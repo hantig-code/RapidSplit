@@ -7,8 +7,7 @@ gemeinsame Ausgaben, Salden und „wer zahlt wem". Läuft komplett im Browser,
 
 ## Nutzen / Installieren
 
-Die App ist über **GitHub Pages** erreichbar (URL siehe oben unter
-**Settings → Pages**, Form: `https://<dein-name>.github.io/kajak-kostenrechner/`).
+**▶️ Live: https://hantig-code.github.io/RapidSplit/**
 
 Als App installieren:
 
