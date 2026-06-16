@@ -1,0 +1,41 @@
+{
+  "id": "/",
+  "name": "Kajak-Tour Kostenrechner",
+  "short_name": "Kajak-Kosten",
+  "description": "Kosten einer Kajak-Tour pro Teilnehmer:in fair berechnen und ausgleichen.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f3f6f8",
+  "theme_color": "#0e7490",
+  "lang": "de",
+  "dir": "ltr",
+  "categories": ["finance", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
