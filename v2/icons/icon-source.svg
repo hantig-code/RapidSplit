@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22b8d6"/>
+      <stop offset="0.55" stop-color="#0e7490"/>
+      <stop offset="1" stop-color="#0b5d72"/>
+    </linearGradient>
+  </defs>
+  <!-- full-bleed background (maskable safe) -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- Strömungslinie (Ledger-Motiv) -->
+  <g stroke="#ffffff" stroke-opacity="0.20" stroke-width="9" stroke-linecap="round" fill="none">
+    <path d="M64 372 q28 -24 56 0 t56 0 t56 0 t56 0 t56 0 t56 0"/>
+    <path d="M84 418 q24 -20 48 0 t48 0 t48 0 t48 0 t48 0"/>
+  </g>
+  <!-- kayak hull -->
+  <g transform="rotate(-22 256 246)">
+    <ellipse cx="256" cy="246" rx="170" ry="47" fill="#ffffff"/>
+    <ellipse cx="256" cy="246" rx="151" ry="30" fill="#0b5d72"/>
+    <ellipse cx="256" cy="246" rx="34" ry="24" fill="#ffffff"/>
+  </g>
+  <!-- paddle -->
+  <g transform="rotate(-22 256 246)" stroke="#ffffff" stroke-width="17" stroke-linecap="round">
+    <line x1="150" y1="146" x2="362" y2="346"/>
+  </g>
+  <g transform="rotate(-22 256 246)" fill="#ffffff">
+    <ellipse cx="142" cy="138" rx="31" ry="17" transform="rotate(45 142 138)"/>
+    <ellipse cx="370" cy="354" rx="31" ry="17" transform="rotate(45 370 354)"/>
+  </g>
+</svg>

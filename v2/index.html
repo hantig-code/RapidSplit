@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e7490">
+<title>Kajak-Tour Kostenrechner v2</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kajak v2">
+<meta name="theme-color" content="#eef3f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a1418" media="(prefers-color-scheme: dark)">
+<style>
+  /* ============================================================
+     Designsystem "Ledger Stromlinie" (v2) — Fintech-Klarheit
+     in Refactoring-UI-Disziplin. Light + Dark, AA-geprüft.
+     ============================================================ */
+  :root{
+    /* Flächen (Tiefe über Stufen statt Linien) */
+    --bg:#eef3f5; --bg-subtle:#f7fafb; --card:#ffffff;
+    /* Text */
+    --ink:#0f2730; --ink-2:#33525e; --muted:#52707b;
+    /* Linien */
+    --line:#dbe6ea; --line-strong:#c3d2d7;
+    /* Marke */
+    --brand:#0e7490; --brand-d:#0b5d72; --brand-tint:#e3eff2; --accent:#0891b2;
+    --on-brand:#ffffff;
+    /* Semantik (AA-korrigiert) */
+    --green:#166534; --green-bg:#e7f6ec; --red:#b91c1c; --red-bg:#fdecec; --warn:#92400e;
+    /* Effekte */
+    --focus:#0e7490;
+    --shadow:0 1px 3px rgba(15,39,48,.08),0 4px 16px rgba(15,39,48,.06);
+    --sh-raised:0 -6px 24px rgba(15,39,48,.10);
+    --r-sm:8px; --r-md:12px; --r-pill:999px;
+    --navh:88px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0a1418; --bg-subtle:#10222a; --card:#15303a;
+      --ink:#eaf2f4; --ink-2:#b3c6cd; --muted:#8aa1a9;
+      --line:#244852; --line-strong:#33545f;
+      --brand:#22b8d6; --brand-d:#67d3e8; --brand-tint:#16323d; --accent:#22b8d6;
+      --on-brand:#06222b;
+      --green:#4ade80; --green-bg:#0f2e1d; --red:#f87171; --red-bg:#34161a; --warn:#f59e0b;
+      --focus:#67d3e8;
+      --shadow:0 1px 2px rgba(0,0,0,.4);
+      --sh-raised:0 -8px 24px rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%;
+    padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+  /* inline-SVG-Icons via <use href="#i-..."> */
+  .ic{width:1em;height:1em;flex:0 0 auto;vertical-align:-.14em;fill:none;stroke:currentColor;
+    stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .ic.fill{fill:currentColor;stroke:none}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+  /* ---------- Topbar / Header ---------- */
+  #topbar{position:sticky;top:0;z-index:50;background:var(--card);
+    box-shadow:0 1px 0 var(--line),0 6px 18px rgba(15,39,48,.05)}
+  header.app{padding:max(14px,env(safe-area-inset-top)) 16px 9px}
+  header.app .app-label{font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    color:var(--muted);display:flex;align-items:center;gap:6px}
+  header.app .app-label .ic{font-size:16px;color:var(--brand)}
+  header.app h1{margin:3px 0 0;font-size:23px;font-weight:800;letter-spacing:.2px;line-height:1.15;color:var(--ink)}
+  header.app .sub{margin:4px 0 0;font-size:13px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
+  header.app .sub .ic{font-size:14px;color:var(--brand)}
+  /* ---------- Navigation (Desktop: Underline-Tabs + Strömungslinie) ---------- */
+  nav.tabs{position:relative;display:flex;gap:2px;background:var(--card);padding:0 8px;max-width:920px;margin:0 auto;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    background-image:linear-gradient(90deg,var(--brand),var(--accent) 55%,var(--brand));
+    background-size:100% 2px;background-position:0 100%;background-repeat:no-repeat}
+  nav.tabs::-webkit-scrollbar{display:none}
+  nav.tabs button{flex:0 0 auto;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:7px;
+    padding:13px 12px;min-height:48px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;
+    border-bottom:3px solid transparent;border-radius:8px 8px 0 0;transition:color .15s,background .15s}
+  nav.tabs button .ic{font-size:17px}
+  nav.tabs button .nav-lbl-m{display:none}
+  nav.tabs button:hover{color:var(--brand-d);background:var(--bg-subtle)}
+  nav.tabs button.active{color:var(--brand-d);border-bottom-color:var(--brand)}
+  main{max-width:920px;margin:0 auto;padding:16px 14px 28px}
+  .tab{display:none}
+  .tab.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  /* ---------- Karten ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;margin:0 0 14px;box-shadow:var(--shadow)}
+  .card.accent{border-left:3px solid var(--brand)}
+  .card h2{margin:0 0 4px;font-size:15.5px;font-weight:700;letter-spacing:-.1px;color:var(--brand-d);display:flex;align-items:center;gap:8px}
+  .card h2 .ic{font-size:17px;color:var(--brand)}
+  .card .hint{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+  label.fld{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:0 0 4px}
+  input[type=text],input[type=number],input[type=date],textarea,select{width:100%;padding:11px 12px;border:1px solid var(--line);
+    border-radius:var(--r-sm);font-size:16px;background:var(--card);color:var(--ink);font-family:inherit;min-height:44px}
+  @media (prefers-color-scheme:dark){
+    input[type=text],input[type=number],input[type=date],textarea,select{background:var(--bg-subtle);border-color:var(--line-strong)}
+  }
+  input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px rgba(14,116,144,.18)}
+  input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+  textarea{resize:vertical;min-height:72px;line-height:1.45}
+  .swatch{display:inline-block;width:11px;height:11px;border-radius:3px;flex:0 0 auto;vertical-align:middle}
+  /* ---------- Buttons ---------- */
+  button.btn{background:var(--brand);color:var(--on-brand);border:none;border-radius:var(--r-sm);padding:10px 16px;
+    min-height:44px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;line-height:1;transition:background .15s,transform .05s}
+  button.btn .ic{font-size:16px}
+  button.btn:hover{background:var(--brand-d)}
+  button.btn:active{transform:scale(.98)}
+  button.btn.ghost{background:var(--brand-tint);color:var(--brand-d)}
+  button.btn.ghost:hover{background:var(--brand-tint);filter:brightness(.96)}
+  button.btn.sm{padding:7px 12px;min-height:40px;font-size:13px}
+  button.btn.danger{background:var(--card);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 40%,transparent)}
+  button.btn.danger:hover{background:var(--red-bg)}
+  .iconbtn{background:none;border:none;color:var(--muted);cursor:pointer;line-height:0;padding:11px;border-radius:var(--r-sm);
+    display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
+  .iconbtn .ic{font-size:18px}
+  .iconbtn:hover{background:var(--red-bg);color:var(--red)}
+  .seg-btn{border-radius:var(--r-pill);padding:6px 12px;min-height:40px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1}
+  .seg-btn.active{box-shadow:0 0 0 2px var(--card) inset,0 0 0 3px currentColor}
+  .link-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  /* ---------- Tabellen ---------- */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;border-radius:var(--r-sm)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:100%}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{color:var(--ink-2)}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);font-weight:700;
+    background:var(--bg-subtle);position:sticky;top:0;z-index:3;border-bottom:1px solid var(--line-strong)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  td.num{color:var(--ink);font-weight:600}
+  td.sticky-col{position:sticky;left:0;background:var(--bg-subtle);z-index:1;color:var(--ink)}
+  th.sticky-col{position:sticky;left:0;top:0;background:var(--bg-subtle);z-index:4;color:var(--ink)}
+  tr.sumrow td{background:var(--bg-subtle);font-weight:700;color:var(--ink)}
+  table input[type=number]{padding:7px 8px;font-size:16px;min-width:66px;min-height:40px;border-radius:var(--r-sm)}
+  table input[type=text]{padding:7px 8px;font-size:16px;min-width:120px;min-height:40px;border-radius:var(--r-sm)}
+  .chk{width:20px;height:20px;accent-color:var(--brand);cursor:pointer}
+  /* ---------- Pills (Saldo mit ▲/▼) ---------- */
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-pill);font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+  .pill .ic{font-size:12px}
+  .pill.green{background:var(--green-bg);color:var(--green)}
+  .pill.red{background:var(--red-bg);color:var(--red)}
+  .pill.muted{background:var(--bg-subtle);color:var(--muted)}
+  .add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:12px}
+  .add-row>div{flex:1;min-width:120px}
+  /* ---------- Statkacheln ---------- */
+  .totals{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 0}
+  .stat{flex:1;min-width:140px;background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
+  .stat.anchor{background:var(--brand-tint);border-color:transparent}
+  .stat .k{font-size:11.5px;color:var(--muted);font-weight:600}
+  .stat .v{font-size:19px;font-weight:700;color:var(--brand-d);margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.2}
+  .stat .v.neg{color:var(--red)}
+  #resHeader .totals .stat .v{font-size:26px;font-weight:800;line-height:1.1}
+  #resHeader .totals .stat.anchor .v{font-size:32px;color:var(--ink)}
+  /* ---------- Etappen-Blöcke / Chips ---------- */
+  .seg-block{border:1px solid var(--line);border-radius:var(--r-md);padding:12px;margin-bottom:10px;background:var(--bg-subtle)}
+  .seg-block h3{margin:0 0 8px;font-size:14px;font-weight:700;color:var(--brand-d);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .checklist{display:flex;flex-wrap:wrap;gap:7px}
+  .checklist label{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r-pill);padding:8px 13px;min-height:44px;font-size:14px;color:var(--ink-2);cursor:pointer;user-select:none;transition:background .12s,color .12s,border-color .12s}
+  .checklist label .ic{font-size:14px;opacity:0;width:0;margin-right:-6px;transition:opacity .12s}
+  .checklist label.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+  .checklist label.on .ic{opacity:1;width:1em;margin-right:0}
+  .checklist label:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+  .checklist input{position:absolute;opacity:0;width:0;height:0}
+  .pay-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .pay-row select,.pay-row input{flex:1;min-width:120px}
+  /* ---------- Avatare + Anteils-Balken (additive Daten-Viz) ---------- */
+  .av{flex:0 0 auto;width:30px;height:30px;border-radius:var(--r-pill);display:inline-flex;align-items:center;justify-content:center;
+    font-size:11.5px;font-weight:700;letter-spacing:.2px;background:color-mix(in srgb,var(--c,#0e7490) 20%,var(--card));
+    color:color-mix(in srgb,var(--c,#0e7490) 72%,#000);line-height:1}
+  @media (prefers-color-scheme:dark){ .av{background:color-mix(in srgb,var(--c,#22b8d6) 30%,var(--card));color:color-mix(in srgb,var(--c,#22b8d6) 60%,#fff)} }
+  .bar{height:8px;border-radius:var(--r-pill);background:var(--bg-subtle);overflow:hidden;margin-top:6px;max-width:220px}
+  .bar>i{display:block;height:100%;border-radius:var(--r-pill);transition:width .3s ease}
+  .rp-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  /* ---------- Settle (Held: wer zahlt wem) ---------- */
+  .settle{display:flex;align-items:center;gap:9px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);
+    margin-bottom:8px;background:var(--bg-subtle);flex-wrap:wrap;min-height:44px}
+  .settle:first-child{background:var(--brand-tint);border-color:transparent;padding:16px 18px}
+  .settle:first-child .av{width:36px;height:36px;font-size:13px}
+  .settle:first-child .amt{font-size:18px}
+  .settle .from{font-weight:600;color:var(--red)}
+  .settle .to{font-weight:600;color:var(--green)}
+  .settle .arrow{color:var(--muted);font-size:18px;display:inline-flex}
+  .settle .amt{margin-left:auto;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;color:var(--brand-d)}
+  /* ---------- Sonstiges ---------- */
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .footnote{font-size:12px;color:var(--muted);margin-top:8px}
+  .banner{background:var(--bg-subtle);border-left:3px solid var(--brand);color:var(--ink-2);border-radius:var(--r-md);
+    padding:12px 14px;font-size:13px;margin-bottom:14px;display:flex;gap:9px;align-items:flex-start}
+  .banner .ic{font-size:17px;color:var(--brand);flex:0 0 auto;margin-top:1px}
+  .warn-txt{color:var(--warn);font-weight:600}
+  details summary{cursor:pointer;font-weight:600;color:var(--brand-d);font-size:14px;list-style:none;display:flex;align-items:center;gap:7px}
+  details summary::-webkit-details-marker{display:none}
+  details summary .ic{font-size:15px;transition:transform .2s}
+  details[open] summary .ic{transform:rotate(90deg)}
+  .right{text-align:right}
+  .mini{font-size:12px;color:var(--muted);font-weight:500}
+  /* ---------- Wizard ---------- */
+  body.wiz-on main{padding-bottom:200px}
+  .wiz-bar{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--card);border-top:1px solid var(--line);
+    box-shadow:var(--sh-raised);border-radius:16px 16px 0 0;
+    padding:14px 16px calc(14px + env(safe-area-inset-bottom));display:none}
+  .wiz-bar.show{display:block;animation:wizup .25s ease}
+  @keyframes wizup{from{transform:translateY(100%)}to{transform:none}}
+  .wiz-inner{max-width:920px;margin:0 auto}
+  .wiz-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .wiz-step{font-size:11.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.4px}
+  .wiz-prog{flex:1;height:6px;background:var(--brand-tint);border-radius:var(--r-pill);overflow:hidden}
+  .wiz-prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));border-radius:var(--r-pill);transition:width .3s}
+  .wiz-close{background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;line-height:0;border-radius:var(--r-sm);min-width:40px;min-height:40px}
+  .wiz-close .ic{font-size:18px}
+  .wiz-close:hover{background:var(--bg-subtle)}
+  .wiz-title{font-weight:700;font-size:15.5px;color:var(--ink);margin:0 0 2px}
+  .wiz-text{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5}
+  .wiz-nav{display:flex;gap:8px;align-items:center}
+  .wiz-nav .spacer{flex:1}
+  nav.tabs button.wiz-hl{animation:wpulse 1.3s ease-in-out infinite}
+  @keyframes wpulse{0%,100%{background:transparent}50%{background:var(--brand-tint)}}
+  /* ---------- Toast ---------- */
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:var(--r-pill);font-size:13.5px;font-weight:600;
+    box-shadow:var(--shadow);opacity:0;transition:.25s;z-index:100;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* ============================================================
+     MOBILE: dieselbe nav.tabs wird zur fixen Bottom-Tab-Bar
+     ============================================================ */
+  @media (max-width:560px){
+    :root{--navh:72px}
+    header.app h1{font-size:20px}
+    #topbar{box-shadow:none;border-bottom:1px solid var(--line)}
+    .settle .amt{margin-left:0;width:100%;text-align:right}
+    nav.tabs{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:60;max-width:none;margin:0;gap:0;overflow:visible;
+      padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:var(--card);box-shadow:var(--sh-raised);
+      background-image:linear-gradient(90deg,var(--brand),var(--accent) 55%,var(--brand));background-position:0 0}
+    @supports (backdrop-filter:blur(20px)){
+      nav.tabs{background-color:color-mix(in srgb,var(--card) 88%,transparent);
+        backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%)}
+    }
+    nav.tabs button{flex:1 1 0;min-width:0;flex-direction:column;gap:3px;padding:6px 2px;min-height:56px;
+      border-bottom:none;border-radius:10px;font-size:10.5px;font-weight:600;color:var(--muted)}
+    nav.tabs button .ic{font-size:22px}
+    nav.tabs button .nav-lbl{display:none}
+    nav.tabs button .nav-lbl-m{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1}
+    nav.tabs button:hover{background:none}
+    nav.tabs button.active{color:var(--brand);background:none;box-shadow:inset 0 2px 0 0 var(--brand)}
+    main{padding:14px 12px calc(var(--navh) + env(safe-area-inset-bottom))}
+    body.wiz-on nav.tabs{display:none}
+    .toast{bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 12px)}
+    .stat .v{font-size:17px}
+    #resHeader .totals{display:grid;grid-template-columns:1fr 1fr}
+    #resHeader .totals .stat{min-width:0}
+    #resHeader .totals .stat .v{font-size:22px}
+  }
+  @media (max-width:360px){
+    nav.tabs button .nav-lbl-m{display:none}
+  }
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+    nav.tabs button.wiz-hl{animation:none;background:var(--brand-tint)}
+  }
+  /* ---------- PDF / Druck: nur das Ergebnis, hell & monochrom-lesbar ---------- */
+  @media print{
+    @page{ margin:14mm 12mm; }
+    :root{
+      --bg:#fff; --bg-subtle:#f4f6f7; --card:#fff; --ink:#0f2730; --ink-2:#33525e; --muted:#52707b;
+      --line:#d0d8dc; --line-strong:#c3d2d7; --brand:#0b5d72; --brand-d:#0b5d72; --brand-tint:#eef4f6;
+      --green:#166534; --red:#b91c1c; --on-brand:#fff;
+    }
+    #topbar,.wiz-bar,.toast,.no-print,nav.tabs{ display:none !important; }
+    body{ background:#fff; font-size:12px; }
+    main{ max-width:none !important; margin:0 !important; padding:0 !important; }
+    .tab{ display:none !important; }
+    .tab.active{ display:block !important; }
+    .card{ box-shadow:none !important; border:1px solid var(--line) !important; break-inside:avoid; margin-bottom:10px; }
+    .settle,.seg-block,.stat{ break-inside:avoid; }
+    details>*:not(summary){ display:block !important; }
+    .av,.pill,.bar,.bar>i,.stat.anchor,.settle:first-child{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .bar>i{ outline:1px solid #888; }
+    a{ color:inherit; text-decoration:none; }
+  }
+</style>
+</head>
+<body>
+<!-- inline-SVG-Icon-Sprite (offline, currentColor) -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <symbol id="i-kayak" viewBox="0 0 24 24"><path d="M3 12c3 2 15 2 18 0M3 12c3-2 15-2 18 0M6.5 8l11 8"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 3v18M5 4h11l-2 3 2 3H5"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M16 6a3 3 0 0 1 0 6"/><path d="M21 20c0-2.5-2-4-4.5-4.5"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h14l-1.5-5a2 2 0 0 0-1.9-1.4H8.4A2 2 0 0 0 6.5 12L5 17z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3v18l2-1 2 1 2-1 2 1 2-1 2 1V3l-2 1-2-1-2 1-2-1-2 1L6 3z"/><path d="M9 8h6M9 12h6"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7l-2.5 5a2.5 2.5 0 0 0 5 0L5 7zM19 7l-2.5 5a2.5 2.5 0 0 0 5 0L19 7z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 10-11"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 7l6 10H6z"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 17l6-10H6z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M8 14h8v6H8z"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2.2 4.8-4.8 2.2 2.2-4.8z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  </defs>
+</svg>
+<div id="topbar">
+  <header class="app">
+    <div class="app-label"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-kayak"></use></svg> Kajak-Tour Kostenrechner</div>
+    <h1 id="metaTitle">Unbenannte Tour</h1>
+    <div class="sub" id="metaSub">Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen</div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Bereiche">
+    <button data-tab="info" class="active" aria-current="page" aria-label="Tour-Info"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-flag"></use></svg><span class="nav-lbl">Tour-Info</span><span class="nav-lbl-m">Info</span></button>
+    <button data-tab="teilnehmer" aria-label="Teilnehmende"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people"></use></svg><span class="nav-lbl">Teilnehmende</span><span class="nav-lbl-m">Leute</span></button>
+    <button data-tab="fahrer" aria-label="Etappen und Fahrer"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg><span class="nav-lbl">Etappen &amp; Fahrer</span><span class="nav-lbl-m">Etappen</span></button>
+    <button data-tab="teilnahme" aria-label="Teilnahme pro Etappe"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg><span class="nav-lbl">Teilnahme</span><span class="nav-lbl-m">Dabei</span></button>
+    <button data-tab="ausgaben" aria-label="Sonstige Ausgaben"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-receipt"></use></svg><span class="nav-lbl">Sonstige Ausgaben</span><span class="nav-lbl-m">Ausgaben</span></button>
+    <button data-tab="ergebnis" aria-label="Ergebnis"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-scale"></use></svg><span class="nav-lbl">Ergebnis</span><span class="nav-lbl-m">Ergebnis</span></button>
+  </nav>
+</div>
+
+<main>
+  <!-- TOUR INFO -->
+  <section class="tab active" id="tab-info">
+    <div class="card accent">
+      <h2>Start</h2>
+      <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen — oder starte direkt mit einer leeren Fahrt.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn" onclick="startWizard()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Wizard starten</button>
+        <button class="btn ghost" onclick="newTrip()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Neue, leere Fahrt anlegen</button>
+      </div>
+      <p class="footnote">„Neue, leere Fahrt" löscht die vorausgefüllten Beispielwerte. Über „Beispiel laden" weiter unten holst du sie jederzeit zurück.</p>
+    </div>
+    <div class="card">
+      <h2>Tour-Eckdaten</h2>
+      <p class="hint">Diese Angaben erscheinen oben und im Ergebnis.</p>
+      <label class="fld">Titel der Tour</label>
+      <input type="text" id="m_title" placeholder="Titel eingeben.">
+      <div style="height:14px"></div>
+      <label class="fld">Reisezeitraum</label>
+      <div class="row">
+        <div><label class="fld" style="font-weight:500">von</label><input type="date" id="m_from"></div>
+        <div><label class="fld" style="font-weight:500">bis</label><input type="date" id="m_to"></div>
+      </div>
+      <div style="height:14px"></div>
+      <label class="fld">Beschreibung der Tour</label>
+      <textarea id="m_desc" placeholder="Anlass, gefahrene Flüsse, Schwierigkeit, Wasserstand, …"></textarea>
+    </div>
+    <div class="card">
+      <h2>Daten sichern</h2>
+      <p class="hint">Alle Eingaben werden automatisch auf diesem Gerät gespeichert. Den Export als Datei und das PDF findest du im Reiter „Ergebnis“.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn ghost" onclick="document.getElementById('importFile').click()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Import (Datei)</button>
+        <button class="btn danger" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
+        <button class="btn danger" onclick="clearAll()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg>Alles leeren</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(event)">
+      </div>
+    </div>
+  </section>
+
+  <!-- FAHRER -->
+  <section class="tab" id="tab-fahrer">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage je Fahrer:in die gefahrenen Kilometer pro Etappe und die Kilometerpauschale (€/km) ein. Zusätzliche Auslagen (Vignette, Maut, Sprit …) kommen pro Fahrer:in dazu.</div>
+    <div class="card">
+      <h2>Fahrer:in hinzufügen</h2>
+      <p class="hint">Neue Fahrer:innen anlegen. Sie erscheinen automatisch auch in der Teilnehmer-Liste.</p>
+      <div class="add-row">
+        <div><label class="fld">Name</label><input type="text" id="drv_new" placeholder="z. B. Nouria N."></div>
+        <div style="flex:0 0 auto"><label class="fld">€/km</label><input type="number" id="drv_rate" value="0.30" step="0.01" style="width:90px"></div>
+        <div style="flex:0 0 auto"><button class="btn" onclick="addDriver()">+ Fahrer:in</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Etappen</h2>
+      <p class="hint">Die Abschnitte der Reise. Pro Etappe werden die Fahrtkosten unter den dort mitfahrenden Personen geteilt.</p>
+      <div id="segList"></div>
+      <div class="add-row">
+        <div><label class="fld">Neue Etappe</label><input type="text" id="seg_new" placeholder="z. B. SLO → München"></div>
+        <div style="flex:0 0 auto"><button class="btn sm" onclick="addSegment()">+ Etappe</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Fahrer:innen &amp; Kilometer</h2>
+      <p class="hint">km pro Etappe und die €/km-Pauschale. Fahrtkosten je Etappe = Σ(km × €/km) aller Autos.</p>
+      <div class="tbl-wrap">
+        <table id="kmTable"></table>
+      </div>
+      <div class="footnote">Neue Fahrer:innen legst du oben unter „Fahrer:in hinzufügen“ an. Mit „Auto entf.“ über einer Spalte entfernst du die Fahrer-Rolle wieder.</div>
+    </div>
+    <div class="card">
+      <h2>Zusätzliche Auslagen je Fahrer:in</h2>
+      <p class="hint">Feste Kosten, die eine Fahrer:in fürs eigene Auto ausgelegt hat (Vignette, Maut, Tunnel, Sprit …).</p>
+      <div id="extrasList"></div>
+    </div>
+  </section>
+
+  <!-- TEILNEHMER -->
+  <section class="tab" id="tab-teilnehmer">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein (inkl. Fahrer:innen). Wer auf welcher Etappe dabei war, legst du anschließend im Reiter „Teilnahme“ fest.</div>
+    <div class="card">
+      <h2>Teilnehmende</h2>
+      <p class="hint">Alle Personen (inkl. Fahrer:innen). Optional ein Haushalt/Gruppe, um Salden am Ende zusammenzufassen (z. B. „Familie Jackson“).</p>
+      <div class="tbl-wrap"><table id="partTable"></table></div>
+      <div class="add-row">
+        <div><label class="fld">Person hinzufügen</label><input type="text" id="part_new" placeholder="Name"></div>
+        <div><label class="fld">Haushalt/Gruppe (optional)</label><input type="text" id="part_group" placeholder="z. B. Familie …"></div>
+        <div style="flex:0 0 auto"><button class="btn sm" onclick="addParticipant()">+ Person</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEILNAHME PRO ETAPPE -->
+  <section class="tab" id="tab-teilnahme">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Wer war auf welcher Etappe dabei? Die Fahrtkosten einer Etappe werden gleichmäßig auf alle dort markierten Personen aufgeteilt.</div>
+    <div class="card">
+      <h2>Teilnahme pro Etappe</h2>
+      <p class="hint">Markiere, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung.</p>
+      <div id="participationBlocks"></div>
+    </div>
+  </section>
+
+  <!-- AUSGABEN -->
+  <section class="tab" id="tab-ausgaben">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Gemeinsame Ausgaben (Einkäufe, Campingplatz …). Lege fest, für wen die Ausgabe gilt (wird gleichmäßig geteilt) und wer sie bezahlt hat.</div>
+    <div id="expenseList"></div>
+    <div class="card">
+      <button class="btn" onclick="addExpense()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Neue Ausgabe</button>
+    </div>
+  </section>
+
+  <!-- ERGEBNIS -->
+  <section class="tab" id="tab-ergebnis">
+    <div class="card no-print">
+      <h2>Exportieren</h2>
+      <p class="hint">Ergebnis als PDF sichern – oder alle Tour-Daten als Datei für Backup/Weitergabe exportieren.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn" onclick="exportPDF()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-printer"></use></svg>Als PDF exportieren</button>
+        <button class="btn ghost" onclick="exportJSON()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-download"></use></svg>Export (Datei)</button>
+      </div>
+    </div>
+    <div class="card" id="resHeader"></div>
+    <div class="card">
+      <h2>Kosten pro Teilnehmer:in</h2>
+      <p class="hint">Eigener Anteil = Fahrtkosten-Anteil + Anteil sonstige Ausgaben. Das ist, was die Tour die Person netto kostet.</p>
+      <div class="tbl-wrap"><table id="costTable"></table></div>
+    </div>
+    <div class="card">
+      <h2>Saldo &amp; Ausgleich</h2>
+      <p class="hint">Saldo = ausgelegtes Geld − eigener Anteil. <span class="pill green"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-up"></use></svg>bekommt zurück</span> &nbsp; <span class="pill red"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-down"></use></svg>zahlt ein</span></p>
+      <div class="tbl-wrap"><table id="balanceTable"></table></div>
+    </div>
+    <div class="card">
+      <h2>Wer zahlt wem <span class="mini">(minimale Anzahl Überweisungen)</span></h2>
+      <div id="settlement"></div>
+    </div>
+    <div class="card">
+      <details>
+        <summary><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Details: Fahrtkosten je Etappe</summary>
+        <div class="tbl-wrap" style="margin-top:10px"><table id="segCostTable"></table></div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<div class="wiz-bar" id="wizBar">
+  <div class="wiz-inner">
+    <div class="wiz-top">
+      <span class="wiz-step" id="wizStep"></span>
+      <span class="wiz-prog"><i id="wizProg"></i></span>
+      <button class="wiz-close" title="Wizard beenden" aria-label="Wizard beenden" onclick="wizClose()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+    </div>
+    <p class="wiz-title" id="wizTitle"></p>
+    <p class="wiz-text" id="wizText"></p>
+    <div class="wiz-nav">
+      <button class="btn ghost sm" id="wizBack" onclick="wizGo(-1)">← Zurück</button>
+      <div class="spacer"></div>
+      <button class="btn sm" id="wizNext" onclick="wizGo(1)">Weiter →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+/* ---------------- State ---------------- */
+const LS_KEY = "kajak_kostenrechner_v2app";
+let S = null;
+let uid = () => Math.random().toString(36).slice(2,9);
+
+function exampleData(){
+  const sIds = ["s1","s2","s3","s4","s5"];
+  const segments = [
+    {id:"s1",name:"MUC → BiH"},
+    {id:"s2",name:"Shutteln BiH"},
+    {id:"s3",name:"BiH → SLO"},
+    {id:"s4",name:"Shutteln SLO"},
+    {id:"s5",name:"SLO → MUC"},
+  ];
+  // participants (master). drivers carry car data.
+  const P = (name,group="",driver=null)=>({id:uid(),name,group,driver});
+  const flo = P("Olaf O.","",{rate:0.35,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[]});
+  const rob = P("Steve F.","",{rate:0.40,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[]});
+  const ste = P("Rush S.","",{rate:0.30,km:{s1:686,s2:247,s3:521,s4:100,s5:398},extras:[]});
+  const ker = P("Emily J.","Familie Jackson",{rate:0.30,km:{s1:0,s2:90,s3:0,s4:76,s5:0},extras:[]});
+  const aida=P("Nouria N."), max=P("Tyler B."), amar=P("Rafa O."), car=P("Adriene L."),
+        chr=P("Adrian M."), bredt=P("Familie Serrasolses"), nicki=P("Dane J.","Familie Jackson"),
+        sam=P("Sam S."), thor=P("Ben M.");
+  const participants=[rob,aida,max,amar,car,chr,bredt,flo,ker,nicki,sam,ste,thor];
+  const byName={};participants.forEach(p=>byName[p.name]=p.id);
+  const on=(names)=>names.map(n=>byName[n]);
+  const participation={
+    s1:on(["Steve F.","Rafa O.","Adriene L.","Adrian M.","Olaf O.","Sam S.","Rush S.","Ben M."]),
+    s2:on(["Steve F.","Nouria N.","Tyler B.","Rafa O.","Adriene L.","Adrian M.","Familie Serrasolses","Olaf O.","Emily J.","Dane J.","Sam S.","Rush S.","Ben M."]),
+    s3:on(["Steve F.","Adriene L.","Adrian M.","Olaf O.","Sam S.","Rush S.","Ben M."]),
+    s4:on(["Steve F.","Adriene L.","Adrian M.","Olaf O.","Emily J.","Dane J.","Sam S.","Rush S.","Ben M."]),
+    s5:on(["Steve F.","Olaf O.","Rush S.","Ben M."]),
+  };
+  const einkaufAppliesTo = participation.s2.filter(id=>id!==byName["Familie Serrasolses"]);
+  const expenses=[
+    {id:uid(),name:"Einkauf Gruppe",appliesTo:einkaufAppliesTo.slice(),
+     payments:[{id:uid(),paidBy:byName["Steve F."],amount:42},{id:uid(),paidBy:byName["Olaf O."],amount:26}]},
+    {id:uid(),name:"Camp Liza",appliesTo:participation.s4.slice(),
+     payments:[{id:uid(),paidBy:byName["Steve F."],amount:316}]},
+  ];
+  return {
+    meta:{title:"Wildwasserkajak-Tour 2026 – Una (BiH) & Soča (SLO)",
+      dateFrom:"2026-05-23", dateTo:"2026-05-31",
+      description:"Hinfahrt Sa 23.05. (München → Bihać/BiH), Weiterreise Mi 27.05. (Bihać → Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München."},
+    segments, participants, participation, expenses
+  };
+}
+function emptyData(){
+  return {meta:{title:"",dateFrom:"",dateTo:"",description:""},segments:[],participants:[],participation:{},expenses:[]};
+}
+
+function load(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(raw){S=JSON.parse(raw); normalize(); return;} }catch(e){}
+  S=emptyData();
+}
+function normalize(){
+  S.meta = S.meta||{};
+  if(S.meta.title==null) S.meta.title="";
+  if(S.meta.dateFrom==null) S.meta.dateFrom="";
+  if(S.meta.dateTo==null) S.meta.dateTo="";
+  if(S.meta.description==null){
+    S.meta.description = (Array.isArray(S.meta.rows)&&S.meta.rows.length)
+      ? S.meta.rows.map(r=>(r.k?r.k+": ":"")+(r.v||"")).join("\n") : "";
+  }
+  delete S.meta.rows;
+  S.segments = S.segments||[];
+  S.participants = S.participants||[];
+  S.participation = S.participation||{};
+  S.expenses = S.expenses||[];
+  S.segments.forEach(s=>{ if(!S.participation[s.id]) S.participation[s.id]=[]; });
+  S.participants.forEach(p=>{
+    if(p.driver){ p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[];
+      S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; }); }
+  });
+}
+function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){} }
+
+/* ---------------- Helpers ---------------- */
+const eur = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const num = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{maximumFractionDigits:2});
+const pById = id => S.participants.find(p=>p.id===id);
+const pName = id => (pById(id)||{}).name || "—";
+const SEG_COLORS=["#0e7490","#b45309","#7c3aed","#15803d","#be185d","#0369a1","#a16207","#9333ea","#0d9488","#c2410c"];
+function segColor(sid){const i=S.segments.findIndex(s=>s.id===sid);return i<0?"#94a3b8":SEG_COLORS[i%SEG_COLORS.length];}
+function segName(sid){const s=S.segments.find(x=>x.id===sid);return s?s.name:"";}
+function tint(hex,a){const c=hex.replace("#","");const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);return `rgba(${r},${g},${b},${a==null?0.10:a})`;}
+function sameSet(a,b){if(a.length!==b.length)return false;const sb=new Set(b);return a.every(x=>sb.has(x));}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
+/* ---------- inline-SVG-Icon + Avatar-Helfer (rein additiv, keine State-Mutation) ---------- */
+function icon(id){return `<svg class="ic" aria-hidden="true" focusable="false"><use href="#${id}"></use></svg>`;}
+function iconF(id){return `<svg class="ic fill" aria-hidden="true" focusable="false"><use href="#${id}"></use></svg>`;}
+const AV_PALETTE=["#0e7490","#0369a1","#7c3aed","#15803d","#be185d","#a16207","#0d9488","#c2410c","#4f46e5","#9333ea"];
+function avColor(name){let h=0;const s=String(name||"");for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return AV_PALETTE[h%AV_PALETTE.length];}
+function avInitials(name){const p=String(name||"").trim().split(/\s+/).filter(Boolean);
+  if(!p.length)return "–"; if(p.length===1)return p[0].slice(0,2).toUpperCase();
+  return (p[0][0]+p[p.length-1][0]).toUpperCase();}
+function avatar(name){return `<span class="av" style="--c:${avColor(name)}" aria-hidden="true">${esc(avInitials(name))}</span>`;}
+
+/* ---------------- Computation (mirrors xlsx) ---------------- */
+function compute(){
+  const segs=S.segments, parts=S.participants;
+  // per-segment total cost = Σ(km × rate) over drivers; persons = count in participation; perPerson
+  const segCost={}, segPersons={}, segPer={};
+  segs.forEach(s=>{
+    let tot=0;
+    parts.forEach(p=>{ if(p.driver){ tot += (p.driver.km[s.id]||0)*(p.driver.rate||0); } });
+    const persons=(S.participation[s.id]||[]).length;
+    segCost[s.id]=tot; segPersons[s.id]=persons; segPer[s.id]= persons>0 ? tot/persons : 0;
+  });
+  // per person: fahrtkosten-Anteil = Σ over segments they are on of segPer
+  const fahrtAnteil={}, laidOutDrive={};
+  parts.forEach(p=>{
+    let a=0; segs.forEach(s=>{ if((S.participation[s.id]||[]).includes(p.id)) a+=segPer[s.id]; });
+    fahrtAnteil[p.id]=a;
+    let lo=0;
+    if(p.driver){ segs.forEach(s=>{ lo += (p.driver.km[s.id]||0)*(p.driver.rate||0); });
+      (p.driver.extras||[]).forEach(e=> lo += (+e.amount||0)); }
+    laidOutDrive[p.id]=lo;
+  });
+  // expenses: each expense total = Σ payments; perPerson = total/|appliesTo|
+  const sonstAnteil={}, sonstAusgelegt={};
+  parts.forEach(p=>{sonstAnteil[p.id]=0;sonstAusgelegt[p.id]=0;});
+  const expRows=[];
+  S.expenses.forEach(ex=>{
+    const total=(ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0);
+    const grp=(ex.appliesTo||[]).filter(id=>pById(id));
+    const per= grp.length>0 ? total/grp.length : 0;
+    grp.forEach(id=> sonstAnteil[id]+=per);
+    (ex.payments||[]).forEach(pm=>{ if(pById(pm.paidBy)) sonstAusgelegt[pm.paidBy]+=(+pm.amount||0); });
+    expRows.push({name:ex.name,total,persons:grp.length,per});
+  });
+  // per person rows
+  const rows=parts.map(p=>{
+    const saldoFahrt = laidOutDrive[p.id]-fahrtAnteil[p.id];
+    const eigenAnteil = fahrtAnteil[p.id]+sonstAnteil[p.id];
+    const gesamtSaldo = saldoFahrt + sonstAusgelegt[p.id] - sonstAnteil[p.id];
+    return {id:p.id,name:p.name,group:p.group||"",
+      laidOutDrive:laidOutDrive[p.id], fahrtAnteil:fahrtAnteil[p.id],
+      saldoFahrt, sonstAusgelegt:sonstAusgelegt[p.id], sonstAnteil:sonstAnteil[p.id],
+      eigenAnteil, gesamtSaldo};
+  });
+  // group merge for balances/settlement
+  const groups={};
+  rows.forEach(r=>{
+    const key = r.group ? "g:"+r.group : "p:"+r.id;
+    if(!groups[key]) groups[key]={name:r.group||r.name, isGroup:!!r.group, members:[], saldo:0, eigenAnteil:0, laidOut:0};
+    groups[key].members.push(r.name);
+    groups[key].saldo += r.gesamtSaldo;
+    groups[key].eigenAnteil += r.eigenAnteil;
+    groups[key].laidOut += r.laidOutDrive + r.sonstAusgelegt;
+  });
+  const grpArr=Object.values(groups);
+  const settlement=settle(grpArr.map(g=>({name:g.name,amount:g.saldo})));
+  const totalDrive=Object.values(segCost).reduce((a,b)=>a+b,0);
+  const totalExp=expRows.reduce((a,b)=>a+b.total,0);
+  return {segs,segCost,segPersons,segPer,rows,grpArr,settlement,expRows,totalDrive,totalExp};
+}
+function settle(balances){
+  const cred=balances.filter(b=>b.amount>0.005).map(b=>({...b})).sort((a,b)=>b.amount-a.amount);
+  const deb=balances.filter(b=>b.amount<-0.005).map(b=>({name:b.name,amount:-b.amount})).sort((a,b)=>b.amount-a.amount);
+  const tx=[];let i=0,j=0;
+  while(i<deb.length&&j<cred.length){
+    const pay=Math.min(deb[i].amount,cred[j].amount);
+    if(pay>0.005) tx.push({from:deb[i].name,to:cred[j].name,amount:pay});
+    deb[i].amount-=pay;cred[j].amount-=pay;
+    if(deb[i].amount<0.005)i++; if(cred[j].amount<0.005)j++;
+  }
+  return tx;
+}
+
+/* ---------------- Rendering ---------------- */
+function renderAll(){ renderInfo();renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();
+  updateSub(); save(); }
+function fmtDate(d){ if(!d)return ""; const p=d.split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d; }
+function dateRangeText(){
+  const f=fmtDate(S.meta.dateFrom), t=fmtDate(S.meta.dateTo);
+  if(f&&t) return f+" – "+t; return f||t||"";
+}
+function updateSub(){
+  const dr=dateRangeText();
+  document.getElementById("metaTitle").textContent=S.meta.title||"Unbenannte Tour";
+  const sub=document.getElementById("metaSub");
+  if(dr){ sub.innerHTML=icon("i-calendar")+" "+esc(dr); }
+  else{ sub.textContent="Kosten pro Teilnehmer:in fair berechnen & ausgleichen"; }
+}
+function renderInfo(){
+  document.getElementById("m_title").value=S.meta.title||"";
+  document.getElementById("m_from").value=S.meta.dateFrom||"";
+  document.getElementById("m_to").value=S.meta.dateTo||"";
+  document.getElementById("m_desc").value=S.meta.description||"";
+}
+function renderFahrer(){
+  // segments list
+  const sl=document.getElementById("segList");sl.innerHTML="";
+  S.segments.forEach((s,i)=>{
+    const d=document.createElement("div");d.className="row";d.style.marginBottom="6px";d.style.alignItems="center";
+    d.innerHTML=`<div style="flex:0 0 auto;color:var(--muted);font-size:13px;min-width:18px">${i+1}.</div>
+      <div><input type="text" value="${esc(s.name)}" onchange="updSeg('${s.id}',this.value)"></div>
+      <div style="flex:0 0 auto"><button class="iconbtn" title="Etappe löschen" onclick="delSeg('${s.id}')">${icon("i-trash")}</button></div>`;
+    sl.appendChild(d);
+  });
+  // km table
+  const drivers=S.participants.filter(p=>p.driver);
+  const t=document.getElementById("kmTable");
+  let h="<thead><tr><th class=\"sticky-col\">Etappe</th>";
+  drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}<br><button title="Als Fahrer:in entfernen" onclick="removeDriver('${d.id}')" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:3px;padding:4px 6px;border-radius:6px">${icon("i-x")} Auto entf.</button></th>`);
+  h+="</tr></thead><tbody>";
+  if(drivers.length===0) h+=`<tr><td colspan="1"><span class="mini">Noch keine Fahrer:innen — unten hinzufügen.</span></td></tr>`;
+  S.segments.forEach(s=>{
+    h+=`<tr><td class="sticky-col">${esc(s.name)}</td>`;
+    drivers.forEach(d=> h+=`<td class="num"><input type="number" value="${d.driver.km[s.id]||0}" min="0" step="1" onchange="updKm('${d.id}','${s.id}',this.value)"></td>`);
+    h+="</tr>";
+  });
+  // total km
+  h+=`<tr class="sumrow"><td class="sticky-col"><b>Gesamt-km</b></td>`;
+  drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0)); h+=`<td class="num"><b>${num(tot)}</b></td>`; });
+  h+="</tr>";
+  // rate
+  h+=`<tr><td class="sticky-col">€/km Pauschale</td>`;
+  drivers.forEach(d=> h+=`<td class="num"><input type="number" value="${d.driver.rate}" min="0" step="0.01" onchange="updRate('${d.id}',this.value)"></td>`);
+  h+="</tr>";
+  // fahrtkosten pauschale
+  h+=`<tr class="sumrow"><td class="sticky-col"><b>Fahrtkosten (km×€)</b></td>`;
+  drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0));h+=`<td class="num"><b>${eur(tot*d.driver.rate)}</b></td>`; });
+  h+="</tr>";
+  h+="</tbody>";
+  t.innerHTML=h;
+  // extras
+  const el=document.getElementById("extrasList");el.innerHTML="";
+  if(drivers.length===0){ el.innerHTML='<p class="mini">Noch keine Fahrer:innen angelegt.</p>'; }
+  drivers.forEach(d=>{
+    const box=document.createElement("div");box.className="seg-block";
+    let inner=`<h3>${esc(d.name)}</h3>`;
+    (d.driver.extras||[]).forEach(e=>{
+      inner+=`<div class="pay-row">
+        <input type="text" value="${esc(e.name)}" placeholder="Bezeichnung (z. B. Vignette)" onchange="updExtra('${d.id}','${e.id}','name',this.value)">
+        <input type="number" style="flex:0 0 110px" value="${e.amount}" step="0.01" onchange="updExtra('${d.id}','${e.id}','amount',this.value)" placeholder="€">
+        <button class="iconbtn" onclick="delExtra('${d.id}','${e.id}')">${icon("i-x")}</button></div>`;
+    });
+    inner+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addExtra('${d.id}')">${icon("i-plus")}Auslage</button></div>`;
+    box.innerHTML=inner;el.appendChild(box);
+  });
+}
+function renderTeilnehmer(){
+  const t=document.getElementById("partTable");
+  let h="<thead><tr><th>Name</th><th>Haushalt/Gruppe</th><th>Fahrer:in</th><th></th></tr></thead><tbody>";
+  S.participants.forEach(p=>{
+    h+=`<tr>
+      <td><input type="text" value="${esc(p.name)}" onchange="updPartName('${p.id}',this.value)"></td>
+      <td><input type="text" value="${esc(p.group||'')}" placeholder="—" onchange="updPartGroup('${p.id}',this.value)"></td>
+      <td>${p.driver?`<span class="pill green">${icon("i-check")}Auto</span> <button class="btn danger sm" style="padding:5px 10px" onclick="removeDriver('${p.id}')">entfernen</button>`:`<button class="btn ghost sm" onclick="makeDriver('${p.id}')">${icon("i-plus")}als Fahrer:in</button>`}</td>
+      <td><button class="iconbtn" title="Person löschen" onclick="delParticipant('${p.id}')">${icon("i-trash")}</button></td></tr>`;
+  });
+  h+="</tbody>";t.innerHTML=h;
+  // participation blocks
+  const pb=document.getElementById("participationBlocks");pb.innerHTML="";
+  S.segments.forEach(s=>{
+    const sel=S.participation[s.id]||[];const col=segColor(s.id);
+    const box=document.createElement("div");box.className="seg-block";
+    box.style.borderLeft="5px solid "+col;box.style.background=tint(col,0.06);
+    let inner=`<h3 style="color:${col}"><span class="swatch" style="background:${col}"></span>${esc(s.name)} <span class="pill muted">${sel.length} Pers.</span></h3>
+      <div style="margin-bottom:10px;display:flex;gap:8px"><button class="btn ghost sm" onclick="allSeg('${s.id}',true)">Alle</button>
+      <button class="btn ghost sm" onclick="allSeg('${s.id}',false)">Keine</button></div><div class="checklist">`;
+    S.participants.forEach(p=>{
+      const on=sel.includes(p.id);
+      inner+=`<label class="${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleSeg('${s.id}','${p.id}',this.checked)">${icon("i-check")}${esc(p.name)}</label>`;
+    });
+    inner+="</div>";box.innerHTML=inner;pb.appendChild(box);
+  });
+}
+function renderAusgaben(){
+  const c=document.getElementById("expenseList");c.innerHTML="";
+  if(S.expenses.length===0) c.innerHTML='<div class="card"><p class="mini">Noch keine Ausgaben. Füge unten eine hinzu.</p></div>';
+  S.expenses.forEach(ex=>{
+    const total=(ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0);
+    const grp=(ex.appliesTo||[]).filter(id=>pById(id));
+    const per=grp.length>0?total/grp.length:0;
+    const linkedSeg = ex.segRef && S.segments.find(s=>s.id===ex.segRef) ? ex.segRef : "";
+    const lcol = linkedSeg ? segColor(linkedSeg) : "";
+    const card=document.createElement("div");card.className="card";
+    if(linkedSeg){ card.style.borderLeft="6px solid "+lcol; }
+    let h=`<div class="row" style="align-items:center"><div style="flex:2"><label class="fld">Bezeichnung</label>
+      <input type="text" value="${esc(ex.name)}" onchange="updExp('${ex.id}','name',this.value)"></div>
+      <div style="flex:0 0 auto;align-self:flex-end"><button class="iconbtn" onclick="delExpense('${ex.id}')">${icon("i-trash")}</button></div></div>`;
+    // link badge
+    if(linkedSeg){
+      const mism = !sameSet((ex.appliesTo||[]).filter(id=>pById(id)), (S.participation[linkedSeg]||[]));
+      h+=`<div style="margin:10px 0 2px"><span class="link-badge" style="background:${tint(lcol,0.14)};color:${lcol};border:1px solid ${lcol}">
+        <span class="swatch" style="background:${lcol}"></span> Zugeordnet: ${esc(segName(linkedSeg))}${mism?' <span class="warn-txt">(Personen angepasst)</span>':''}
+        <span style="cursor:pointer;font-weight:700;margin-left:2px;display:inline-flex" title="Zuordnung lösen" onclick="unlinkExp('${ex.id}')">${icon("i-x")}</span></span></div>`;
+    }
+    h+=`<div class="totals" style="margin:10px 0">
+      <div class="stat"><div class="k">Summe</div><div class="v">${eur(total)}</div></div>
+      <div class="stat"><div class="k">Personen</div><div class="v">${grp.length}</div></div>
+      <div class="stat"><div class="k">pro Person</div><div class="v">${eur(per)}</div></div></div>`;
+    // appliesTo
+    h+=`<label class="fld">Gilt für (wird geteilt) — Etappe wählen oder Personen einzeln an-/abhaken</label>
+      <div style="margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px">`;
+    S.segments.forEach(s=>{ const col=segColor(s.id); const act=linkedSeg===s.id;
+      h+=`<button class="seg-btn ${act?'active':''}" style="color:${col};border:1px solid ${col};background:${act?tint(col,0.18):tint(col,0.06)}" onclick="expFromSeg('${ex.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
+    h+=`</div><div class="checklist">`;
+    S.participants.forEach(p=>{
+      const on=(ex.appliesTo||[]).includes(p.id);
+      h+=`<label class="${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleExpPart('${ex.id}','${p.id}',this.checked)">${icon("i-check")}${esc(p.name)}</label>`;
+    });
+    h+=`</div>`;
+    // payments
+    h+=`<label class="fld" style="margin-top:12px">Bezahlt von</label>`;
+    (ex.payments||[]).forEach(pm=>{
+      h+=`<div class="pay-row"><select onchange="updPay('${ex.id}','${pm.id}','paidBy',this.value)">${optList(pm.paidBy)}</select>
+        <input type="number" style="flex:0 0 110px" value="${pm.amount}" step="0.01" placeholder="€" onchange="updPay('${ex.id}','${pm.id}','amount',this.value)">
+        <button class="iconbtn" onclick="delPay('${ex.id}','${pm.id}')">${icon("i-x")}</button></div>`;
+    });
+    h+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addPay('${ex.id}')">${icon("i-plus")}Zahlung</button></div>`;
+    card.innerHTML=h;c.appendChild(card);
+  });
+}
+function optList(sel){ return S.participants.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.name)}</option>`).join(""); }
+
+function renderErgebnis(){
+  const R=compute();
+  // header
+  const dh=document.getElementById("resHeader");
+  const dr=dateRangeText();
+  dh.innerHTML=`<h2>${esc(S.meta.title||"Tour")}</h2>
+    ${dr?`<div class="mini" style="margin:0 0 4px;display:flex;align-items:center;gap:6px">${icon("i-calendar")}${esc(dr)}</div>`:""}
+    ${S.meta.description?`<p class="hint" style="margin:0 0 6px">${esc(S.meta.description)}</p>`:""}
+    <div class="totals" style="margin-top:8px">
+      <div class="stat"><div class="k">Fahrtkosten gesamt</div><div class="v">${eur(R.totalDrive)}</div></div>
+      <div class="stat"><div class="k">Sonstige Ausgaben</div><div class="v">${eur(R.totalExp)}</div></div>
+      <div class="stat anchor"><div class="k">Gesamtkosten</div><div class="v">${eur(R.totalDrive+R.totalExp)}</div></div>
+      <div class="stat"><div class="k">Teilnehmende</div><div class="v">${S.participants.length}</div></div>
+    </div>`;
+  // cost table
+  const ct=document.getElementById("costTable");
+  let h=`<thead><tr><th>Person</th><th class="num">Fahrtkosten</th><th class="num">Sonstige</th><th class="num">Eigener Anteil</th></tr></thead><tbody>`;
+  R.rows.slice().sort((a,b)=>b.eigenAnteil-a.eigenAnteil).forEach(r=>{
+    h+=`<tr><td>${esc(r.name)}</td><td class="num">${eur(r.fahrtAnteil)}</td><td class="num">${eur(r.sonstAnteil)}</td><td class="num"><b>${eur(r.eigenAnteil)}</b></td></tr>`;
+  });
+  const sumAnteil=R.rows.reduce((a,b)=>a+b.eigenAnteil,0);
+  h+=`<tr><td><b>Summe</b></td><td class="num"></td><td class="num"></td><td class="num"><b>${eur(sumAnteil)}</b></td></tr></tbody>`;
+  ct.innerHTML=h;
+  // balance table (grouped)
+  const bt=document.getElementById("balanceTable");
+  let bh=`<thead><tr><th>Person / Haushalt</th><th class="num">Ausgelegt</th><th class="num">Eigener Anteil</th><th class="num">Saldo</th></tr></thead><tbody>`;
+  const maxAbs=Math.max(0,...R.grpArr.map(g=>Math.abs(g.saldo)));
+  R.grpArr.slice().sort((a,b)=>b.saldo-a.saldo).forEach(g=>{
+    const cls=g.saldo>0.005?'green':(g.saldo<-0.005?'red':'muted');
+    const txt=g.saldo>0.005?('+'+eur(g.saldo)):eur(g.saldo);
+    const ico=cls==='green'?iconF("i-up")+'<span class="sr-only">bekommt zurück </span>':(cls==='red'?iconF("i-down")+'<span class="sr-only">zahlt ein </span>':"");
+    const memb=g.isGroup?`<div class="rp-sub">${esc(g.members.join(", "))}</div>`:"";
+    const pct=maxAbs>0?Math.round(Math.abs(g.saldo)/maxAbs*100):0;
+    const barcol=cls==='green'?'var(--green)':(cls==='red'?'var(--red)':'var(--muted)');
+    const bar=pct>0?`<div class="bar"><i style="width:${pct}%;background:${barcol}"></i></div>`:"";
+    bh+=`<tr><td><div style="display:flex;align-items:center;gap:9px">${avatar(g.name)}<div style="min-width:0"><div style="font-weight:600;color:var(--ink)">${esc(g.name)}</div>${memb}${bar}</div></div></td><td class="num">${eur(g.laidOut)}</td><td class="num">${eur(g.eigenAnteil)}</td><td class="num"><span class="pill ${cls}">${ico}${txt}</span></td></tr>`;
+  });
+  bh+=`</tbody>`;bt.innerHTML=bh;
+  // settlement
+  const st=document.getElementById("settlement");
+  if(R.settlement.length===0){ st.innerHTML='<p class="mini">Alles ausgeglichen — keine Zahlungen nötig.</p>'; }
+  else{
+    st.innerHTML=R.settlement.map(t=>`<div class="settle">${avatar(t.from)}<span class="from">${esc(t.from)}</span><span class="sr-only"> zahlt an </span><span class="arrow">${icon("i-arrow-right")}</span>${avatar(t.to)}<span class="to">${esc(t.to)}</span><span class="amt">${eur(t.amount)}</span></div>`).join("");
+    const tot=R.settlement.reduce((a,b)=>a+b.amount,0);
+    st.innerHTML+=`<p class="footnote">${R.settlement.length} Überweisung(en), Summe ${eur(tot)}.</p>`;
+  }
+  // seg cost detail
+  const sct=document.getElementById("segCostTable");
+  let sh=`<thead><tr><th>Etappe</th><th class="num">Gesamtkosten</th><th class="num">Personen</th><th class="num">pro Person</th></tr></thead><tbody>`;
+  R.segs.forEach(s=> sh+=`<tr><td>${esc(s.name)}</td><td class="num">${eur(R.segCost[s.id])}</td><td class="num">${R.segPersons[s.id]}</td><td class="num">${eur(R.segPer[s.id])}</td></tr>`);
+  sh+=`<tr><td><b>Summe</b></td><td class="num"><b>${eur(R.totalDrive)}</b></td><td></td><td></td></tr></tbody>`;
+  sct.innerHTML=sh;
+}
+
+/* ---------------- Mutations ---------------- */
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+// segments
+function addSegment(){const e=document.getElementById("seg_new");if(!e.value.trim())return;
+  const id=uid();S.segments.push({id,name:e.value.trim()});S.participation[id]=[];
+  S.participants.forEach(p=>{if(p.driver)p.driver.km[id]=0;});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
+function delSeg(id){if(!confirm("Etappe wirklich löschen?"))return;S.segments=S.segments.filter(x=>x.id!==id);delete S.participation[id];
+  S.participants.forEach(p=>{if(p.driver)delete p.driver.km[id];});renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+// drivers
+function addDriver(){const e=document.getElementById("drv_new"),r=document.getElementById("drv_rate");
+  if(!e.value.trim())return;const name=e.value.trim();
+  let p=S.participants.find(x=>x.name===name);
+  const km={};S.segments.forEach(s=>km[s.id]=0);
+  if(p){ p.driver={rate:+r.value||0,km,extras:[]}; }
+  else{ p={id:uid(),name,group:"",driver:{rate:+r.value||0,km,extras:[]}};S.participants.push(p); }
+  e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function makeDriver(id){const p=pById(id);if(!p||p.driver)return;const km={};S.segments.forEach(s=>km[s.id]=0);
+  p.driver={rate:0.30,km,extras:[]};renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast(p.name+" ist jetzt Fahrer:in");}
+function removeDriver(id){const p=pById(id);if(!p||!p.driver)return;
+  if(!confirm("„"+p.name+"“ als Fahrer:in entfernen?\nKilometer & Auslagen dieses Autos werden gelöscht. Die Person bleibt als Teilnehmer:in erhalten."))return;
+  p.driver=null;renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast("Fahrer:in entfernt");}
+function updKm(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.km[sid]=+v||0;renderFahrer();renderErgebnis();save();}}
+function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=+v||0;renderFahrer();renderErgebnis();save();}}
+function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0});renderFahrer();save();}}
+function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
+  if(e){e[f]=f==="amount"?(+v||0):v;renderErgebnis();save();}}
+function delExtra(id,eid){const p=pById(id);if(p&&p.driver){p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();}}
+// participants
+function addParticipant(){const e=document.getElementById("part_new"),g=document.getElementById("part_group");
+  if(!e.value.trim())return;S.participants.push({id:uid(),name:e.value.trim(),group:g.value.trim(),driver:null});
+  e.value="";g.value="";renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function updPartName(id,v){const p=pById(id);if(p){p.name=v;renderFahrer();renderAusgaben();renderErgebnis();save();}}
+function updPartGroup(id,v){const p=pById(id);if(p){p.group=v.trim();renderErgebnis();save();}}
+function delParticipant(id){if(!confirm("Person löschen? (auch aus allen Etappen/Ausgaben)"))return;
+  S.participants=S.participants.filter(x=>x.id!==id);
+  Object.keys(S.participation).forEach(k=>S.participation[k]=S.participation[k].filter(x=>x!==id));
+  S.expenses.forEach(ex=>{ex.appliesTo=(ex.appliesTo||[]).filter(x=>x!==id);ex.payments=(ex.payments||[]).filter(pm=>pm.paidBy!==id);});
+  renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+// participation
+function toggleSeg(sid,pid,on){let arr=S.participation[sid]||[];
+  if(on){if(!arr.includes(pid))arr.push(pid);}else{arr=arr.filter(x=>x!==pid);}
+  S.participation[sid]=arr;renderTeilnehmer();renderErgebnis();save();}
+function allSeg(sid,on){S.participation[sid]=on?S.participants.map(p=>p.id):[];renderTeilnehmer();renderErgebnis();save();}
+// expenses
+function addExpense(){S.expenses.push({id:uid(),name:"Neue Ausgabe",appliesTo:[],payments:[{id:uid(),paidBy:(S.participants[0]||{}).id,amount:0}]});
+  renderAusgaben();renderErgebnis();save();}
+function delExpense(id){S.expenses=S.expenses.filter(x=>x.id!==id);renderAusgaben();renderErgebnis();save();}
+function updExp(id,f,v){const ex=S.expenses.find(x=>x.id===id);if(ex){ex[f]=v;renderErgebnis();save();}}
+function toggleExpPart(id,pid,on){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;ex.appliesTo=ex.appliesTo||[];
+  if(on){if(!ex.appliesTo.includes(pid))ex.appliesTo.push(pid);}else{ex.appliesTo=ex.appliesTo.filter(x=>x!==pid);}
+  renderAusgaben();renderErgebnis();save();}
+function expFromSeg(id,sid){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.appliesTo=(S.participation[sid]||[]).slice();ex.segRef=sid;renderAusgaben();renderErgebnis();save();toast("Etappe „"+segName(sid)+"“ zugeordnet — Einzelne abwählbar");}}
+function unlinkExp(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.segRef="";renderAusgaben();save();}}
+function addPay(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.payments=ex.payments||[];ex.payments.push({id:uid(),paidBy:(S.participants[0]||{}).id,amount:0});renderAusgaben();save();}}
+function updPay(id,pid,f,v){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;const pm=ex.payments.find(x=>x.id===pid);
+  if(pm){pm[f]=f==="amount"?(+v||0):v;renderAusgaben();renderErgebnis();save();}}
+function delPay(id,pid){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.payments=ex.payments.filter(x=>x.id!==pid);renderAusgaben();renderErgebnis();save();}}
+
+/* ---------------- Import / Export / Reset ---------------- */
+/* Native-Brücke (macOS/Android); im Browser/PWA -> null, dann Fallback unten */
+function macBridge(){ return (window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.kajak)?window.webkit.messageHandlers.kajak:null; }
+function androidBridge(){ return (typeof window.KajakNative!=="undefined")?window.KajakNative:null; }
+function b64utf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+function exportName(ext){ return (S.meta.title||"kajak-tour").replace(/[^\w\-]+/g,"_").slice(0,40)+"."+ext; }
+
+function exportJSON(){
+  const text=JSON.stringify(S,null,2), name=exportName("json"), mime="application/json";
+  const ab=androidBridge(); if(ab){ ab.saveFile(name,mime,b64utf8(text)); toast("Exportiert"); return; }
+  const mb=macBridge();     if(mb){ mb.postMessage({type:"saveFile",name:name,mime:mime,b64:b64utf8(text)}); toast("Exportiert"); return; }
+  const blob=new Blob([text],{type:mime});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();toast("Exportiert");
+}
+
+function exportPDF(){
+  // Ergebnis-Reiter aktivieren und alle Detail-Bereiche aufklappen, damit das PDF vollständig ist
+  const tb=document.querySelector('#tabs button[data-tab="ergebnis"]'); if(tb) tb.click();
+  document.querySelectorAll('#tab-ergebnis details').forEach(d=>d.open=true);
+  const ab=androidBridge(); if(ab){ ab.exportPDF(); return; }
+  const mb=macBridge();     if(mb){ mb.postMessage({type:"exportPDF"}); return; }
+  setTimeout(()=>window.print(),120);
+}
+function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{S=JSON.parse(r.result);normalize();renderAll();toast("Importiert");}catch(e){alert("Datei konnte nicht gelesen werden.");}};
+  r.readAsText(f);ev.target.value="";}
+function resetExample(){if(!confirm("Beispiel-Tour (Una & Soča 2026) laden? Aktuelle Daten werden ersetzt."))return;S=exampleData();normalize();renderAll();toast("Beispiel geladen");}
+function clearAll(){if(!confirm("Wirklich alle Daten leeren?"))return;
+  S={meta:{title:"Neue Tour",rows:[]},segments:[],participants:[],participation:{},expenses:[]};renderAll();toast("Geleert");}
+function newTrip(skipConfirm){
+  if(!skipConfirm && !confirm("Neue, leere Fahrt anlegen?\nAlle aktuellen Eingaben werden gelöscht.\n(Mit „Beispiel laden“ holst du die Vorlage zurück.)"))return false;
+  S={meta:{title:"Neue Tour",rows:[]},segments:[],participants:[],participation:{},expenses:[]};
+  normalize();renderAll();
+  document.querySelector('#tabs button[data-tab="info"]').click();
+  document.getElementById("m_title").select&&document.getElementById("m_title").focus();
+  toast("Neue Fahrt angelegt");return true;}
+
+/* ---------------- Tabs & init ---------------- */
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll("#tabs button").forEach(x=>{x.classList.remove("active");x.removeAttribute("aria-current");});
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");b.setAttribute("aria-current","page");document.getElementById("tab-"+b.dataset.tab).classList.add("active");
+  if(b.dataset.tab==="ergebnis")renderErgebnis();
+  window.scrollTo(0,0);
+});
+document.getElementById("m_title").addEventListener("input",e=>{S.meta.title=e.target.value;updateSub();save();});
+document.getElementById("m_from").addEventListener("change",e=>{S.meta.dateFrom=e.target.value;updateSub();renderErgebnis();save();});
+document.getElementById("m_to").addEventListener("change",e=>{S.meta.dateTo=e.target.value;updateSub();renderErgebnis();save();});
+document.getElementById("m_desc").addEventListener("input",e=>{S.meta.description=e.target.value;renderErgebnis();save();});
+// enter-to-add
+["seg_new","drv_new","part_new","part_group"].forEach(id=>{
+  document.getElementById(id).addEventListener("keydown",e=>{if(e.key==="Enter"){
+    if(id==="seg_new")addSegment();else if(id==="drv_new"||id==="drv_rate")addDriver();else addParticipant();}});
+});
+/* ---------------- Wizard ---------------- */
+const WIZ_STEPS=[
+  {tab:"info",title:"1. Tour benennen",text:"Gib deiner Fahrt einen Titel, wähle den Reisezeitraum und trage optional eine Beschreibung ein."},
+  {tab:"teilnehmer",title:"2. Teilnehmende eintragen",text:"Trage alle Personen ein. Haushalte/Gruppen (z. B. Familien) werden am Ende im Saldo zusammengefasst."},
+  {tab:"fahrer",title:"3. Etappen anlegen",text:"Lege die Abschnitte der Tour an (z. B. Hinfahrt, Shuttle, Rückfahrt). Pro Etappe werden die Fahrtkosten später auf die Mitfahrenden geteilt."},
+  {tab:"fahrer",title:"4. Fahrer:innen & Kilometer",text:"Füge die Fahrer:innen hinzu und trage je Etappe die gefahrenen Kilometer sowie die €/km-Pauschale ein. Auslagen wie Vignette oder Maut kommen darunter dazu."},
+  {tab:"teilnahme",title:"5. Teilnahme pro Etappe",text:"Hake an, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung."},
+  {tab:"ausgaben",title:"6. Sonstige Ausgaben",text:"Erfasse gemeinsame Ausgaben (Einkäufe, Campingplatz …): Betrag, für wen sie gilt (Knopf „= Etappe“ hilft) und wer bezahlt hat."},
+  {tab:"ergebnis",title:"7. Fertig — Ergebnis",text:"Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Über „Drucken/PDF“ oder „Export“ kannst du alles teilen."},
+];
+let wizStepIdx=0, wizActive=false;
+function startWizard(){
+  const fresh=confirm("Wizard starten.\n\nMöchtest du mit einer NEUEN, leeren Fahrt beginnen?\n\nOK = leer starten   ·   Abbrechen = aktuelle Daten behalten");
+  if(fresh) newTrip(true);
+  wizActive=true; wizStepIdx=0; document.body.classList.add("wiz-on");
+  document.getElementById("wizBar").classList.add("show"); wizRender();
+}
+function wizGo(d){
+  const n=wizStepIdx+d;
+  if(n<0)return;
+  if(n>=WIZ_STEPS.length){ wizClose(); toast("Wizard abgeschlossen 🎉"); return; }
+  wizStepIdx=n; wizRender();
+}
+function wizRender(){
+  const s=WIZ_STEPS[wizStepIdx];
+  document.querySelector('#tabs button[data-tab="'+s.tab+'"]').click();
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('wiz-hl'));
+  document.querySelector('#tabs button[data-tab="'+s.tab+'"]').classList.add('wiz-hl');
+  document.getElementById("wizStep").textContent="Schritt "+(wizStepIdx+1)+" / "+WIZ_STEPS.length;
+  document.getElementById("wizProg").style.width=Math.round((wizStepIdx+1)/WIZ_STEPS.length*100)+"%";
+  document.getElementById("wizTitle").textContent=s.title;
+  document.getElementById("wizText").textContent=s.text;
+  document.getElementById("wizBack").style.visibility=wizStepIdx===0?"hidden":"visible";
+  document.getElementById("wizNext").textContent=wizStepIdx===WIZ_STEPS.length-1?"Fertig ✓":"Weiter →";
+  window.scrollTo(0,0);
+}
+function wizClose(){
+  wizActive=false; document.body.classList.remove("wiz-on");
+  document.getElementById("wizBar").classList.remove("show");
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('wiz-hl'));
+}
+
+load();renderAll();
+
+/* ---------------- PWA: Service Worker ---------------- */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

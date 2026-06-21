@@ -7,7 +7,13 @@ gemeinsame Ausgaben, Salden und „wer zahlt wem". Läuft komplett im Browser,
 
 ## Nutzen / Installieren
 
-**▶️ Live: https://hantig-code.github.io/RapidSplit/**
+**▶️ Live (v1): https://hantig-code.github.io/RapidSplit/**
+**🎨 Live (v2 – neues Design): https://hantig-code.github.io/RapidSplit/v2/**
+
+> **v1** und **v2** laufen unabhängig parallel: gleiche Funktionen, aber v2 hat ein
+> überarbeitetes, barriereärmeres Design (Light/Dark, Bottom-Navigation auf dem
+> Handy, Settle-up mit Avataren & Anteilsbalken). Beide speichern ihre Daten
+> getrennt und sind separat installierbar.
 
 Als App installieren:
 
