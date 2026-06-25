@@ -1,8 +1,8 @@
 {
   "id": "/RapidSplit/v2/",
-  "name": "Kajak-Tour Kostenrechner v2",
-  "short_name": "Kajak v2",
-  "description": "Kosten einer Kajak-Tour pro Teilnehmer:in fair berechnen und ausgleichen.",
+  "name": "RapidSplit (Beta)",
+  "short_name": "RapidSplit",
+  "description": "RapidSplit – Kosten einer Kajak-Tour fair pro Teilnehmer:in berechnen und ausgleichen.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
