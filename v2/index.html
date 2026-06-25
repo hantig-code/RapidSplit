@@ -53,7 +53,7 @@
     }
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
+  html,body{margin:0;padding:0;overflow-x:hidden;overflow-x:clip}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%;
     padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
@@ -141,6 +141,7 @@
   table input[type=number]{padding:7px 8px;font-size:16px;min-width:66px;min-height:40px;border-radius:var(--r-sm)}
   table input[type=text]{padding:7px 8px;font-size:16px;min-width:120px;min-height:40px;border-radius:var(--r-sm)}
   .chk{width:20px;height:20px;accent-color:var(--brand);cursor:pointer}
+  .th-short{display:none}
   /* ---------- Pills (Saldo mit ▲/▼) ---------- */
   .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-pill);font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
   .pill .ic{font-size:12px}
@@ -171,6 +172,21 @@
   .checklist input{position:absolute;opacity:0;width:0;height:0}
   .pay-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
   .pay-row select,.pay-row input{flex:1;min-width:120px}
+  /* Teilnehmer-Liste (umbruchfähig, kein horizontales Scrollen) */
+  .plist{display:flex;flex-direction:column}
+  .prow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .prow:first-child{padding-top:2px}
+  .prow:last-child{border-bottom:none;padding-bottom:2px}
+  .prow .p-name{flex:2 1 150px;min-width:0;font-weight:600}
+  .prow .p-group{flex:1 1 130px;min-width:0}
+  .prow .drv-toggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 13px;
+    border:1px solid var(--line);border-radius:var(--r-pill);cursor:pointer;color:var(--ink-2);font-size:13px;font-weight:600;
+    user-select:none;background:var(--card);transition:background .12s,color .12s,border-color .12s;white-space:nowrap}
+  .prow .drv-toggle .ic{font-size:16px}
+  .prow .drv-toggle input{position:absolute;opacity:0;width:0;height:0}
+  .prow .drv-toggle.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+  .prow .drv-toggle:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+  .prow .iconbtn{flex:0 0 auto}
   /* ---------- Avatare + Anteils-Balken (additive Daten-Viz) ---------- */
   .av{flex:0 0 auto;width:30px;height:30px;border-radius:var(--r-pill);display:inline-flex;align-items:center;justify-content:center;
     font-size:11.5px;font-weight:700;letter-spacing:.2px;background:color-mix(in srgb,var(--c,#0e7490) 20%,var(--card));
@@ -236,7 +252,7 @@
     header.app h1{font-size:20px}
     #topbar{box-shadow:none;border-bottom:1px solid var(--line)}
     .settle .amt{margin-left:0;width:100%;text-align:right}
-    nav.tabs{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:60;max-width:none;margin:0;gap:0;overflow:visible;
+    nav.tabs{position:fixed;left:0;right:auto;width:100vw;bottom:0;top:auto;z-index:60;max-width:none;margin:0;gap:0;overflow:hidden;
       padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:var(--sh-raised);
       background-color:var(--card);
       background-image:linear-gradient(90deg,var(--brand),var(--accent) 55%,var(--brand));
@@ -258,7 +274,17 @@
     .stat .v{font-size:17px}
     #resHeader .totals{display:grid;grid-template-columns:1fr 1fr}
     #resHeader .totals .stat{min-width:0}
-    #resHeader .totals .stat .v{font-size:22px}
+    #resHeader .totals .stat .v{font-size:21px;white-space:nowrap}
+    #resHeader .totals .stat.anchor .v{font-size:24px}
+    /* Ergebnis-Tabellen kompakter, damit sie ohne Seitwärts-Scrollen passen */
+    #costTable td,#segCostTable td,#balanceTable td{padding:6px 5px;font-size:12px}
+    #costTable th,#segCostTable th,#balanceTable th{padding:6px 5px;font-size:10px;letter-spacing:.1px}
+    #balanceTable td:nth-child(2),#balanceTable th:nth-child(2){display:none}
+    #balanceTable .bar{max-width:96px}
+    #balanceTable .av{width:26px;height:26px;font-size:10.5px}
+    #balanceTable .rp-sub{white-space:normal}
+    .th-full{display:none}
+    .th-short{display:inline}
   }
   @media (max-width:360px){
     nav.tabs button .nav-lbl-m{display:none}
@@ -415,7 +441,7 @@
     <div class="card">
       <h2>Teilnehmende</h2>
       <p class="hint">Alle Personen (inkl. Fahrer:innen). Optional ein Haushalt/Gruppe, um Salden am Ende zusammenzufassen (z. B. „Familie Jackson“).</p>
-      <div class="tbl-wrap"><table id="partTable"></table></div>
+      <div id="partTable" class="plist"></div>
       <div class="add-row">
         <div><label class="fld">Person hinzufügen</label><input type="text" id="part_new" placeholder="Name"></div>
         <div><label class="fld">Haushalt/Gruppe (optional)</label><input type="text" id="part_group" placeholder="z. B. Familie …"></div>
@@ -742,15 +768,17 @@ function renderFahrer(){
 }
 function renderTeilnehmer(){
   const t=document.getElementById("partTable");
-  let h="<thead><tr><th>Name</th><th>Haushalt/Gruppe</th><th>Fahrer:in</th><th></th></tr></thead><tbody>";
+  let h="";
+  if(S.participants.length===0) h='<p class="mini">Noch keine Personen — unten hinzufügen.</p>';
   S.participants.forEach(p=>{
-    h+=`<tr>
-      <td><input type="text" value="${esc(p.name)}" onchange="updPartName('${p.id}',this.value)"></td>
-      <td><input type="text" value="${esc(p.group||'')}" placeholder="—" onchange="updPartGroup('${p.id}',this.value)"></td>
-      <td>${p.driver?`<span class="pill green">${icon("i-check")}Auto</span> <button class="btn danger sm" style="padding:5px 10px" onclick="removeDriver('${p.id}')">entfernen</button>`:`<button class="btn ghost sm" onclick="makeDriver('${p.id}')">${icon("i-plus")}als Fahrer:in</button>`}</td>
-      <td><button class="iconbtn" title="Person löschen" onclick="delParticipant('${p.id}')">${icon("i-trash")}</button></td></tr>`;
+    h+=`<div class="prow">
+      <input class="p-name" type="text" value="${esc(p.name)}" placeholder="Name" onchange="updPartName('${p.id}',this.value)">
+      <input class="p-group" type="text" value="${esc(p.group||'')}" placeholder="Haushalt/Gruppe" onchange="updPartGroup('${p.id}',this.value)">
+      <label class="drv-toggle ${p.driver?'on':''}" title="Mit eigenem Auto gefahren?"><input type="checkbox" ${p.driver?'checked':''} onchange="toggleDriver('${p.id}',this.checked)" aria-label="Fährt mit eigenem Auto: ${esc(p.name)}">${icon("i-car")}<span>Auto</span></label>
+      <button class="iconbtn" title="Person löschen" onclick="delParticipant('${p.id}')">${icon("i-trash")}</button>
+    </div>`;
   });
-  h+="</tbody>";t.innerHTML=h;
+  t.innerHTML=h;
   // participation blocks
   const pb=document.getElementById("participationBlocks");pb.innerHTML="";
   S.segments.forEach(s=>{
@@ -832,7 +860,7 @@ function renderErgebnis(){
     </div>`;
   // cost table
   const ct=document.getElementById("costTable");
-  let h=`<thead><tr><th>Person</th><th class="num">Fahrtkosten</th><th class="num">Sonstige</th><th class="num">Eigener Anteil</th></tr></thead><tbody>`;
+  let h=`<thead><tr><th>Person</th><th class="num"><span class="th-full">Fahrtkosten</span><span class="th-short">Fahrt</span></th><th class="num"><span class="th-full">Sonstige</span><span class="th-short">Sonst.</span></th><th class="num"><span class="th-full">Eigener Anteil</span><span class="th-short">Anteil</span></th></tr></thead><tbody>`;
   R.rows.slice().sort((a,b)=>b.eigenAnteil-a.eigenAnteil).forEach(r=>{
     h+=`<tr><td>${esc(r.name)}</td><td class="num">${eur(r.fahrtAnteil)}</td><td class="num">${eur(r.sonstAnteil)}</td><td class="num"><b>${eur(r.eigenAnteil)}</b></td></tr>`;
   });
@@ -841,7 +869,7 @@ function renderErgebnis(){
   ct.innerHTML=h;
   // balance table (grouped)
   const bt=document.getElementById("balanceTable");
-  let bh=`<thead><tr><th>Person / Haushalt</th><th class="num">Ausgelegt</th><th class="num">Eigener Anteil</th><th class="num">Saldo</th></tr></thead><tbody>`;
+  let bh=`<thead><tr><th><span class="th-full">Person / Haushalt</span><span class="th-short">Person</span></th><th class="num">Ausgelegt</th><th class="num"><span class="th-full">Eigener Anteil</span><span class="th-short">Anteil</span></th><th class="num">Saldo</th></tr></thead><tbody>`;
   const maxAbs=Math.max(0,...R.grpArr.map(g=>Math.abs(g.saldo)));
   R.grpArr.slice().sort((a,b)=>b.saldo-a.saldo).forEach(g=>{
     const cls=g.saldo>0.005?'green':(g.saldo<-0.005?'red':'muted');
@@ -864,7 +892,7 @@ function renderErgebnis(){
   }
   // seg cost detail
   const sct=document.getElementById("segCostTable");
-  let sh=`<thead><tr><th>Etappe</th><th class="num">Gesamtkosten</th><th class="num">Personen</th><th class="num">pro Person</th></tr></thead><tbody>`;
+  let sh=`<thead><tr><th>Etappe</th><th class="num"><span class="th-full">Gesamtkosten</span><span class="th-short">Kosten</span></th><th class="num"><span class="th-full">Personen</span><span class="th-short">Pers.</span></th><th class="num"><span class="th-full">pro Person</span><span class="th-short">/Pers.</span></th></tr></thead><tbody>`;
   R.segs.forEach(s=> sh+=`<tr><td>${esc(s.name)}</td><td class="num">${eur(R.segCost[s.id])}</td><td class="num">${R.segPersons[s.id]}</td><td class="num">${eur(R.segPer[s.id])}</td></tr>`);
   sh+=`<tr><td><b>Summe</b></td><td class="num"><b>${eur(R.totalDrive)}</b></td><td></td><td></td></tr></tbody>`;
   sct.innerHTML=sh;
@@ -889,6 +917,13 @@ function addDriver(){const e=document.getElementById("drv_new"),r=document.getEl
   e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
 function makeDriver(id){const p=pById(id);if(!p||p.driver)return;const km={};S.segments.forEach(s=>km[s.id]=0);
   p.driver={rate:0.30,km,extras:[]};renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast(p.name+" ist jetzt Fahrer:in");}
+function toggleDriver(id,on){const p=pById(id);if(!p)return;
+  if(on){ if(!p.driver){const km={};S.segments.forEach(s=>km[s.id]=0);p.driver={rate:0.30,km,extras:[]};
+    renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast(p.name+" fährt mit eigenem Auto");} }
+  else{ if(p.driver){
+    if(!confirm("„"+p.name+"“ nicht mehr als Fahrer:in?\nKilometer & Auslagen dieses Autos werden gelöscht.")){renderTeilnehmer();return;}
+    p.driver=null;renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast("Auto entfernt");} }
+}
 function removeDriver(id){const p=pById(id);if(!p||!p.driver)return;
   if(!confirm("„"+p.name+"“ als Fahrer:in entfernen?\nKilometer & Auslagen dieses Autos werden gelöscht. Die Person bleibt als Teilnehmer:in erhalten."))return;
   p.driver=null;renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast("Fahrer:in entfernt");}
