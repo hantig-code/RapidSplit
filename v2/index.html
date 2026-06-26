@@ -66,19 +66,17 @@
   /* ---------- Topbar / Header ---------- */
   #topbar{position:sticky;top:0;z-index:50;background:var(--card);
     box-shadow:0 1px 0 var(--line),0 6px 18px rgba(15,39,48,.05)}
-  header.app{padding:max(14px,env(safe-area-inset-top)) 16px 9px}
-  header.app .app-label{font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
-    color:var(--muted);display:flex;align-items:center;gap:6px}
-  header.app .app-label .ic{font-size:16px;color:var(--brand)}
-  header.app h1{margin:3px 0 0;font-size:23px;font-weight:800;letter-spacing:.2px;line-height:1.15;color:var(--ink)}
-  header.app .sub{margin:4px 0 0;font-size:13px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
-  header.app .sub .ic{font-size:14px;color:var(--brand)}
-  /* Header beim Scrollen auf die erste Titelzeile minimieren */
-  header.app{transition:padding .16s ease}
-  header.app h1{transition:font-size .16s ease}
-  #topbar.condensed header.app{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:8px}
-  #topbar.condensed .app-label,#topbar.condensed .sub{display:none}
-  #topbar.condensed h1{font-size:16px;line-height:1.25;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Statischer, einzeiliger Header: Logo + „RapidSplit (Beta)" (kein Scroll-Umbau) */
+  header.app{padding:max(12px,env(safe-area-inset-top)) 16px 11px}
+  header.app .brand{display:flex;align-items:center;gap:10px}
+  header.app .brand-logo{width:30px;height:30px;border-radius:8px;flex:0 0 auto;box-shadow:0 1px 2px rgba(15,39,48,.22)}
+  header.app .brand-name{font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.1;color:var(--ink)}
+  header.app .brand-beta{font-weight:600;color:var(--muted);font-size:15px}
+  /* Tour-Sub-Header (Tour-Titel + Reisezeitraum) im Tour-Reiter */
+  .tour-subhead{margin:0 2px 16px}
+  .tour-subhead h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.15;color:var(--ink)}
+  .tour-subhead .sub{margin:5px 0 0;font-size:13.5px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
+  .tour-subhead .sub .ic{font-size:14px;color:var(--brand)}
   /* €-Symbol in Geld-Eingabefeldern */
   .cur{position:relative;display:inline-flex;align-items:center}
   .cur::before{content:"€";position:absolute;left:10px;color:var(--muted);font-weight:600;font-size:13.5px;pointer-events:none;z-index:1}
@@ -275,7 +273,9 @@
      ============================================================ */
   @media (max-width:560px){
     :root{--navh:72px}
-    header.app h1{font-size:20px}
+    header.app .brand-name{font-size:19px}
+    header.app .brand-beta{font-size:13.5px}
+    .tour-subhead h1{font-size:20px}
     #topbar{box-shadow:none;border-bottom:1px solid var(--line)}
     .settle .amt{margin-left:0;width:100%;text-align:right}
     nav.tabs{position:fixed;left:0;right:auto;width:100vw;bottom:0;top:auto;z-index:60;max-width:none;margin:0;gap:0;overflow:hidden;
@@ -372,19 +372,22 @@
     <symbol id="i-people3" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.6"/><path d="M7.5 18.5c0-2.5 2-4.3 4.5-4.3s4.5 1.8 4.5 4.3"/><circle cx="5" cy="9" r="2.1"/><path d="M2 18c0-1.9 1.3-3.4 3-3.7"/><circle cx="19" cy="9" r="2.1"/><path d="M22 18c0-1.9-1.3-3.4-3-3.7"/></symbol>
     <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M6 8.4v4.1a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3"/></symbol>
     <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M14.5 11.5c2.6.2 5 1.3 5 2.6 0 1.4-2.5 2.6-5.5 2.6-1.2 0-2.3-.2-3.2-.5"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a7.5 7.5 0 0 1-10.8 6.8L4 20l1.7-5.1A7.5 7.5 0 1 1 21 11.5z"/><path d="M8.5 11h7M8.5 14h4.5"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-8 8M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
   </defs>
 </svg>
 <div id="topbar">
   <header class="app">
-    <div class="app-label"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-kayak"></use></svg> RapidSplit (Beta)</div>
-    <h1 id="metaTitle">Unbenannte Tour</h1>
-    <div class="sub" id="metaSub">Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen</div>
+    <div class="brand">
+      <img class="brand-logo" src="icons/icon-192.png" alt="" width="30" height="30">
+      <span class="brand-name">RapidSplit <span class="brand-beta">(Beta)</span></span>
+    </div>
   </header>
   <nav class="tabs" id="tabs" aria-label="Bereiche">
     <button data-tab="info" class="active" aria-current="page" aria-label="Tour"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-flag"></use></svg><span class="nav-lbl">Tour</span><span class="nav-lbl-m">Tour</span></button>
     <button data-tab="teilnehmer" aria-label="Gruppe"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people3"></use></svg><span class="nav-lbl">Gruppe</span><span class="nav-lbl-m">Gruppe</span></button>
-    <button data-tab="teilnahme" aria-label="Zuordnung"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg><span class="nav-lbl">Zuordnung</span><span class="nav-lbl-m">Zuord.</span></button>
-    <button data-tab="fahrer" aria-label="Fahrtkosten"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg><span class="nav-lbl">Fahrtkosten</span><span class="nav-lbl-m">Fahrt</span></button>
+    <button data-tab="teilnahme" aria-label="Wer und Wo"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg><span class="nav-lbl">Wer &amp; Wo</span><span class="nav-lbl-m">Wer&amp;Wo</span></button>
+    <button data-tab="fahrer" aria-label="Fahrtkosten"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg><span class="nav-lbl">Fahrtkosten</span><span class="nav-lbl-m">Fahrt</span></button>
     <button data-tab="ausgaben" aria-label="Ausgaben"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-receipt"></use></svg><span class="nav-lbl">Ausgaben</span><span class="nav-lbl-m">Ausgab.</span></button>
     <button data-tab="ergebnis" aria-label="Auswertung"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-scale"></use></svg><span class="nav-lbl">Auswertung</span><span class="nav-lbl-m">Auswert.</span></button>
   </nav>
@@ -393,6 +396,10 @@
 <main>
   <!-- TOUR INFO -->
   <section class="tab active" id="tab-info">
+    <div class="tour-subhead">
+      <h1 id="metaTitle">Unbenannte Tour</h1>
+      <div class="sub" id="metaSub">Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen</div>
+    </div>
     <div class="card accent">
       <h2>Start</h2>
       <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen — oder starte direkt mit einer leeren Fahrt.</p>
@@ -420,11 +427,11 @@
     <div class="card">
       <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg>Etappen</h2>
       <p class="hint">Die Abschnitte der Reise (z. B. Hinfahrt, Shuttle, Rückfahrt). Pro Etappe werden die Fahrtkosten unter den dort mitfahrenden Personen geteilt.</p>
-      <div id="segList"></div>
-      <div class="add-row">
+      <div class="add-row" style="margin-top:0;margin-bottom:14px">
         <div><label class="fld">Neue Etappe</label><input type="text" id="seg_new" placeholder="z. B. SLO → München"></div>
         <div style="flex:0 0 auto"><button class="btn sm" onclick="addSegment()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Etappe</button></div>
       </div>
+      <div id="segList"></div>
     </div>
     <div class="card">
       <h2>Daten sichern</h2>
@@ -435,6 +442,13 @@
         <button class="btn danger" onclick="clearAll()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg>Alles leeren</button>
         <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(event)">
       </div>
+    </div>
+    <div class="card">
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>Feedback &amp; Kontakt</h2>
+      <p class="hint">Fehler gefunden, Wunsch oder Idee? Feedback geht direkt an die Entwicklung – als Issue auf GitHub (kein Account-Zwang zum Lesen, Anlegen erfordert ein kostenloses GitHub-Konto).</p>
+      <a class="btn ghost" href="https://github.com/hantig-code/RapidSplit/issues" target="_blank" rel="noopener noreferrer" style="text-decoration:none">
+        <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-external"></use></svg>Feedback auf GitHub
+      </a>
     </div>
   </section>
 
@@ -458,7 +472,7 @@
 
   <!-- TEILNEHMER -->
   <section class="tab" id="tab-teilnehmer">
-    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein (inkl. Fahrer:innen). Setze das „Auto“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Wer auf welcher Etappe dabei war, legst du im Reiter „Zuordnung“ fest.</div>
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein (inkl. Fahrer:innen). Setze das „Auto“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Wer auf welcher Etappe dabei war, legst du im Reiter „Wer &amp; Wo“ fest.</div>
     <div class="card">
       <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people3"></use></svg>Gruppe</h2>
       <p class="hint">Alle Personen (inkl. Fahrer:innen). Optional ein Verein/Familie, um Salden am Ende zusammenzufassen (z. B. „Familie Jackson“).</p>
@@ -475,7 +489,7 @@
   <section class="tab" id="tab-teilnahme">
     <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Wer war auf welcher Etappe dabei? Die Fahrtkosten einer Etappe werden gleichmäßig auf alle dort markierten Personen aufgeteilt.</div>
     <div class="card">
-      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg>Zuordnung: wer war wo dabei?</h2>
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg>Wer war wo dabei?</h2>
       <p class="hint">Markiere, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung.</p>
       <div id="participationBlocks"></div>
     </div>
@@ -976,10 +990,10 @@ function renderErgebnis(){
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 // segments
 function addSegment(){const e=document.getElementById("seg_new");if(!e.value.trim())return;
-  const id=uid();S.segments.push({id,name:e.value.trim()});S.participation[id]=[];
+  const id=uid();S.segments.unshift({id,name:e.value.trim()});S.participation[id]=[];
   S.participants.forEach(p=>{if(p.driver)p.driver.km[id]=0;});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
 function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
-function delSeg(id){confirmDialog("Etappe löschen?","Diese Etappe wird entfernt – auch aus „Zuordnung“ und Ausgaben.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(!ok)return;
+function delSeg(id){confirmDialog("Etappe löschen?","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(!ok)return;
   S.segments=S.segments.filter(x=>x.id!==id);delete S.participation[id];
   S.participants.forEach(p=>{if(p.driver)delete p.driver.km[id];});renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();});}
 // drivers — die Fahrer-Rolle wird über das „Auto"-Häkchen in „Gruppe" gesteuert (toggleDriver)
@@ -1015,7 +1029,7 @@ function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=
 function delExtra(id,eid){const p=pById(id);if(p&&p.driver){p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();}}
 // participants
 function addParticipant(){const e=document.getElementById("part_new"),g=document.getElementById("part_group");
-  if(!e.value.trim())return;S.participants.push({id:uid(),name:e.value.trim(),group:g.value.trim(),driver:null});
+  if(!e.value.trim())return;S.participants.unshift({id:uid(),name:e.value.trim(),group:g.value.trim(),driver:null});
   e.value="";g.value="";renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
 function updPartName(id,v){const p=pById(id);if(p){p.name=v;renderFahrer();renderAusgaben();renderErgebnis();save();}}
 function updPartGroup(id,v){const p=pById(id);if(p){p.group=v.trim();renderErgebnis();save();}}
@@ -1030,7 +1044,7 @@ function toggleSeg(sid,pid,on){let arr=S.participation[sid]||[];
   S.participation[sid]=arr;renderTeilnehmer();renderErgebnis();save();}
 function allSeg(sid,on){S.participation[sid]=on?S.participants.map(p=>p.id):[];renderTeilnehmer();renderErgebnis();save();}
 // expenses
-function addExpense(){S.expenses.push({id:uid(),name:"Neue Ausgabe",appliesTo:[],payments:[{id:uid(),paidBy:(S.participants[0]||{}).id,amount:0}]});
+function addExpense(){S.expenses.unshift({id:uid(),name:"Neue Ausgabe",appliesTo:[],payments:[{id:uid(),paidBy:(S.participants[0]||{}).id,amount:0}]});
   renderAusgaben();renderErgebnis();save();}
 function delExpense(id){S.expenses=S.expenses.filter(x=>x.id!==id);renderAusgaben();renderErgebnis();save();}
 function updExp(id,f,v){const ex=S.expenses.find(x=>x.id===id);if(ex){ex[f]=v;renderErgebnis();save();}}
@@ -1104,17 +1118,11 @@ document.getElementById("m_desc").addEventListener("input",e=>{S.meta.descriptio
   const el=document.getElementById(id); if(!el)return;
   el.addEventListener("keydown",e=>{if(e.key==="Enter"){ if(id==="seg_new")addSegment(); else addParticipant(); }});
 });
-// Header beim Scrollen auf die erste Titelzeile minimieren
-let _condensed=false;
-window.addEventListener("scroll",()=>{
-  const sc=window.scrollY>24;
-  if(sc!==_condensed){ _condensed=sc; document.getElementById("topbar").classList.toggle("condensed",sc); }
-},{passive:true});
 /* ---------------- Wizard ---------------- */
 const WIZ_STEPS=[
   {tab:"info",title:"1. Tour & Etappen",text:"Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …)."},
   {tab:"teilnehmer",title:"2. Gruppe eintragen",text:"Trage alle Personen ein. Setze das „Auto“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Ein Verein/Familie fasst Salden am Ende zusammen."},
-  {tab:"teilnahme",title:"3. Zuordnung",text:"Hake an, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung."},
+  {tab:"teilnahme",title:"3. Wer & Wo",text:"Hake an, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung."},
   {tab:"fahrer",title:"4. Fahrtkosten",text:"Trage je Fahrer:in die gefahrenen Kilometer pro Etappe und die €/km-Pauschale ein. Auslagen wie Vignette oder Maut kommen darunter dazu."},
   {tab:"ausgaben",title:"5. Ausgaben",text:"Erfasse gemeinsame Ausgaben (Einkäufe, Campingplatz …): Betrag, Bezahler:in und für wen die Ausgabe gilt."},
   {tab:"ergebnis",title:"6. Auswertung",text:"Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Über „PDF“ oder „Export“ teilst du alles."},
