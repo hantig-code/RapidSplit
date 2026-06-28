@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0e7490">
+<meta name="theme-color" content="#eef3f5" id="metaTheme">
 <title>RapidSplit (Beta)</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -13,8 +13,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RapidSplit">
-<meta name="theme-color" content="#eef3f5" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a1418" media="(prefers-color-scheme: dark)">
+<script>
+  /* Theme vor dem ersten Paint setzen (kein Flackern) */
+  (function(){try{var t=localStorage.getItem('kajak_theme');
+    if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
 <style>
   /* ============================================================
      Designsystem "Ledger Stromlinie" (v2) — Fintech-Klarheit
@@ -39,18 +44,17 @@
     --r-sm:8px; --r-md:12px; --r-pill:999px;
     --navh:88px;
   }
-  @media (prefers-color-scheme:dark){
-    :root{
-      --bg:#0a1418; --bg-subtle:#10222a; --card:#15303a;
-      --ink:#eaf2f4; --ink-2:#b3c6cd; --muted:#8aa1a9;
-      --line:#244852; --line-strong:#33545f;
-      --brand:#22b8d6; --brand-d:#67d3e8; --brand-tint:#16323d; --accent:#22b8d6;
-      --on-brand:#06222b;
-      --green:#4ade80; --green-bg:#0f2e1d; --red:#f87171; --red-bg:#34161a; --warn:#f59e0b;
-      --focus:#67d3e8;
-      --shadow:0 1px 2px rgba(0,0,0,.4);
-      --sh-raised:0 -8px 24px rgba(0,0,0,.5);
-    }
+  /* Dark Mode wird per Schalter über [data-theme] gesetzt (Vorgabe = OS, siehe Head-Skript) */
+  :root[data-theme="dark"]{
+    --bg:#0a1418; --bg-subtle:#10222a; --card:#15303a;
+    --ink:#eaf2f4; --ink-2:#b3c6cd; --muted:#8aa1a9;
+    --line:#244852; --line-strong:#33545f;
+    --brand:#22b8d6; --brand-d:#67d3e8; --brand-tint:#16323d; --accent:#22b8d6;
+    --on-brand:#06222b;
+    --green:#4ade80; --green-bg:#0f2e1d; --red:#f87171; --red-bg:#34161a; --warn:#f59e0b;
+    --focus:#67d3e8;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+    --sh-raised:0 -8px 24px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;overflow-x:hidden;overflow-x:clip}
@@ -66,9 +70,23 @@
   /* ---------- Topbar / Header ---------- */
   #topbar{position:sticky;top:0;z-index:50;background:var(--card);
     box-shadow:0 1px 0 var(--line),0 6px 18px rgba(15,39,48,.05)}
-  /* Statischer, einzeiliger Header: Logo + „RapidSplit (Beta)" (kein Scroll-Umbau) */
-  header.app{padding:max(12px,env(safe-area-inset-top)) 16px 11px}
-  header.app .brand{display:flex;align-items:center;gap:10px}
+  /* Statischer, einzeiliger Header: Logo + „RapidSplit (Beta)" links, Dark-Mode-Schalter rechts */
+  header.app{padding:max(12px,env(safe-area-inset-top)) 16px 11px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  header.app .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  /* Dark-Mode-Schiebeschalter */
+  .theme-switch{flex:0 0 auto;position:relative;width:58px;height:32px;border-radius:var(--r-pill);
+    border:1px solid var(--line);background:var(--bg-subtle);cursor:pointer;padding:0;display:inline-flex;align-items:center;
+    transition:background .2s,border-color .2s}
+  .theme-switch:hover{border-color:var(--line-strong)}
+  .theme-switch .t-ic{position:absolute;top:50%;transform:translateY(-50%);font-size:15px;color:var(--muted);pointer-events:none;transition:color .2s}
+  .theme-switch .t-sun{left:8px}
+  .theme-switch .t-moon{right:8px}
+  .theme-switch .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--card);
+    box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.3,.9,.3,1)}
+  :root[data-theme="dark"] .theme-switch{background:var(--brand-tint);border-color:transparent}
+  :root[data-theme="dark"] .theme-switch .knob{transform:translateX(26px)}
+  :root[data-theme="dark"] .theme-switch .t-moon{color:var(--brand-d)}
+  :root[data-theme="light"] .theme-switch .t-sun{color:var(--warn)}
   header.app .brand-logo{width:30px;height:30px;border-radius:8px;flex:0 0 auto;box-shadow:0 1px 2px rgba(15,39,48,.22)}
   header.app .brand-name{font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.1;color:var(--ink)}
   header.app .brand-beta{font-weight:600;color:var(--muted);font-size:15px}
@@ -123,9 +141,7 @@
   label.fld{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:0 0 4px}
   input[type=text],input[type=number],input[type=date],textarea,select{width:100%;padding:11px 12px;border:1px solid var(--line);
     border-radius:var(--r-sm);font-size:16px;background:var(--card);color:var(--ink);font-family:inherit;min-height:44px}
-  @media (prefers-color-scheme:dark){
-    input[type=text],input[type=number],input[type=date],textarea,select{background:var(--bg-subtle);border-color:var(--line-strong)}
-  }
+  :root[data-theme="dark"] input[type=text],:root[data-theme="dark"] input[type=number],:root[data-theme="dark"] input[type=date],:root[data-theme="dark"] textarea,:root[data-theme="dark"] select{background:var(--bg-subtle);border-color:var(--line-strong)}
   input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px rgba(14,116,144,.18)}
   input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
   textarea{resize:vertical;min-height:72px;line-height:1.45}
@@ -190,6 +206,17 @@
   summary.as-h2{font-size:15.5px;font-weight:700;color:var(--brand-d);letter-spacing:-.1px}
   summary.as-h2 .ic{font-size:17px;color:var(--brand)}
   #m_desc{min-height:104px}
+  /* Etappen-Auswahl als Pillen (Ausgaben) */
+  .seg-pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+  .seg-pill{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r-pill);padding:8px 13px;min-height:42px;font-size:13.5px;font-weight:600;color:var(--ink-2);
+    cursor:pointer;user-select:none;transition:background .12s,color .12s,border-color .12s}
+  .seg-pill .ic{font-size:14px}
+  .seg-pill .swatch{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .seg-pill:hover{border-color:var(--line-strong)}
+  .seg-pill.on{background:var(--c,var(--brand));color:#fff;border-color:transparent}
+  .seg-pill.on .swatch{background:#fff !important;opacity:.92}
+  .seg-pill:has(:focus-visible),.seg-pill:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
   /* ---------- Statkacheln ---------- */
   .totals{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 0}
   .stat{flex:1;min-width:140px;background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
@@ -232,7 +259,7 @@
   .av{flex:0 0 auto;width:30px;height:30px;border-radius:var(--r-pill);display:inline-flex;align-items:center;justify-content:center;
     font-size:11.5px;font-weight:700;letter-spacing:.2px;background:color-mix(in srgb,var(--c,#0e7490) 20%,var(--card));
     color:color-mix(in srgb,var(--c,#0e7490) 72%,#000);line-height:1}
-  @media (prefers-color-scheme:dark){ .av{background:color-mix(in srgb,var(--c,#22b8d6) 30%,var(--card));color:color-mix(in srgb,var(--c,#22b8d6) 60%,#fff)} }
+  :root[data-theme="dark"] .av{background:color-mix(in srgb,var(--c,#22b8d6) 30%,var(--card));color:color-mix(in srgb,var(--c,#22b8d6) 60%,#fff)}
   .bar{height:8px;border-radius:var(--r-pill);background:var(--bg-subtle);overflow:hidden;margin-top:6px;max-width:220px}
   .bar>i{display:block;height:100%;border-radius:var(--r-pill);transition:width .3s ease}
   .rp-sub{font-size:12px;color:var(--muted);margin-top:2px}
@@ -391,6 +418,8 @@
     <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M14.5 11.5c2.6.2 5 1.3 5 2.6 0 1.4-2.5 2.6-5.5 2.6-1.2 0-2.3-.2-3.2-.5"/></symbol>
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a7.5 7.5 0 0 1-10.8 6.8L4 20l1.7-5.1A7.5 7.5 0 1 1 21 11.5z"/><path d="M8.5 11h7M8.5 14h4.5"/></symbol>
     <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-8 8M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
   </defs>
 </svg>
 <div id="topbar">
@@ -399,6 +428,11 @@
       <img class="brand-logo" src="icons/icon-192.png" alt="" width="30" height="30">
       <span class="brand-name">RapidSplit <span class="brand-beta">(Beta)</span></span>
     </div>
+    <button class="theme-switch" id="themeSwitch" type="button" role="switch" aria-checked="false" aria-label="Dunkelmodus umschalten" title="Hell/Dunkel umschalten" onclick="toggleTheme()">
+      <svg class="ic t-ic t-sun" aria-hidden="true" focusable="false"><use href="#i-sun"></use></svg>
+      <svg class="ic t-ic t-moon" aria-hidden="true" focusable="false"><use href="#i-moon"></use></svg>
+      <span class="knob"></span>
+    </button>
   </header>
   <nav class="tabs" id="tabs" aria-label="Bereiche">
     <button data-tab="info" class="active" aria-current="page" aria-label="Tour"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-flag"></use></svg><span class="nav-lbl">Tour</span><span class="nav-lbl-m">Tour</span></button>
@@ -673,7 +707,7 @@ function normalize(){
   S.participants = S.participants||[];
   S.participation = S.participation||{};
   S.expenses = S.expenses||[];
-  S.segments.forEach(s=>{ if(!S.participation[s.id]) S.participation[s.id]=[]; });
+  S.segments.forEach(s=>{ if(!S.participation[s.id]) S.participation[s.id]=[]; if(!s.color) s.color=nextSegColor(); });
   S.participants.forEach(p=>{
     if(p.driver){ p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[]; p.driver.fuel=p.driver.fuel||{};
       S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; if(p.driver.fuel[s.id]==null) p.driver.fuel[s.id]=0; }); }
@@ -691,7 +725,10 @@ function driverSegCost(p,segId){ if(!p||!p.driver) return 0;
   if(S.costMode==="fuel"){ return +((p.driver.fuel&&p.driver.fuel[segId])||0)||0; }
   return (p.driver.km[segId]||0)*(p.driver.rate||0); }
 const SEG_COLORS=["#0e7490","#b45309","#7c3aed","#15803d","#be185d","#0369a1","#a16207","#9333ea","#0d9488","#c2410c"];
-function segColor(sid){const i=S.segments.findIndex(s=>s.id===sid);return i<0?"#94a3b8":SEG_COLORS[i%SEG_COLORS.length];}
+function segColor(sid){const s=S.segments.find(x=>x.id===sid);if(s&&s.color)return s.color;
+  const i=S.segments.findIndex(x=>x.id===sid);return i<0?"#94a3b8":SEG_COLORS[i%SEG_COLORS.length];}
+function nextSegColor(){const used=new Set((S.segments||[]).map(s=>s.color).filter(Boolean));
+  return SEG_COLORS.find(c=>!used.has(c))||SEG_COLORS[(S.segments||[]).length%SEG_COLORS.length];}
 function segName(sid){const s=S.segments.find(x=>x.id===sid);return s?s.name:"";}
 function tint(hex,a){const c=hex.replace("#","");const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);return `rgba(${r},${g},${b},${a==null?0.10:a})`;}
 function sameSet(a,b){if(a.length!==b.length)return false;const sb=new Set(b);return a.every(x=>sb.has(x));}
@@ -844,11 +881,12 @@ function renderInfo(){
 function renderFahrer(){
   // segments list
   const sl=document.getElementById("segList");sl.innerHTML="";
-  S.segments.forEach((s,i)=>{
-    const d=document.createElement("div");d.className="row";d.style.marginBottom="6px";d.style.alignItems="center";
-    d.innerHTML=`<div style="flex:0 0 auto;color:var(--muted);font-size:13px;min-width:18px">${i+1}.</div>
-      <div><input type="text" value="${esc(s.name)}" onchange="updSeg('${s.id}',this.value)"></div>
-      <div style="flex:0 0 auto"><button class="iconbtn" title="Etappe löschen" onclick="delSeg('${s.id}')">${icon("i-trash")}</button></div>`;
+  S.segments.forEach((s)=>{
+    const d=document.createElement("div");
+    d.style.cssText="display:flex;align-items:center;gap:10px;margin-bottom:6px";
+    d.innerHTML=`<span class="swatch" style="width:15px;height:15px;border-radius:4px;background:${segColor(s.id)};flex:0 0 auto" title="Etappenfarbe"></span>
+      <input type="text" value="${esc(s.name)}" onchange="updSeg('${s.id}',this.value)" style="flex:1 1 auto;min-width:0">
+      <button class="iconbtn" style="flex:0 0 auto" title="Etappe löschen" onclick="delSeg('${s.id}')">${icon("i-trash")}</button>`;
     sl.appendChild(d);
   });
   // Erfassungsart: Toggle-Zustand + Hinweise + Tabellenüberschrift
@@ -964,12 +1002,13 @@ function renderAusgaben(){
         <button class="iconbtn" title="Zahler entfernen" onclick="delPay('${ex.id}','${pm.id}')">${icon("i-x")}</button></div>`;
     });
     h+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addPay('${ex.id}')">${icon("i-plus")}Person</button></div>`;
-    // 3) Etappen-Auswahl als Dropdown (keine Etappen-Namen-Buttons in der Standardansicht)
+    // 3) Etappen-Auswahl als pillenförmige, farbcodierte Liste (wie „Wer & Wo“)
     h+=`<label class="fld" style="margin-top:14px">Gilt für (wird gleichmäßig geteilt)</label>
-      <select aria-label="Gilt für — Etappe oder eigene Auswahl" onchange="expSetSeg('${ex.id}',this.value)">
-        <option value="" ${!linkedSeg?'selected':''}>Eigene Auswahl${!linkedSeg?` — ${grp.length} Pers.`:''}</option>`;
-    S.segments.forEach(s=>{ h+=`<option value="${s.id}" ${linkedSeg===s.id?'selected':''}>Wie Etappe: ${esc(s.name)}</option>`; });
-    h+=`</select>`;
+      <div class="seg-pills">
+        <button type="button" class="seg-pill${!linkedSeg?' on':''}" aria-pressed="${!linkedSeg}" onclick="expSetSeg('${ex.id}','')">${!linkedSeg?icon("i-check"):""}Eigene Auswahl${!linkedSeg?` · ${grp.length}`:''}</button>`;
+    S.segments.forEach(s=>{ const on=linkedSeg===s.id; const col=segColor(s.id);
+      h+=`<button type="button" class="seg-pill${on?' on':''}" style="--c:${col}" aria-pressed="${on}" onclick="expSetSeg('${ex.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
+    h+=`</div>`;
     if(linkedSeg){
       const mism = !sameSet((ex.appliesTo||[]).filter(id=>pById(id)), (S.participation[linkedSeg]||[]));
       if(mism) h+=`<p class="footnote warn-txt">Personen wurden gegenüber der Etappe einzeln angepasst.</p>`;
@@ -1046,7 +1085,7 @@ function renderErgebnis(){
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 // segments
 function addSegment(){const e=document.getElementById("seg_new");if(!e.value.trim())return;
-  const id=uid();S.segments.unshift({id,name:e.value.trim()});S.participation[id]=[];
+  const id=uid();S.segments.unshift({id,name:e.value.trim(),color:nextSegColor()});S.participation[id]=[];
   S.participants.forEach(p=>{if(p.driver){p.driver.km[id]=0;p.driver.fuel=p.driver.fuel||{};p.driver.fuel[id]=0;}});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
 function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
 function delSeg(id){confirmDialog("Etappe löschen?","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(!ok)return;
@@ -1181,6 +1220,17 @@ document.addEventListener("focusin",e=>{
   const el=e.target;
   if(el&&el.tagName==="INPUT"&&el.type==="number"){ setTimeout(()=>{try{el.select();}catch(_){}} ,0); }
 });
+/* ---------------- Dark Mode ---------------- */
+function currentTheme(){ return document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light"; }
+function applyTheme(t){
+  t=(t==="dark")?"dark":"light";
+  document.documentElement.setAttribute("data-theme",t);
+  const sw=document.getElementById("themeSwitch"); if(sw) sw.setAttribute("aria-checked", t==="dark"?"true":"false");
+  const mt=document.getElementById("metaTheme"); if(mt) mt.setAttribute("content", t==="dark"?"#0a1418":"#eef3f5");
+}
+function toggleTheme(){ const t=currentTheme()==="dark"?"light":"dark"; try{localStorage.setItem("kajak_theme",t);}catch(e){} applyTheme(t); }
+applyTheme(currentTheme()); // Schalter/Meta mit der vom Head-Skript gesetzten Vorgabe synchronisieren
+try{ matchMedia("(prefers-color-scheme:dark)").addEventListener("change",e=>{ if(!localStorage.getItem("kajak_theme")) applyTheme(e.matches?"dark":"light"); }); }catch(e){}
 /* ---------------- Wizard ---------------- */
 const WIZ_STEPS=[
   {tab:"info",title:"1. Tour & Etappen",text:"Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …)."},
