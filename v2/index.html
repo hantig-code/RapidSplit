@@ -69,11 +69,15 @@
   .ic.fill{fill:currentColor;stroke:none}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
-  /* ---------- Topbar / Header ---------- */
-  #topbar{position:sticky;top:0;z-index:50;background:var(--card);
+  /* ---------- Topbar / Header (frosted, immersiv: Inhalt scrollt durchscheinend darunter & hinter die OS-Statusleiste) ---------- */
+  #topbar{position:sticky;top:0;z-index:50;background-color:var(--card);
     box-shadow:0 1px 0 var(--line),0 6px 18px rgba(15,39,48,.05)}
+  @supports (backdrop-filter:blur(18px)){
+    #topbar{background-color:color-mix(in srgb,var(--card) 80%,transparent);
+      backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
+  }
   /* Statischer, einzeiliger Header: Logo + „RapidSplit (Beta)" links, Dark-Mode-Schalter rechts */
-  header.app{padding:max(12px,env(safe-area-inset-top)) 16px 11px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  header.app{padding:max(12px,env(safe-area-inset-top),var(--sys-top,0px)) 16px 11px;display:flex;align-items:center;justify-content:space-between;gap:12px}
   header.app .brand{display:flex;align-items:center;gap:10px;min-width:0}
   /* Dark-Mode-Schiebeschalter */
   .theme-switch{flex:0 0 auto;position:relative;width:58px;height:32px;border-radius:var(--r-pill);
@@ -204,6 +208,7 @@
   tr.sumrow td{background:var(--bg-subtle);font-weight:700;color:var(--ink)}
   table input[type=number]{padding:7px 8px;font-size:16px;min-width:66px;min-height:40px;border-radius:var(--r-sm)}
   table input[type=text]{padding:7px 8px;font-size:16px;min-width:120px;min-height:40px;border-radius:var(--r-sm)}
+  table select.rate-mode{padding:5px 6px;font-size:12.5px;font-weight:600;min-height:34px;min-width:72px;width:100%;border-radius:var(--r-sm)}
   .chk{width:20px;height:20px;accent-color:var(--brand);cursor:pointer}
   .th-short{display:none}
   /* ---------- Pills (Saldo mit ▲/▼) ---------- */
@@ -480,7 +485,7 @@
         <h2 style="margin:0">Start</h2>
         <button class="hide-link" onclick="hideStart()" title="Start-Block dauerhaft ausblenden"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>Ausblenden</button>
       </div>
-      <p class="hint" style="margin-top:6px">Neu hier? Lass dich Schritt für Schritt durch das Tool führen, oder lade eine Beispielfahrt um zu sehen, wie die App zu bedienen ist.</p>
+      <p class="hint" style="margin-top:6px">Neu hier? Lass dich Schritt für Schritt durch das Tool führen, oder lade eine Beispiel-Fahrt.</p>
       <div class="toolbar" style="margin-bottom:0">
         <button class="btn" onclick="startWizard()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Tutorial</button>
         <button class="btn demo" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
@@ -512,7 +517,7 @@
       <div id="segList"></div>
     </div>
     <div class="card">
-      <h2>Daten sichern</h2>
+      <h2>Daten</h2>
       <p class="hint">Alle Eingaben werden automatisch auf diesem Gerät gespeichert. Den Export als Datei und das PDF findest du im Reiter „Auswertung“.</p>
       <div class="toolbar" style="margin-bottom:0">
         <button class="btn ghost" onclick="document.getElementById('importFile').click()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Import (Datei)</button>
@@ -548,20 +553,11 @@
   <section class="tab" id="tab-fahrer">
     <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Hier trägst du je Fahrer:in (festgelegt unter „Gruppe“ per „Fahrer:in“-Häkchen) die Fahrtkosten ein. Zusätzliche Auslagen (Streckenmaut, Parkplatz, Permit, …) kommen pro Fahrer:in dazu.</div>
     <div class="card">
-      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg>Fahrtkosten erfassen über</h2>
-      <div class="segmented" id="costModeToggle" role="group" aria-label="Erfassungsart der Fahrtkosten">
-        <button type="button" data-mode="km" onclick="setCostMode('km')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg>Kilometer × €/km</button>
-        <button type="button" data-mode="fuel" onclick="setCostMode('fuel')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-coins"></use></svg>Spritkosten</button>
-      </div>
-      <p class="hint" id="costModeHint" style="margin:10px 0 0"></p>
-    </div>
-    <div class="card">
-      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg><span id="kmCardTitle">Kilometer je Fahrer:in</span></h2>
-      <p class="hint" id="kmCardHint">km pro Etappe und die €/km-Pauschale. Fahrtkosten je Etappe = Σ(km × €/km) aller Fahrer:innen.</p>
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg>Kilometer je Fahrer:in</h2>
+      <p class="hint">km pro Etappe eintragen. In der Zeile „Abrechnung“ je Fahrer:in zwischen €/km-Pauschale und Spritkosten (Gesamtbetrag) wählen.</p>
       <div class="tbl-wrap" id="kmTableWrap">
         <table id="kmTable"></table>
       </div>
-      <div id="fuelList"></div>
       <div class="footnote">Fahrer:innen legst du im Reiter „Gruppe“ über das „Fahrer:in“-Häkchen fest.</div>
     </div>
     <div class="card">
@@ -573,10 +569,10 @@
 
   <!-- TEILNEHMER -->
   <section class="tab" id="tab-teilnehmer">
-    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein (inkl. Fahrer:innen). Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Wer auf welcher Etappe dabei war, legst du im Reiter „Wer &amp; Wo“ fest.</div>
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Wer auf welcher Etappe dabei war, legst du im Reiter „Wer &amp; Wo“ fest.</div>
     <div class="card">
       <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people3"></use></svg>Gruppe</h2>
-      <p class="hint">Alle Personen (inkl. Fahrer:innen). Optional ein Verein/Familie, um Salden am Ende zusammenzufassen (z. B. „Familie Jackson“).</p>
+      <p class="hint">Alle Personen. Optional ein Verein/Familie, um Salden am Ende zusammenzufassen (z. B. „Familie Jackson“).</p>
       <div class="add-zone">
         <div class="add-row" style="margin:0">
           <div><label class="fld">Person hinzufügen</label><input type="text" id="part_new" placeholder="Name"></div>
@@ -748,7 +744,7 @@ function normalize(){
       ? S.meta.rows.map(r=>(r.k?r.k+": ":"")+(r.v||"")).join("\n") : "";
   }
   delete S.meta.rows;
-  if(S.costMode!=="fuel") S.costMode="km";   // Erfassungsart Fahrtkosten: "km" | "fuel"
+  const _wasFuelMode = S.costMode==="fuel"; delete S.costMode;  // Erfassungsart ist jetzt pro Fahrer:in (driver.mode)
   if(S.mergeGroups==null) S.mergeGroups=false; // Familien/Vereine bei der Abrechnung zusammenfassen (Vorgabe: aus)
   S.segments = S.segments||[];
   S.participants = S.participants||[];
@@ -757,14 +753,18 @@ function normalize(){
   S.segments.forEach(s=>{ if(!S.participation[s.id]) S.participation[s.id]=[]; if(!s.color) s.color=nextSegColor(); });
   S.participants.forEach(p=>{
     if(p.driver){ p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[];
+      if(typeof p.driver.rate!=="number") p.driver.rate=0.30;
       S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; });
-      // Spritkosten: von „pro Etappe" (altes fuel{}) auf „pro Tankvorgang" (fuelLog[]) migrieren
-      if(!Array.isArray(p.driver.fuelLog)){
-        const oldSum = p.driver.fuel ? Object.values(p.driver.fuel).reduce((a,b)=>a+(+b||0),0) : 0;
-        p.driver.fuelLog = oldSum>0 ? [{id:uid(),amount:oldSum}] : [];
+      // Spritkosten: auf EINEN Gesamtbetrag (driver.fuel: number) vereinheitlichen
+      if(typeof p.driver.fuel!=="number"){
+        let f=0;
+        if(Array.isArray(p.driver.fuelLog)) f=p.driver.fuelLog.reduce((a,b)=>a+(+b.amount||0),0);
+        else if(p.driver.fuel && typeof p.driver.fuel==="object") f=Object.values(p.driver.fuel).reduce((a,b)=>a+(+b||0),0);
+        p.driver.fuel=f;
       }
-      delete p.driver.fuel;
-      if(p.driver.fuelLog.length===0) p.driver.fuelLog.push({id:uid(),amount:0}); // immer ≥1 Eingabefeld
+      delete p.driver.fuelLog;
+      // Abrechnungsart pro Fahrer:in: "rate" (Standard) oder "fuel"; alten globalen Spritkosten-Modus übernehmen
+      if(p.driver.mode!=="fuel" && p.driver.mode!=="rate") p.driver.mode = (_wasFuelMode && p.driver.fuel>0) ? "fuel" : "rate";
     }
   });
 }
@@ -775,15 +775,17 @@ const eur = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE"
 const num = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{maximumFractionDigits:2});
 const pById = id => S.participants.find(p=>p.id===id);
 const pName = id => (pById(id)||{}).name || "—";
-// Fahrtkosten eines Autos für eine Etappe – je nach Erfassungsart (km×Pauschale oder Spritkosten €)
-function driverFuelTotal(p){ return (p&&p.driver&&Array.isArray(p.driver.fuelLog)) ? p.driver.fuelLog.reduce((a,b)=>a+(+b.amount||0),0) : 0; }
-// Etappen, über die die Spritkosten einer Fahrer:in verteilt werden: die, auf denen sie mitfährt; sonst alle Etappen mit Teilnehmer:innen
+// Etappen, auf denen die Fahrer:in mitfährt; sonst alle Etappen mit Teilnehmer:innen (Fallback ohne km)
 function driverFuelPool(p){ let pool=S.segments.filter(s=>(S.participation[s.id]||[]).includes(p.id));
   if(pool.length===0) pool=S.segments.filter(s=>(S.participation[s.id]||[]).length>0); return pool; }
+// Fahrtkosten eines Autos für eine Etappe – Abrechnung je Fahrer:in: "rate" (km×€/km) oder "fuel" (Gesamt-Spritkosten, nach km-Anteil verteilt)
 function driverSegCost(p,segId){ if(!p||!p.driver) return 0;
-  if(S.costMode==="fuel"){ const total=driverFuelTotal(p); if(total<=0) return 0;
-    const pool=driverFuelPool(p); if(pool.length===0) return 0;
-    return pool.some(s=>s.id===segId) ? total/pool.length : 0; }
+  if(p.driver.mode==="fuel"){
+    const total=+p.driver.fuel||0; if(total<=0) return 0;
+    let totalKm=0; S.segments.forEach(s=>totalKm+=(p.driver.km[s.id]||0));
+    if(totalKm>0) return total*((p.driver.km[segId]||0)/totalKm);
+    const pool=driverFuelPool(p); return (pool.length && pool.some(s=>s.id===segId)) ? total/pool.length : 0;
+  }
   return (p.driver.km[segId]||0)*(p.driver.rate||0); }
 const SEG_COLORS=["#0e7490","#b45309","#7c3aed","#15803d","#be185d","#0369a1","#a16207","#9333ea","#0d9488","#c2410c"];
 function segColor(sid){const s=S.segments.find(x=>x.id===sid);if(s&&s.color)return s.color;
@@ -951,41 +953,16 @@ function renderFahrer(){
       <button class="iconbtn" style="flex:0 0 auto" title="Etappe löschen" onclick="delSeg('${s.id}')">${icon("i-trash")}</button>`;
     sl.appendChild(d);
   });
-  // Erfassungsart: Toggle-Zustand + Hinweise + Tabellenüberschrift
-  const mode = S.costMode==="fuel" ? "fuel" : "km";
-  document.querySelectorAll('#costModeToggle button').forEach(b=>{const on=b.dataset.mode===mode;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
-  document.getElementById('costModeHint').textContent = mode==="fuel"
-    ? "Spritkosten-Modus: trage je Fahrer:in die einzelnen Tankvorgänge ein. Die Gesamtsumme wird auf die Etappen verteilt, auf denen die Fahrer:in mitfährt, und dort unter den Mitfahrenden geteilt."
-    : "Kilometer-Modus: trage je Fahrer:in die gefahrenen km pro Etappe und die €/km-Pauschale ein.";
-  document.getElementById('kmCardTitle').textContent = mode==="fuel" ? "Spritkosten je Fahrer:in" : "Kilometer je Fahrer:in";
-  document.getElementById('kmCardHint').textContent = mode==="fuel"
-    ? "Je Fahrer:in alle Tankvorgänge der Tour (€). Über „+ Tankvorgang“ weitere hinzufügen, falls mehrmals getankt wurde."
-    : "km pro Etappe und die €/km-Pauschale. Fahrtkosten je Etappe = Σ(km × €/km) aller Fahrer:innen.";
   const drivers=S.participants.filter(p=>p.driver);
-  const kmWrap=document.getElementById("kmTableWrap"), fuelEl=document.getElementById("fuelList");
-  if(mode==="fuel"){
-    // Spritkosten je Fahrer:in als einzelne Tankvorgänge (nicht pro Etappe)
-    kmWrap.style.display="none"; fuelEl.style.display=""; fuelEl.innerHTML="";
-    if(drivers.length===0){ fuelEl.innerHTML='<p class="mini">Noch keine Fahrer:innen — im Reiter „Gruppe“ per „Fahrer:in“-Häkchen festlegen.</p>'; }
-    drivers.forEach(d=>{
-      const box=document.createElement("div");box.className="seg-block";
-      let inner=`<h3>${esc(d.name)} <span class="pill muted">Sprit gesamt: ${eur(driverFuelTotal(d))}</span></h3>`;
-      (d.driver.fuelLog||[]).forEach((e,i)=>{
-        inner+=`<div class="pay-row">
-          <span style="flex:0 0 auto;color:var(--muted);font-size:13px;min-width:104px">Tankvorgang ${i+1}</span>
-          <span class="cur" style="flex:1 1 100px"><input type="number" inputmode="decimal" value="${e.amount}" min="0" step="0.01" style="width:100%;text-align:right" placeholder="Betrag" aria-label="Spritkosten Tankvorgang ${i+1} – ${esc(d.name)}" onchange="updFuelEntry('${d.id}','${e.id}',this.value)"></span>
-          <button class="iconbtn" title="Tankvorgang entfernen" onclick="delFuelEntry('${d.id}','${e.id}')">${icon("i-x")}</button></div>`;
-      });
-      inner+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addFuelEntry('${d.id}')">${icon("i-plus")}Tankvorgang</button></div>`;
-      box.innerHTML=inner;fuelEl.appendChild(box);
-    });
+  const t=document.getElementById("kmTable");
+  let h="<thead><tr><th class=\"sticky-col\">Etappe</th>";
+  drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}</th>`);
+  h+="</tr></thead><tbody>";
+  if(drivers.length===0){
+    h+=`<tr><td><span class="mini">Noch keine Fahrer:innen — im Reiter „Gruppe“ per „Fahrer:in“-Häkchen festlegen.</span></td></tr></tbody>`;
+    t.innerHTML=h;
   } else {
-    fuelEl.style.display="none"; fuelEl.innerHTML=""; kmWrap.style.display="";
-    const t=document.getElementById("kmTable");
-    let h="<thead><tr><th class=\"sticky-col\">Etappe</th>";
-    drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}</th>`);
-    h+="</tr></thead><tbody>";
-    if(drivers.length===0) h+=`<tr><td colspan="1"><span class="mini">Noch keine Fahrer:innen — im Reiter „Gruppe“ per „Fahrer:in“-Häkchen festlegen.</span></td></tr>`;
+    // km je Etappe (immer erforderlich)
     S.segments.forEach(s=>{
       h+=`<tr><td class="sticky-col">${esc(s.name)}</td>`;
       drivers.forEach(d=> h+=`<td class="num"><input type="number" inputmode="numeric" value="${d.driver.km[s.id]||0}" min="0" step="1" aria-label="Kilometer ${esc(d.name)} – ${esc(s.name)}" onchange="updKm('${d.id}','${s.id}',this.value)"></td>`);
@@ -994,11 +971,15 @@ function renderFahrer(){
     h+=`<tr class="sumrow"><td class="sticky-col"><b>Gesamt-km</b></td>`;
     drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0)); h+=`<td class="num"><b>${num(tot)}</b></td>`; });
     h+="</tr>";
-    h+=`<tr><td class="sticky-col">€/km Pauschale</td>`;
-    drivers.forEach(d=> h+=`<td class="num"><span class="cur" style="display:flex;width:100%"><input type="number" inputmode="decimal" value="${d.driver.rate}" min="0" step="0.01" style="text-align:right;width:100%" aria-label="€/km Pauschale ${esc(d.name)}" onchange="updRate('${d.id}',this.value)"></span></td>`);
+    // Abrechnung je Fahrer:in: €/km-Pauschale ODER Spritkosten (Gesamtbetrag)
+    h+=`<tr><td class="sticky-col">Abrechnung</td>`;
+    drivers.forEach(d=>{ const fuel=d.driver.mode==="fuel";
+      h+=`<td class="num"><select class="rate-mode" aria-label="Abrechnung ${esc(d.name)}" onchange="setDriverMode('${d.id}',this.value)"><option value="rate" ${fuel?'':'selected'}>€/km</option><option value="fuel" ${fuel?'selected':''}>Sprit €</option></select>`;
+      h+=`<span class="cur" style="display:flex;width:100%;margin-top:5px"><input type="number" inputmode="decimal" value="${fuel?(d.driver.fuel||0):d.driver.rate}" min="0" step="0.01" style="text-align:right;width:100%" aria-label="${fuel?'Spritkosten gesamt':'€/km Pauschale'} ${esc(d.name)}" onchange="${fuel?`updFuelAmount('${d.id}',this.value)`:`updRate('${d.id}',this.value)`}"></span></td>`;
+    });
     h+="</tr>";
-    h+=`<tr class="sumrow"><td class="sticky-col"><b>Fahrtkosten (km×€)</b></td>`;
-    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0));h+=`<td class="num"><b>${eur(tot*d.driver.rate)}</b></td>`; });
+    h+=`<tr class="sumrow"><td class="sticky-col"><b>Fahrtkosten</b></td>`;
+    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=driverSegCost(d,s.id)); h+=`<td class="num"><b>${eur(tot)}</b></td>`; });
     h+="</tr></tbody>";
     t.innerHTML=h;
   }
@@ -1171,7 +1152,7 @@ function toggleDriver(id,on){const p=pById(id);if(!p)return;
       renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
       toast(p.name+": Fahrer:in-Eingaben wiederhergestellt");
     } else {
-      const km={};S.segments.forEach(s=>{km[s.id]=0;});p.driver={rate:0.30,km,fuelLog:[{id:uid(),amount:0}],extras:[]};
+      const km={};S.segments.forEach(s=>{km[s.id]=0;});p.driver={rate:0.30,km,fuel:0,mode:"rate",extras:[]};
       renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
       toast(p.name+" ist jetzt Fahrer:in");
     }
@@ -1187,11 +1168,8 @@ function toggleDriver(id,on){const p=pById(id);if(!p)return;
 function removeDriver(id){ toggleDriver(id,false); }
 function updKm(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.km[sid]=+v||0;renderFahrer();renderErgebnis();save();}}
 function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=+v||0;renderFahrer();renderErgebnis();save();}}
-function addFuelEntry(id){const p=pById(id);if(p&&p.driver){p.driver.fuelLog=p.driver.fuelLog||[];p.driver.fuelLog.push({id:uid(),amount:0});renderFahrer();renderErgebnis();save();}}
-function updFuelEntry(id,eid,v){const p=pById(id);if(!p||!p.driver)return;const e=(p.driver.fuelLog||[]).find(x=>x.id===eid);if(e){e.amount=+v||0;renderErgebnis();save();}}
-function delFuelEntry(id,eid){const p=pById(id);if(!p||!p.driver)return;p.driver.fuelLog=(p.driver.fuelLog||[]).filter(x=>x.id!==eid);
-  if(p.driver.fuelLog.length===0) p.driver.fuelLog.push({id:uid(),amount:0});renderFahrer();renderErgebnis();save();}
-function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"km"); renderFahrer(); renderErgebnis(); save(); }
+function updFuelAmount(id,v){const p=pById(id);if(p&&p.driver){p.driver.fuel=+v||0;renderFahrer();renderErgebnis();save();}}
+function setDriverMode(id,m){const p=pById(id);if(p&&p.driver){p.driver.mode=(m==="fuel"?"fuel":"rate");renderFahrer();renderErgebnis();save();}}
 function setMergeGroups(on){ S.mergeGroups=!!on; renderErgebnis(); save(); }
 function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0});renderFahrer();save();}}
 function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
@@ -1325,7 +1303,7 @@ const WIZ_STEPS=[
   {tab:"info",title:"1. Tour & Etappen",text:"Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …)."},
   {tab:"teilnehmer",title:"2. Gruppe eintragen",text:"Trage alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Ein Verein/Familie fasst Salden am Ende zusammen."},
   {tab:"teilnahme",title:"3. Wer & Wo",text:"Hake an, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung."},
-  {tab:"fahrer",title:"4. Fahrtkosten",text:"Erfasse die Fahrtkosten oben wahlweise über km × €/km-Pauschale oder über die einzelnen Tankvorgänge (Spritkosten). Auslagen wie Vignette oder Maut kommen darunter dazu."},
+  {tab:"fahrer",title:"4. Fahrtkosten",text:"Trage je Fahrer:in die km pro Etappe ein. In der Zeile „Abrechnung“ wählst du je Fahrer:in zwischen €/km-Pauschale und Spritkosten (Gesamtbetrag). Auslagen wie Streckenmaut kommen darunter dazu."},
   {tab:"ausgaben",title:"5. Ausgaben",text:"Erfasse gemeinsame Ausgaben (Einkäufe, Campingplatz …): Betrag, Bezahler:in und für wen die Ausgabe gilt."},
   {tab:"ergebnis",title:"6. Auswertung",text:"Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Über „PDF“ oder „Export“ teilst du alles."},
 ];
