@@ -161,6 +161,12 @@
   .btn.danger{background:var(--card);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 40%,transparent)}
   .btn.demo{background:var(--demo-bg);color:var(--demo);border:1px solid color-mix(in srgb,var(--demo) 45%,transparent)}
   .btn.demo:hover{background:var(--demo-bg);filter:brightness(.97)}
+  /* Ko-fi-Unterstützungsbutton (offizielles Bild, lokal eingebettet) */
+  .kofi-btn{display:inline-block;line-height:0;border-radius:9px;transition:transform .1s ease}
+  .kofi-btn img{height:40px;width:auto;display:block;border:0;border-radius:9px}
+  .kofi-btn:hover{transform:translateY(-1px)}
+  .kofi-btn:active{transform:scale(.98)}
+  .kofi-btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
   /* Schiebeschalter-Option (z. B. Familien zusammenfassen) */
   .opt-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:13.5px;font-weight:600;color:var(--ink-2);margin:2px 0 14px}
   .opt-toggle input{position:absolute;opacity:0;width:0;height:0}
@@ -522,6 +528,10 @@
           <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-globe"></use></svg>hantig.store
         </a>
       </div>
+      <p class="hint" style="margin:16px 0 8px">Gefällt dir RapidSplit? Unterstütze die Entwicklung:</p>
+      <a class="kofi-btn" href="https://ko-fi.com/W3A722A6DU" target="_blank" rel="noopener noreferrer" aria-label="Unterstütze mich auf Ko-fi">
+        <img src="icons/kofi-button.png" alt="Support me on Ko-fi" width="159" height="40">
+      </a>
     </div>
   </section>
 
