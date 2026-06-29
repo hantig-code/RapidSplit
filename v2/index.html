@@ -161,6 +161,14 @@
   .btn.danger{background:var(--card);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 40%,transparent)}
   .btn.demo{background:var(--demo-bg);color:var(--demo);border:1px solid color-mix(in srgb,var(--demo) 45%,transparent)}
   .btn.demo:hover{background:var(--demo-bg);filter:brightness(.97)}
+  /* Schiebeschalter-Option (z. B. Familien zusammenfassen) */
+  .opt-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:13.5px;font-weight:600;color:var(--ink-2);margin:2px 0 14px}
+  .opt-toggle input{position:absolute;opacity:0;width:0;height:0}
+  .opt-track{position:relative;flex:0 0 auto;width:44px;height:26px;border-radius:var(--r-pill);background:var(--line-strong);transition:background .2s}
+  .opt-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35);transition:transform .2s}
+  .opt-toggle input:checked + .opt-track{background:var(--brand)}
+  .opt-toggle input:checked + .opt-track .opt-knob{transform:translateX(18px)}
+  .opt-toggle input:focus-visible + .opt-track{outline:3px solid var(--focus);outline-offset:2px}
   .btn.danger:hover{background:var(--red-bg)}
   .iconbtn{background:none;border:none;color:var(--muted);cursor:pointer;line-height:0;padding:11px;border-radius:var(--r-sm);
     display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
@@ -575,6 +583,11 @@
     <div class="card" id="resHeader"></div>
     <div class="card">
       <h2>Wer zahlt an wen? <span class="mini">(minimale Anzahl Überweisungen)</span></h2>
+      <label class="opt-toggle" title="Bei Aus: jede Person zahlt/erhält einzeln, auch innerhalb einer Familie/eines Vereins">
+        <input type="checkbox" id="mergeGroupsToggle" checked onchange="setMergeGroups(this.checked)">
+        <span class="opt-track"><span class="opt-knob"></span></span>
+        <span class="opt-lbl">Familien/Vereine als Einheit abrechnen</span>
+      </label>
       <div id="settlement"></div>
     </div>
     <div class="card">
@@ -707,6 +720,7 @@ function normalize(){
   }
   delete S.meta.rows;
   if(S.costMode!=="fuel") S.costMode="km";   // Erfassungsart Fahrtkosten: "km" | "fuel"
+  if(S.mergeGroups==null) S.mergeGroups=true; // Familien/Vereine bei der Abrechnung zusammenfassen (Vorgabe: an)
   S.segments = S.segments||[];
   S.participants = S.participants||[];
   S.participation = S.participation||{};
@@ -849,8 +863,9 @@ function compute(){
   // group merge for balances/settlement
   const groups={};
   rows.forEach(r=>{
-    const key = r.group ? "g:"+r.group : "p:"+r.id;
-    if(!groups[key]) groups[key]={name:r.group||r.name, isGroup:!!r.group, members:[], saldo:0, eigenAnteil:0, laidOut:0};
+    const merge = (S.mergeGroups!==false) && !!r.group;   // Familien/Vereine optional zusammenfassen
+    const key = merge ? "g:"+r.group : "p:"+r.id;
+    if(!groups[key]) groups[key]={name:merge?r.group:r.name, isGroup:merge, members:[], saldo:0, eigenAnteil:0, laidOut:0};
     groups[key].members.push(r.name);
     groups[key].saldo += r.gesamtSaldo;
     groups[key].eigenAnteil += r.eigenAnteil;
@@ -1018,7 +1033,7 @@ function renderAusgaben(){
     if(linkedSeg){ card.style.borderLeft="5px solid "+lcol; }
     // 1) Bezeichnung
     let h=`<div class="row" style="align-items:flex-end"><div style="flex:1"><label class="fld">Bezeichnung</label>
-      <input type="text" value="${esc(ex.name)}" placeholder="z. B. Einkauf, Campingplatz" onchange="updExp('${ex.id}','name',this.value)"></div>
+      <input type="text" class="selonfocus" value="${esc(ex.name)}" placeholder="z. B. Einkauf, Campingplatz" onchange="updExp('${ex.id}','name',this.value)"></div>
       <div style="flex:0 0 auto"><button class="iconbtn" title="Ausgabe löschen" onclick="delExpense('${ex.id}')">${icon("i-trash")}</button></div></div>`;
     // 2) Bezahlt von + Höhe (€), „X“ zum Entfernen, „+ Person“ für weitere Zahler (V1-Reihenfolge)
     h+=`<label class="fld" style="margin-top:12px">Bezahlt von &amp; Höhe</label>`;
@@ -1056,6 +1071,7 @@ function optList(sel){ return S.participants.map(p=>`<option value="${p.id}" ${p
 
 function renderErgebnis(){
   const R=compute();
+  const mt=document.getElementById("mergeGroupsToggle"); if(mt) mt.checked = S.mergeGroups!==false;
   // header
   const dh=document.getElementById("resHeader");
   dh.innerHTML=`<h2>${esc(S.meta.title||"Tour")}</h2>
@@ -1147,6 +1163,7 @@ function updFuelEntry(id,eid,v){const p=pById(id);if(!p||!p.driver)return;const 
 function delFuelEntry(id,eid){const p=pById(id);if(!p||!p.driver)return;p.driver.fuelLog=(p.driver.fuelLog||[]).filter(x=>x.id!==eid);
   if(p.driver.fuelLog.length===0) p.driver.fuelLog.push({id:uid(),amount:0});renderFahrer();renderErgebnis();save();}
 function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"km"); renderFahrer(); renderErgebnis(); save(); }
+function setMergeGroups(on){ S.mergeGroups=!!on; renderErgebnis(); save(); }
 function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0});renderFahrer();save();}}
 function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
   if(e){e[f]=f==="amount"?(+v||0):v;renderErgebnis();save();}}
@@ -1245,10 +1262,10 @@ document.getElementById("m_desc").addEventListener("input",e=>{S.meta.descriptio
   const el=document.getElementById(id); if(!el)return;
   el.addEventListener("keydown",e=>{if(e.key==="Enter"){ if(id==="seg_new")addSegment(); else addParticipant(); }});
 });
-// Zahlenfelder: beim Hineintippen den vorausgefüllten Wert markieren → direkt lostippen
+// Zahlenfelder + markierte Textfelder (.selonfocus): beim Hineintippen vorausgefüllten Wert markieren → direkt lostippen
 document.addEventListener("focusin",e=>{
   const el=e.target;
-  if(el&&el.tagName==="INPUT"&&el.type==="number"){ setTimeout(()=>{try{el.select();}catch(_){}} ,0); }
+  if(el&&el.tagName==="INPUT"&&(el.type==="number"||el.classList.contains("selonfocus"))){ setTimeout(()=>{try{el.select();}catch(_){}} ,0); }
 });
 /* ---------------- Dark Mode ---------------- */
 function currentTheme(){ return document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light"; }
