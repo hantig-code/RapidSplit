@@ -75,18 +75,19 @@
   header.app .brand{display:flex;align-items:center;gap:10px;min-width:0}
   /* Dark-Mode-Schiebeschalter */
   .theme-switch{flex:0 0 auto;position:relative;width:58px;height:32px;border-radius:var(--r-pill);
-    border:1px solid var(--line);background:var(--bg-subtle);cursor:pointer;padding:0;display:inline-flex;align-items:center;
+    border:1px solid var(--line-strong);background:var(--bg-subtle);cursor:pointer;padding:0;display:block;
     transition:background .2s,border-color .2s}
-  .theme-switch:hover{border-color:var(--line-strong)}
-  .theme-switch .t-ic{position:absolute;top:50%;transform:translateY(-50%);font-size:15px;color:var(--muted);pointer-events:none;transition:color .2s}
-  .theme-switch .t-sun{left:8px}
-  .theme-switch .t-moon{right:8px}
-  .theme-switch .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--card);
-    box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.3,.9,.3,1)}
-  :root[data-theme="dark"] .theme-switch{background:var(--brand-tint);border-color:transparent}
-  :root[data-theme="dark"] .theme-switch .knob{transform:translateX(26px)}
-  :root[data-theme="dark"] .theme-switch .t-moon{color:var(--brand-d)}
-  :root[data-theme="light"] .theme-switch .t-sun{color:var(--warn)}
+  .theme-switch:hover{filter:brightness(.98)}
+  .theme-switch .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.3,.9,.3,1);display:flex;align-items:center;justify-content:center}
+  .theme-switch .knob .ic{font-size:15px}
+  .theme-switch .k-sun{color:#b45309;display:block}
+  .theme-switch .k-moon{display:none}
+  /* Dark: heller Knopf auf mittlerem Track + dunkles Mond-Icon = klarer Kontrast */
+  :root[data-theme="dark"] .theme-switch{background:var(--line-strong);border-color:transparent}
+  :root[data-theme="dark"] .theme-switch .knob{transform:translateX(26px);background:var(--brand-d)}
+  :root[data-theme="dark"] .theme-switch .k-sun{display:none}
+  :root[data-theme="dark"] .theme-switch .k-moon{display:block;color:#06222b}
   header.app .brand-logo{width:30px;height:30px;border-radius:8px;flex:0 0 auto;box-shadow:0 1px 2px rgba(15,39,48,.22)}
   header.app .brand-name{font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.1;color:var(--ink)}
   header.app .brand-beta{font-weight:600;color:var(--muted);font-size:15px}
@@ -266,9 +267,6 @@
   /* ---------- Settle (Held: wer zahlt wem) ---------- */
   .settle{display:flex;align-items:center;gap:9px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);
     margin-bottom:8px;background:var(--bg-subtle);flex-wrap:wrap;min-height:44px}
-  .settle:first-child{background:var(--brand-tint);border-color:transparent;padding:16px 18px}
-  .settle:first-child .av{width:36px;height:36px;font-size:13px}
-  .settle:first-child .amt{font-size:18px}
   .settle .from{font-weight:600;color:var(--red)}
   .settle .to{font-weight:600;color:var(--green)}
   .settle .arrow{color:var(--muted);font-size:18px;display:inline-flex}
@@ -381,7 +379,7 @@
     .card{ box-shadow:none !important; border:1px solid var(--line) !important; break-inside:avoid; margin-bottom:10px; }
     .settle,.seg-block,.stat{ break-inside:avoid; }
     details>*:not(summary){ display:block !important; }
-    .av,.pill,.bar,.bar>i,.stat.anchor,.settle:first-child{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .av,.pill,.bar,.bar>i,.stat.anchor{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .bar>i{ outline:1px solid #888; }
     a{ color:inherit; text-decoration:none; }
   }
@@ -429,9 +427,10 @@
       <span class="brand-name">RapidSplit <span class="brand-beta">(Beta)</span></span>
     </div>
     <button class="theme-switch" id="themeSwitch" type="button" role="switch" aria-checked="false" aria-label="Dunkelmodus umschalten" title="Hell/Dunkel umschalten" onclick="toggleTheme()">
-      <svg class="ic t-ic t-sun" aria-hidden="true" focusable="false"><use href="#i-sun"></use></svg>
-      <svg class="ic t-ic t-moon" aria-hidden="true" focusable="false"><use href="#i-moon"></use></svg>
-      <span class="knob"></span>
+      <span class="knob">
+        <svg class="ic k-sun" aria-hidden="true" focusable="false"><use href="#i-sun"></use></svg>
+        <svg class="ic k-moon" aria-hidden="true" focusable="false"><use href="#i-moon"></use></svg>
+      </span>
     </button>
   </header>
   <nav class="tabs" id="tabs" aria-label="Bereiche">
@@ -450,6 +449,15 @@
     <div class="tour-subhead">
       <h1 id="metaTitle">Unbenannte Tour</h1>
       <div class="sub" id="metaSub">Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen</div>
+    </div>
+    <div class="card accent">
+      <h2>Start</h2>
+      <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen — oder starte direkt mit einer leeren Fahrt.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn" onclick="startWizard()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Tutorial</button>
+        <button class="btn ghost" onclick="newTrip()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Fahrt anlegen</button>
+      </div>
+      <p class="footnote">„Fahrt anlegen" löscht die vorausgefüllten Beispielwerte. Über „Beispiel laden" weiter unten holst du sie jederzeit zurück.</p>
     </div>
     <div class="card">
       <h2>Tour-Eckdaten</h2>
@@ -477,15 +485,6 @@
       </div>
       <div id="segList"></div>
     </div>
-    <div class="card accent">
-      <h2>Start</h2>
-      <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen — oder starte direkt mit einer leeren Fahrt.</p>
-      <div class="toolbar" style="margin-bottom:0">
-        <button class="btn" onclick="startWizard()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Wizard starten</button>
-        <button class="btn ghost" onclick="newTrip()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Neue, leere Fahrt anlegen</button>
-      </div>
-      <p class="footnote">„Neue, leere Fahrt" löscht die vorausgefüllten Beispielwerte. Über „Beispiel laden" weiter unten holst du sie jederzeit zurück.</p>
-    </div>
     <div class="card">
       <h2>Daten sichern</h2>
       <p class="hint">Alle Eingaben werden automatisch auf diesem Gerät gespeichert. Den Export als Datei und das PDF findest du im Reiter „Ergebnis“.</p>
@@ -512,16 +511,17 @@
       <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg>Fahrtkosten erfassen über</h2>
       <div class="segmented" id="costModeToggle" role="group" aria-label="Erfassungsart der Fahrtkosten">
         <button type="button" data-mode="km" onclick="setCostMode('km')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg>Kilometer × €/km</button>
-        <button type="button" data-mode="fuel" onclick="setCostMode('fuel')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-coins"></use></svg>Spritkosten (€)</button>
+        <button type="button" data-mode="fuel" onclick="setCostMode('fuel')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-coins"></use></svg>Spritkosten</button>
       </div>
       <p class="hint" id="costModeHint" style="margin:10px 0 0"></p>
     </div>
     <div class="card">
       <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg><span id="kmCardTitle">Kilometer je Fahrer:in</span></h2>
       <p class="hint" id="kmCardHint">km pro Etappe und die €/km-Pauschale. Fahrtkosten je Etappe = Σ(km × €/km) aller Autos.</p>
-      <div class="tbl-wrap">
+      <div class="tbl-wrap" id="kmTableWrap">
         <table id="kmTable"></table>
       </div>
+      <div id="fuelList"></div>
       <div class="footnote">Fahrer:innen legst du im Reiter „Gruppe“ über das „Auto“-Häkchen fest.</div>
     </div>
     <div class="card">
@@ -571,7 +571,7 @@
   <section class="tab" id="tab-ergebnis">
     <div class="card" id="resHeader"></div>
     <div class="card">
-      <h2>Wer zahlt wem <span class="mini">(minimale Anzahl Überweisungen)</span></h2>
+      <h2>Wer zahlt an wen? <span class="mini">(minimale Anzahl Überweisungen)</span></h2>
       <div id="settlement"></div>
     </div>
     <div class="card">
@@ -590,7 +590,7 @@
     </div>
     <div class="card">
       <details>
-        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Details: Fahrtkosten je Etappe</summary>
+        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Fahrtkosten je Etappe</summary>
         <div class="tbl-wrap" style="margin-top:10px"><table id="segCostTable"></table></div>
       </details>
     </div>
@@ -709,8 +709,16 @@ function normalize(){
   S.expenses = S.expenses||[];
   S.segments.forEach(s=>{ if(!S.participation[s.id]) S.participation[s.id]=[]; if(!s.color) s.color=nextSegColor(); });
   S.participants.forEach(p=>{
-    if(p.driver){ p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[]; p.driver.fuel=p.driver.fuel||{};
-      S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; if(p.driver.fuel[s.id]==null) p.driver.fuel[s.id]=0; }); }
+    if(p.driver){ p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[];
+      S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; });
+      // Spritkosten: von „pro Etappe" (altes fuel{}) auf „pro Tankvorgang" (fuelLog[]) migrieren
+      if(!Array.isArray(p.driver.fuelLog)){
+        const oldSum = p.driver.fuel ? Object.values(p.driver.fuel).reduce((a,b)=>a+(+b||0),0) : 0;
+        p.driver.fuelLog = oldSum>0 ? [{id:uid(),amount:oldSum}] : [];
+      }
+      delete p.driver.fuel;
+      if(p.driver.fuelLog.length===0) p.driver.fuelLog.push({id:uid(),amount:0}); // immer ≥1 Eingabefeld
+    }
   });
 }
 function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){} }
@@ -721,8 +729,14 @@ const num = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE"
 const pById = id => S.participants.find(p=>p.id===id);
 const pName = id => (pById(id)||{}).name || "—";
 // Fahrtkosten eines Autos für eine Etappe – je nach Erfassungsart (km×Pauschale oder Spritkosten €)
+function driverFuelTotal(p){ return (p&&p.driver&&Array.isArray(p.driver.fuelLog)) ? p.driver.fuelLog.reduce((a,b)=>a+(+b.amount||0),0) : 0; }
+// Etappen, über die die Spritkosten einer Fahrer:in verteilt werden: die, auf denen sie mitfährt; sonst alle Etappen mit Teilnehmer:innen
+function driverFuelPool(p){ let pool=S.segments.filter(s=>(S.participation[s.id]||[]).includes(p.id));
+  if(pool.length===0) pool=S.segments.filter(s=>(S.participation[s.id]||[]).length>0); return pool; }
 function driverSegCost(p,segId){ if(!p||!p.driver) return 0;
-  if(S.costMode==="fuel"){ return +((p.driver.fuel&&p.driver.fuel[segId])||0)||0; }
+  if(S.costMode==="fuel"){ const total=driverFuelTotal(p); if(total<=0) return 0;
+    const pool=driverFuelPool(p); if(pool.length===0) return 0;
+    return pool.some(s=>s.id===segId) ? total/pool.length : 0; }
   return (p.driver.km[segId]||0)*(p.driver.rate||0); }
 const SEG_COLORS=["#0e7490","#b45309","#7c3aed","#15803d","#be185d","#0369a1","#a16207","#9333ea","#0d9488","#c2410c"];
 function segColor(sid){const s=S.segments.find(x=>x.id===sid);if(s&&s.color)return s.color;
@@ -893,29 +907,37 @@ function renderFahrer(){
   const mode = S.costMode==="fuel" ? "fuel" : "km";
   document.querySelectorAll('#costModeToggle button').forEach(b=>{const on=b.dataset.mode===mode;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
   document.getElementById('costModeHint').textContent = mode==="fuel"
-    ? "Spritkosten-Modus: trage je Fahrer:in die Spritkosten (€) pro Etappe ein. Sie werden – wie die km-Variante – pro Etappe unter den dort Mitfahrenden geteilt."
+    ? "Spritkosten-Modus: trage je Fahrer:in die einzelnen Tankvorgänge ein. Die Gesamtsumme wird auf die Etappen verteilt, auf denen die Fahrer:in mitfährt, und dort unter den Mitfahrenden geteilt."
     : "Kilometer-Modus: trage je Fahrer:in die gefahrenen km pro Etappe und die €/km-Pauschale ein.";
   document.getElementById('kmCardTitle').textContent = mode==="fuel" ? "Spritkosten je Fahrer:in" : "Kilometer je Fahrer:in";
   document.getElementById('kmCardHint').textContent = mode==="fuel"
-    ? "Spritkosten (€) pro Etappe je Auto. Fahrtkosten je Etappe = Σ der Spritkosten aller Autos."
+    ? "Je Fahrer:in alle Tankvorgänge der Tour (€). Über „+ Tankvorgang“ weitere hinzufügen, falls mehrmals getankt wurde."
     : "km pro Etappe und die €/km-Pauschale. Fahrtkosten je Etappe = Σ(km × €/km) aller Autos.";
-  // Tabelle (je nach Modus)
   const drivers=S.participants.filter(p=>p.driver);
-  const t=document.getElementById("kmTable");
-  let h="<thead><tr><th class=\"sticky-col\">Etappe</th>";
-  drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}</th>`);
-  h+="</tr></thead><tbody>";
-  if(drivers.length===0) h+=`<tr><td colspan="1"><span class="mini">Noch keine Fahrer:innen — im Reiter „Gruppe“ per „Auto“-Häkchen festlegen.</span></td></tr>`;
+  const kmWrap=document.getElementById("kmTableWrap"), fuelEl=document.getElementById("fuelList");
   if(mode==="fuel"){
-    S.segments.forEach(s=>{
-      h+=`<tr><td class="sticky-col">${esc(s.name)}</td>`;
-      drivers.forEach(d=> h+=`<td class="num"><span class="cur" style="display:flex;width:100%"><input type="number" inputmode="decimal" value="${(d.driver.fuel&&d.driver.fuel[s.id])||0}" min="0" step="0.01" style="text-align:right;width:100%" aria-label="Spritkosten ${esc(d.name)} – ${esc(s.name)}" onchange="updFuel('${d.id}','${s.id}',this.value)"></span></td>`);
-      h+="</tr>";
+    // Spritkosten je Fahrer:in als einzelne Tankvorgänge (nicht pro Etappe)
+    kmWrap.style.display="none"; fuelEl.style.display=""; fuelEl.innerHTML="";
+    if(drivers.length===0){ fuelEl.innerHTML='<p class="mini">Noch keine Fahrer:innen — im Reiter „Gruppe“ per „Auto“-Häkchen festlegen.</p>'; }
+    drivers.forEach(d=>{
+      const box=document.createElement("div");box.className="seg-block";
+      let inner=`<h3>${esc(d.name)} <span class="pill muted">Sprit gesamt: ${eur(driverFuelTotal(d))}</span></h3>`;
+      (d.driver.fuelLog||[]).forEach((e,i)=>{
+        inner+=`<div class="pay-row">
+          <span style="flex:0 0 auto;color:var(--muted);font-size:13px;min-width:104px">Tankvorgang ${i+1}</span>
+          <span class="cur" style="flex:1 1 100px"><input type="number" inputmode="decimal" value="${e.amount}" min="0" step="0.01" style="width:100%;text-align:right" placeholder="Betrag" aria-label="Spritkosten Tankvorgang ${i+1} – ${esc(d.name)}" onchange="updFuelEntry('${d.id}','${e.id}',this.value)"></span>
+          <button class="iconbtn" title="Tankvorgang entfernen" onclick="delFuelEntry('${d.id}','${e.id}')">${icon("i-x")}</button></div>`;
+      });
+      inner+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addFuelEntry('${d.id}')">${icon("i-plus")}Tankvorgang</button></div>`;
+      box.innerHTML=inner;fuelEl.appendChild(box);
     });
-    h+=`<tr class="sumrow"><td class="sticky-col"><b>Fahrtkosten (Sprit)</b></td>`;
-    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=((d.driver.fuel&&d.driver.fuel[s.id])||0)); h+=`<td class="num"><b>${eur(tot)}</b></td>`; });
-    h+="</tr>";
   } else {
+    fuelEl.style.display="none"; fuelEl.innerHTML=""; kmWrap.style.display="";
+    const t=document.getElementById("kmTable");
+    let h="<thead><tr><th class=\"sticky-col\">Etappe</th>";
+    drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}</th>`);
+    h+="</tr></thead><tbody>";
+    if(drivers.length===0) h+=`<tr><td colspan="1"><span class="mini">Noch keine Fahrer:innen — im Reiter „Gruppe“ per „Auto“-Häkchen festlegen.</span></td></tr>`;
     S.segments.forEach(s=>{
       h+=`<tr><td class="sticky-col">${esc(s.name)}</td>`;
       drivers.forEach(d=> h+=`<td class="num"><input type="number" inputmode="numeric" value="${d.driver.km[s.id]||0}" min="0" step="1" aria-label="Kilometer ${esc(d.name)} – ${esc(s.name)}" onchange="updKm('${d.id}','${s.id}',this.value)"></td>`);
@@ -929,10 +951,9 @@ function renderFahrer(){
     h+="</tr>";
     h+=`<tr class="sumrow"><td class="sticky-col"><b>Fahrtkosten (km×€)</b></td>`;
     drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0));h+=`<td class="num"><b>${eur(tot*d.driver.rate)}</b></td>`; });
-    h+="</tr>";
+    h+="</tr></tbody>";
+    t.innerHTML=h;
   }
-  h+="</tbody>";
-  t.innerHTML=h;
   // extras
   const el=document.getElementById("extrasList");el.innerHTML="";
   if(drivers.length===0){ el.innerHTML='<p class="mini">Noch keine Fahrer:innen angelegt.</p>'; }
@@ -978,6 +999,8 @@ function renderTeilnehmer(){
     inner+="</div>";box.innerHTML=inner;pb.appendChild(box);
   });
 }
+const expDetailsOpen=new Set(); // welche Ausgaben die „Personen einzeln"-Liste offen haben (bleibt über Re-Render erhalten)
+function expToggleDetails(id,open){ if(open) expDetailsOpen.add(id); else expDetailsOpen.delete(id); }
 function renderAusgaben(){
   const c=document.getElementById("expenseList");c.innerHTML="";
   if(S.expenses.length===0){ c.innerHTML='<div class="card"><p class="mini">Noch keine Ausgaben. Füge oben eine hinzu.</p></div>'; return; }
@@ -1004,17 +1027,17 @@ function renderAusgaben(){
     h+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addPay('${ex.id}')">${icon("i-plus")}Person</button></div>`;
     // 3) Etappen-Auswahl als pillenförmige, farbcodierte Liste (wie „Wer & Wo“)
     h+=`<label class="fld" style="margin-top:14px">Gilt für (wird gleichmäßig geteilt)</label>
-      <div class="seg-pills">
-        <button type="button" class="seg-pill${!linkedSeg?' on':''}" aria-pressed="${!linkedSeg}" onclick="expSetSeg('${ex.id}','')">${!linkedSeg?icon("i-check"):""}Eigene Auswahl${!linkedSeg?` · ${grp.length}`:''}</button>`;
+      <div class="seg-pills">`;
     S.segments.forEach(s=>{ const on=linkedSeg===s.id; const col=segColor(s.id);
       h+=`<button type="button" class="seg-pill${on?' on':''}" style="--c:${col}" aria-pressed="${on}" onclick="expSetSeg('${ex.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
+    h+=`<button type="button" class="seg-pill${!linkedSeg?' on':''}" aria-pressed="${!linkedSeg}" onclick="expSetSeg('${ex.id}','')">${!linkedSeg?icon("i-check"):""}Eigene Auswahl${!linkedSeg?` · ${grp.length}`:''}</button>`;
     h+=`</div>`;
     if(linkedSeg){
       const mism = !sameSet((ex.appliesTo||[]).filter(id=>pById(id)), (S.participation[linkedSeg]||[]));
       if(mism) h+=`<p class="footnote warn-txt">Personen wurden gegenüber der Etappe einzeln angepasst.</p>`;
     }
     // Personen einzeln (eingeklappt — Standardansicht bleibt schlank)
-    h+=`<details style="margin-top:10px"><summary>${icon("i-chevron")}Personen einzeln wählen (${grp.length})</summary><div class="checklist" style="margin-top:10px">`;
+    h+=`<details ${expDetailsOpen.has(ex.id)?'open':''} ontoggle="expToggleDetails('${ex.id}',this.open)" style="margin-top:10px"><summary>${icon("i-chevron")}Personen einzeln wählen (${grp.length})</summary><div class="checklist" style="margin-top:10px">`;
     S.participants.forEach(p=>{
       const on=(ex.appliesTo||[]).includes(p.id);
       h+=`<label class="${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleExpPart('${ex.id}','${p.id}',this.checked)">${icon("i-check")}${esc(p.name)}</label>`;
@@ -1031,10 +1054,7 @@ function renderErgebnis(){
   const R=compute();
   // header
   const dh=document.getElementById("resHeader");
-  const dr=dateRangeText();
   dh.innerHTML=`<h2>${esc(S.meta.title||"Tour")}</h2>
-    ${dr?`<div class="mini" style="margin:0 0 4px;display:flex;align-items:center;gap:6px">${icon("i-calendar")}${esc(dr)}</div>`:""}
-    ${S.meta.description?`<p class="hint" style="margin:0 0 6px">${esc(S.meta.description)}</p>`:""}
     <div class="totals" style="margin-top:8px">
       <div class="stat"><div class="k">Fahrtkosten gesamt</div><div class="v">${eur(R.totalDrive)}</div></div>
       <div class="stat"><div class="k">Sonstige Ausgaben</div><div class="v">${eur(R.totalExp)}</div></div>
@@ -1086,7 +1106,7 @@ function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"
 // segments
 function addSegment(){const e=document.getElementById("seg_new");if(!e.value.trim())return;
   const id=uid();S.segments.unshift({id,name:e.value.trim(),color:nextSegColor()});S.participation[id]=[];
-  S.participants.forEach(p=>{if(p.driver){p.driver.km[id]=0;p.driver.fuel=p.driver.fuel||{};p.driver.fuel[id]=0;}});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+  S.participants.forEach(p=>{if(p.driver){p.driver.km[id]=0;}});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
 function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
 function delSeg(id){confirmDialog("Etappe löschen?","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(!ok)return;
   S.segments=S.segments.filter(x=>x.id!==id);delete S.participation[id];
@@ -1102,7 +1122,7 @@ function toggleDriver(id,on){const p=pById(id);if(!p)return;
       renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
       toast(p.name+": Auto-Eingaben wiederhergestellt");
     } else {
-      const km={},fuel={};S.segments.forEach(s=>{km[s.id]=0;fuel[s.id]=0;});p.driver={rate:0.30,km,fuel,extras:[]};
+      const km={};S.segments.forEach(s=>{km[s.id]=0;});p.driver={rate:0.30,km,fuelLog:[{id:uid(),amount:0}],extras:[]};
       renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
       toast(p.name+" fährt mit eigenem Auto");
     }
@@ -1118,7 +1138,10 @@ function toggleDriver(id,on){const p=pById(id);if(!p)return;
 function removeDriver(id){ toggleDriver(id,false); }
 function updKm(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.km[sid]=+v||0;renderFahrer();renderErgebnis();save();}}
 function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=+v||0;renderFahrer();renderErgebnis();save();}}
-function updFuel(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.fuel=p.driver.fuel||{};p.driver.fuel[sid]=+v||0;renderFahrer();renderErgebnis();save();}}
+function addFuelEntry(id){const p=pById(id);if(p&&p.driver){p.driver.fuelLog=p.driver.fuelLog||[];p.driver.fuelLog.push({id:uid(),amount:0});renderFahrer();renderErgebnis();save();}}
+function updFuelEntry(id,eid,v){const p=pById(id);if(!p||!p.driver)return;const e=(p.driver.fuelLog||[]).find(x=>x.id===eid);if(e){e.amount=+v||0;renderErgebnis();save();}}
+function delFuelEntry(id,eid){const p=pById(id);if(!p||!p.driver)return;p.driver.fuelLog=(p.driver.fuelLog||[]).filter(x=>x.id!==eid);
+  if(p.driver.fuelLog.length===0) p.driver.fuelLog.push({id:uid(),amount:0});renderFahrer();renderErgebnis();save();}
 function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"km"); renderFahrer(); renderErgebnis(); save(); }
 function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0});renderFahrer();save();}}
 function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
@@ -1150,7 +1173,7 @@ function toggleExpPart(id,pid,on){const ex=S.expenses.find(x=>x.id===id);if(!ex)
   renderAusgaben();renderErgebnis();save();}
 function expFromSeg(id,sid){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.appliesTo=(S.participation[sid]||[]).slice();ex.segRef=sid;renderAusgaben();renderErgebnis();save();toast("Etappe „"+segName(sid)+"“ zugeordnet — Einzelne abwählbar");}}
 function unlinkExp(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.segRef="";renderAusgaben();save();}}
-function expSetSeg(id,sid){ if(sid){ expFromSeg(id,sid); } else { unlinkExp(id); } }
+function expSetSeg(id,sid){ if(sid){ expFromSeg(id,sid); } else { expDetailsOpen.add(id); unlinkExp(id); } }
 function addPay(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.payments=ex.payments||[];ex.payments.push({id:uid(),paidBy:(S.participants[0]||{}).id,amount:0});renderAusgaben();save();}}
 function updPay(id,pid,f,v){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;const pm=ex.payments.find(x=>x.id===pid);
   if(pm){pm[f]=f==="amount"?(+v||0):v;renderAusgaben();renderErgebnis();save();}}
@@ -1184,9 +1207,9 @@ function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new File
   r.readAsText(f);ev.target.value="";}
 function resetExample(){confirmDialog("Beispiel laden?","Die Beispiel-Tour (Una & Soča 2026) ersetzt deine aktuellen Daten.",{okText:"Laden",cancelText:"Abbrechen"}).then(ok=>{if(!ok)return;S=exampleData();normalize();renderAll();toast("Beispiel geladen");});}
 function clearAll(){confirmDialog("Alles leeren?","Alle Eingaben dieser Tour werden unwiderruflich gelöscht.",{danger:true,okText:"Leeren",icon:"i-trash"}).then(ok=>{if(!ok)return;
-  S={meta:{title:"Neue Tour",rows:[]},segments:[],participants:[],participation:{},expenses:[]};renderAll();toast("Geleert");});}
+  S={meta:{title:"",rows:[]},segments:[],participants:[],participation:{},expenses:[]};renderAll();toast("Geleert");});}
 function doNewTrip(){
-  S={meta:{title:"Neue Tour",rows:[]},segments:[],participants:[],participation:{},expenses:[]};
+  S={meta:{title:"",rows:[]},segments:[],participants:[],participation:{},expenses:[]};
   normalize();renderAll();
   document.querySelector('#tabs button[data-tab="info"]').click();
   const mt=document.getElementById("m_title"); if(mt&&mt.focus){try{mt.focus();}catch(e){}}
@@ -1236,7 +1259,7 @@ const WIZ_STEPS=[
   {tab:"info",title:"1. Tour & Etappen",text:"Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …)."},
   {tab:"teilnehmer",title:"2. Gruppe eintragen",text:"Trage alle Personen ein. Setze das „Auto“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Ein Verein/Familie fasst Salden am Ende zusammen."},
   {tab:"teilnahme",title:"3. Wer & Wo",text:"Hake an, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung."},
-  {tab:"fahrer",title:"4. Fahrtkosten",text:"Erfasse die Fahrtkosten oben wahlweise über km × €/km-Pauschale oder über die Spritkosten (€) pro Etappe. Auslagen wie Vignette oder Maut kommen darunter dazu."},
+  {tab:"fahrer",title:"4. Fahrtkosten",text:"Erfasse die Fahrtkosten oben wahlweise über km × €/km-Pauschale oder über die einzelnen Tankvorgänge (Spritkosten). Auslagen wie Vignette oder Maut kommen darunter dazu."},
   {tab:"ausgaben",title:"5. Ausgaben",text:"Erfasse gemeinsame Ausgaben (Einkäufe, Campingplatz …): Betrag, Bezahler:in und für wen die Ausgabe gilt."},
   {tab:"ergebnis",title:"6. Auswertung",text:"Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Über „PDF“ oder „Export“ teilst du alles."},
 ];
