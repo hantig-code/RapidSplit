@@ -167,6 +167,11 @@
   .kofi-btn:hover{transform:translateY(-1px)}
   .kofi-btn:active{transform:scale(.98)}
   .kofi-btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+  /* dezenter „Ausblenden"-Link in Kartenköpfen */
+  .hide-link{flex:0 0 auto;background:none;border:none;color:var(--muted);font-size:12.5px;font-weight:600;cursor:pointer;
+    padding:5px 7px;border-radius:7px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .hide-link .ic{font-size:14px}
+  .hide-link:hover{color:var(--ink-2);background:var(--bg-subtle)}
   /* Schiebeschalter-Option (z. B. Familien zusammenfassen) */
   .opt-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:13.5px;font-weight:600;color:var(--ink-2);margin:2px 0 14px}
   .opt-toggle input{position:absolute;opacity:0;width:0;height:0}
@@ -306,7 +311,7 @@
   body.wiz-on main{padding-bottom:200px}
   .wiz-bar{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--card);border-top:1px solid var(--line);
     box-shadow:var(--sh-raised);border-radius:16px 16px 0 0;
-    padding:14px 16px calc(14px + env(safe-area-inset-bottom));display:none}
+    padding:14px 16px calc(14px + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)));display:none}
   .wiz-bar.show{display:block;animation:wizup .25s ease}
   @keyframes wizup{from{transform:translateY(100%)}to{transform:none}}
   .wiz-inner{max-width:920px;margin:0 auto}
@@ -339,7 +344,7 @@
     #topbar{box-shadow:none;border-bottom:1px solid var(--line)}
     .settle .amt{margin-left:0;width:100%;text-align:right}
     nav.tabs{position:fixed;left:0;right:auto;width:100vw;bottom:0;top:auto;z-index:60;max-width:none;margin:0;gap:0;overflow:hidden;
-      padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:var(--sh-raised);
+      padding:6px 4px calc(6px + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)));box-shadow:var(--sh-raised);
       background-color:var(--card);
       background-image:linear-gradient(90deg,var(--brand),var(--accent) 55%,var(--brand));
       background-size:100% 2px;background-position:0 0;background-repeat:no-repeat}
@@ -354,9 +359,9 @@
     nav.tabs button .nav-lbl-m{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1}
     nav.tabs button:hover{background:none}
     nav.tabs button.active{color:var(--on-brand);background:var(--brand);box-shadow:none;border-radius:9px}
-    main{padding:14px 12px calc(var(--navh) + env(safe-area-inset-bottom))}
+    main{padding:14px 12px calc(var(--navh) + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)))}
     body.wiz-on nav.tabs{display:none}
-    .toast{bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 12px)}
+    .toast{bottom:calc(var(--navh) + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)) + 12px)}
     .stat .v{font-size:17px}
     #resHeader .totals{display:grid;grid-template-columns:1fr 1fr}
     #resHeader .totals .stat{min-width:0}
@@ -470,9 +475,12 @@
       <h1 id="metaTitle">Unbenannte Tour</h1>
       <div class="sub" id="metaSub">Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen</div>
     </div>
-    <div class="card accent">
-      <h2>Start</h2>
-      <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen, oder lade eine Beispielfahrt um zu sehen, wie die App zu bedienen ist.</p>
+    <div class="card accent" id="startCard">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <h2 style="margin:0">Start</h2>
+        <button class="hide-link" onclick="hideStart()" title="Start-Block dauerhaft ausblenden"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>Ausblenden</button>
+      </div>
+      <p class="hint" style="margin-top:6px">Neu hier? Lass dich Schritt für Schritt durch das Tool führen, oder lade eine Beispielfahrt um zu sehen, wie die App zu bedienen ist.</p>
       <div class="toolbar" style="margin-bottom:0">
         <button class="btn" onclick="startWizard()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Tutorial</button>
         <button class="btn demo" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
@@ -530,6 +538,9 @@
       <a class="kofi-btn" href="https://ko-fi.com/W3A722A6DU" target="_blank" rel="noopener noreferrer" aria-label="Unterstütze mich auf Ko-fi">
         <img src="icons/kofi-button.png" alt="Support me on Ko-fi" width="159" height="40">
       </a>
+    </div>
+    <div id="showStartRow" style="display:none;text-align:center;margin-top:2px">
+      <button class="btn ghost sm" onclick="showStart()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Start-Hilfe wieder einblenden</button>
     </div>
   </section>
 
@@ -1010,7 +1021,6 @@ function renderFahrer(){
 function renderTeilnehmer(){
   const t=document.getElementById("partTable");
   let h="";
-  if(S.participants.length===0) h='<p class="mini">Noch keine Personen — unten hinzufügen.</p>';
   S.participants.forEach(p=>{
     h+=`<div class="prow">
       <input class="p-name" type="text" value="${esc(p.name)}" placeholder="Name" onchange="updPartName('${p.id}',this.value)">
@@ -1022,6 +1032,7 @@ function renderTeilnehmer(){
   t.innerHTML=h;
   // participation blocks
   const pb=document.getElementById("participationBlocks");pb.innerHTML="";
+  if(S.segments.length===0){ pb.innerHTML='<p class="mini">Hier ist nichts zu sehen? Trage Etappen im Bereich „Tour“ ein!</p>'; }
   S.segments.slice().reverse().forEach(s=>{
     const sel=S.participation[s.id]||[];const col=segColor(s.id);
     const box=document.createElement("div");box.className="seg-block";
@@ -1298,6 +1309,17 @@ function applyTheme(t){
 function toggleTheme(){ const t=currentTheme()==="dark"?"light":"dark"; try{localStorage.setItem("kajak_theme",t);}catch(e){} applyTheme(t); }
 applyTheme(currentTheme()); // Schalter/Meta mit der vom Head-Skript gesetzten Vorgabe synchronisieren
 try{ matchMedia("(prefers-color-scheme:dark)").addEventListener("change",e=>{ if(!localStorage.getItem("kajak_theme")) applyTheme(e.matches?"dark":"light"); }); }catch(e){}
+/* ---------------- Start-Block ein-/ausblenden (dauerhaft, geräteweit) ---------------- */
+const HIDE_START_KEY="rapidsplit_hide_start";
+function applyStartVisibility(){
+  const hidden = (function(){try{return localStorage.getItem(HIDE_START_KEY)==="1";}catch(e){return false;}})();
+  const card=document.getElementById("startCard"), row=document.getElementById("showStartRow");
+  if(card) card.style.display = hidden ? "none" : "";
+  if(row) row.style.display = hidden ? "" : "none";
+}
+function hideStart(){ try{localStorage.setItem(HIDE_START_KEY,"1");}catch(e){} applyStartVisibility(); toast("Start-Block ausgeblendet"); }
+function showStart(){ try{localStorage.removeItem(HIDE_START_KEY);}catch(e){} applyStartVisibility(); window.scrollTo(0,0); }
+applyStartVisibility();
 /* ---------------- Wizard ---------------- */
 const WIZ_STEPS=[
   {tab:"info",title:"1. Tour & Etappen",text:"Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …)."},
