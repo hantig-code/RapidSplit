@@ -37,6 +37,7 @@
     --on-brand:#ffffff;
     /* Semantik (AA-korrigiert) */
     --green:#166534; --green-bg:#e7f6ec; --red:#b91c1c; --red-bg:#fdecec; --warn:#92400e;
+    --demo:#0d8f7e; --demo-bg:#e3f5f1;   /* grün/türkis für „Beispiel laden" */
     /* Effekte */
     --focus:#0e7490;
     --shadow:0 1px 3px rgba(15,39,48,.08),0 4px 16px rgba(15,39,48,.06);
@@ -52,6 +53,7 @@
     --brand:#22b8d6; --brand-d:#67d3e8; --brand-tint:#16323d; --accent:#22b8d6;
     --on-brand:#06222b;
     --green:#4ade80; --green-bg:#0f2e1d; --red:#f87171; --red-bg:#34161a; --warn:#f59e0b;
+    --demo:#2dd4bf; --demo-bg:#10302c;   /* grün/türkis für „Beispiel laden" (Dark) */
     --focus:#67d3e8;
     --shadow:0 1px 2px rgba(0,0,0,.4);
     --sh-raised:0 -8px 24px rgba(0,0,0,.5);
@@ -153,10 +155,12 @@
   .btn .ic{font-size:16px}
   .btn:hover{background:var(--brand-d)}
   .btn:active{transform:scale(.98)}
-  .btn.ghost{background:var(--brand-tint);color:var(--brand-d)}
+  .btn.ghost{background:var(--brand-tint);color:var(--brand-d);border:1px solid color-mix(in srgb,var(--brand) 40%,transparent)}
   .btn.ghost:hover{background:var(--brand-tint);filter:brightness(.96)}
   .btn.sm{padding:7px 12px;min-height:40px;font-size:13px}
   .btn.danger{background:var(--card);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 40%,transparent)}
+  .btn.demo{background:var(--demo-bg);color:var(--demo);border:1px solid color-mix(in srgb,var(--demo) 45%,transparent)}
+  .btn.demo:hover{background:var(--demo-bg);filter:brightness(.97)}
   .btn.danger:hover{background:var(--red-bg)}
   .iconbtn{background:none;border:none;color:var(--muted);cursor:pointer;line-height:0;padding:11px;border-radius:var(--r-sm);
     display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
@@ -489,7 +493,7 @@
       <p class="hint">Alle Eingaben werden automatisch auf diesem Gerät gespeichert. Den Export als Datei und das PDF findest du im Reiter „Auswertung“.</p>
       <div class="toolbar" style="margin-bottom:0">
         <button class="btn ghost" onclick="document.getElementById('importFile').click()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Import (Datei)</button>
-        <button class="btn danger" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
+        <button class="btn demo" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
         <button class="btn danger" onclick="clearAll()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg>Alles leeren</button>
         <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(event)">
       </div>
@@ -1058,7 +1062,7 @@ function renderErgebnis(){
     <div class="totals" style="margin-top:8px">
       <div class="stat"><div class="k">Fahrtkosten gesamt</div><div class="v">${eur(R.totalDrive)}</div></div>
       <div class="stat"><div class="k">Sonstige Ausgaben</div><div class="v">${eur(R.totalExp)}</div></div>
-      <div class="stat anchor"><div class="k">Gesamtkosten</div><div class="v">${eur(R.totalDrive+R.totalExp)}</div></div>
+      <div class="stat"><div class="k">Gesamtkosten</div><div class="v">${eur(R.totalDrive+R.totalExp)}</div></div>
       <div class="stat"><div class="k">Teilnehmende</div><div class="v">${S.participants.length}</div></div>
     </div>`;
   // cost table
