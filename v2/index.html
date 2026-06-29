@@ -472,12 +472,11 @@
     </div>
     <div class="card accent">
       <h2>Start</h2>
-      <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen — oder starte direkt mit einer leeren Fahrt.</p>
+      <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen, oder lade eine Beispielfahrt um zu sehen, wie die App zu bedienen ist.</p>
       <div class="toolbar" style="margin-bottom:0">
         <button class="btn" onclick="startWizard()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Tutorial</button>
-        <button class="btn ghost" onclick="newTrip()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Fahrt anlegen</button>
+        <button class="btn demo" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
       </div>
-      <p class="footnote">„Fahrt anlegen" löscht die vorausgefüllten Beispielwerte. Über „Beispiel laden" weiter unten holst du sie jederzeit zurück.</p>
     </div>
     <div class="card">
       <h2>Tour-Eckdaten</h2>
@@ -509,14 +508,13 @@
       <p class="hint">Alle Eingaben werden automatisch auf diesem Gerät gespeichert. Den Export als Datei und das PDF findest du im Reiter „Auswertung“.</p>
       <div class="toolbar" style="margin-bottom:0">
         <button class="btn ghost" onclick="document.getElementById('importFile').click()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Import (Datei)</button>
-        <button class="btn demo" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
         <button class="btn danger" onclick="clearAll()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg>Alles leeren</button>
         <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(event)">
       </div>
     </div>
     <div class="card">
       <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>Feedback &amp; Kontakt</h2>
-      <p class="hint">Fehler gefunden, Wunsch oder Idee? Schreib uns per E-Mail oder leg ein Issue auf GitHub an. Mehr von uns findest du auf hantig.store.</p>
+      <p class="hint">Fehler gefunden, Wunsch oder Idee? Schreib mir per E-Mail oder leg ein Issue auf GitHub an. Mehr von mir findest du auf hantig.store.</p>
       <div class="toolbar" style="margin-bottom:0">
         <a class="btn ghost" href="mailto:rapidsplit.patchwork814@passmail.com" style="text-decoration:none">
           <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg>E-Mail
@@ -674,7 +672,7 @@
 
 <script>
 /* ---------------- State ---------------- */
-const LS_KEY = "kajak_kostenrechner_v2app_r2";  // r2: Neustart ohne automatisch geladenes Beispiel (alter Stand verworfen)
+const LS_KEY = "kajak_kostenrechner_v2app_r3";  // r3: garantiert leerer Start (alter gespeicherter Stand inkl. Beispiel verworfen)
 let S = null;
 let uid = () => Math.random().toString(36).slice(2,9);
 
