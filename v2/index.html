@@ -7,8 +7,8 @@
 <title>RapidSplit (Beta)</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=10">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=10">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -147,17 +147,17 @@
   input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
   textarea{resize:vertical;min-height:72px;line-height:1.45}
   .swatch{display:inline-block;width:11px;height:11px;border-radius:3px;flex:0 0 auto;vertical-align:middle}
-  /* ---------- Buttons ---------- */
-  button.btn{background:var(--brand);color:var(--on-brand);border:none;border-radius:var(--r-sm);padding:10px 16px;
-    min-height:44px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;line-height:1;transition:background .15s,transform .05s}
-  button.btn .ic{font-size:16px}
-  button.btn:hover{background:var(--brand-d)}
-  button.btn:active{transform:scale(.98)}
-  button.btn.ghost{background:var(--brand-tint);color:var(--brand-d)}
-  button.btn.ghost:hover{background:var(--brand-tint);filter:brightness(.96)}
-  button.btn.sm{padding:7px 12px;min-height:40px;font-size:13px}
-  button.btn.danger{background:var(--card);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 40%,transparent)}
-  button.btn.danger:hover{background:var(--red-bg)}
+  /* ---------- Buttons (gilt für <button> und <a class="btn">) ---------- */
+  .btn{background:var(--brand);color:var(--on-brand);border:none;border-radius:var(--r-sm);padding:10px 16px;
+    min-height:44px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;line-height:1;transition:background .15s,transform .05s;text-decoration:none}
+  .btn .ic{font-size:16px}
+  .btn:hover{background:var(--brand-d)}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:var(--brand-tint);color:var(--brand-d)}
+  .btn.ghost:hover{background:var(--brand-tint);filter:brightness(.96)}
+  .btn.sm{padding:7px 12px;min-height:40px;font-size:13px}
+  .btn.danger{background:var(--card);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 40%,transparent)}
+  .btn.danger:hover{background:var(--red-bg)}
   .iconbtn{background:none;border:none;color:var(--muted);cursor:pointer;line-height:0;padding:11px;border-radius:var(--r-sm);
     display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
   .iconbtn .ic{font-size:18px}
@@ -423,7 +423,7 @@
 <div id="topbar">
   <header class="app">
     <div class="brand">
-      <img class="brand-logo" src="icons/icon-192.png" alt="" width="30" height="30">
+      <img class="brand-logo" src="icons/icon-192.png?v=10" alt="" width="30" height="30">
       <span class="brand-name">RapidSplit <span class="brand-beta">(Beta)</span></span>
     </div>
     <button class="theme-switch" id="themeSwitch" type="button" role="switch" aria-checked="false" aria-label="Dunkelmodus umschalten" title="Hell/Dunkel umschalten" onclick="toggleTheme()">
@@ -575,17 +575,17 @@
       <div id="settlement"></div>
     </div>
     <div class="card">
-      <details>
-        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Kosten pro Teilnehmer:in</summary>
-        <p class="hint" style="margin-top:10px">Eigener Anteil = Fahrtkosten-Anteil + Anteil sonstige Ausgaben. Das ist, was die Tour die Person netto kostet.</p>
-        <div class="tbl-wrap"><table id="costTable"></table></div>
+      <details open>
+        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Saldo &amp; Ausgleich</summary>
+        <p class="hint" style="margin-top:10px">Saldo = ausgelegtes Geld − eigener Anteil. <span class="pill green"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-up"></use></svg>bekommt zurück</span> &nbsp; <span class="pill red"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-down"></use></svg>zahlt ein</span></p>
+        <div class="tbl-wrap"><table id="balanceTable"></table></div>
       </details>
     </div>
     <div class="card">
       <details>
-        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Saldo &amp; Ausgleich</summary>
-        <p class="hint" style="margin-top:10px">Saldo = ausgelegtes Geld − eigener Anteil. <span class="pill green"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-up"></use></svg>bekommt zurück</span> &nbsp; <span class="pill red"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-down"></use></svg>zahlt ein</span></p>
-        <div class="tbl-wrap"><table id="balanceTable"></table></div>
+        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Kosten pro Teilnehmer:in</summary>
+        <p class="hint" style="margin-top:10px">Eigener Anteil = Fahrtkosten-Anteil + Anteil sonstige Ausgaben. Das ist, was die Tour die Person netto kostet.</p>
+        <div class="tbl-wrap"><table id="costTable"></table></div>
       </details>
     </div>
     <div class="card">
@@ -1028,7 +1028,7 @@ function renderAusgaben(){
     // 3) Etappen-Auswahl als pillenförmige, farbcodierte Liste (wie „Wer & Wo“)
     h+=`<label class="fld" style="margin-top:14px">Gilt für (wird gleichmäßig geteilt)</label>
       <div class="seg-pills">`;
-    S.segments.forEach(s=>{ const on=linkedSeg===s.id; const col=segColor(s.id);
+    S.segments.slice().reverse().forEach(s=>{ const on=linkedSeg===s.id; const col=segColor(s.id);
       h+=`<button type="button" class="seg-pill${on?' on':''}" style="--c:${col}" aria-pressed="${on}" onclick="expSetSeg('${ex.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
     h+=`<button type="button" class="seg-pill${!linkedSeg?' on':''}" aria-pressed="${!linkedSeg}" onclick="expSetSeg('${ex.id}','')">${!linkedSeg?icon("i-check"):""}Eigene Auswahl${!linkedSeg?` · ${grp.length}`:''}</button>`;
     h+=`</div>`;
