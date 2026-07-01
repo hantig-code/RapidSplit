@@ -641,7 +641,7 @@
     </div>
     <div class="card">
       <h2>Zusätzliche Auslagen je Fahrer:in</h2>
-      <p class="hint">Auslagen die eine Fahrer:in für das eigene Auto ausgelegt hat (Streckenmaut, Parkplatz, Permit, …).</p>
+      <p class="hint">Auslagen die eine Fahrer:in für das eigene Auto ausgelegt hat (Streckenmaut, Parkplatz, Permit, …). Ordne jede Auslage einer oder mehreren Etappen zu (oder „Alle") – sie wird dann gleichmäßig auf die Mitfahrenden dieser Etappen geteilt.</p>
       <div id="extrasList"></div>
     </div>
   </section>
@@ -857,6 +857,12 @@ function normalize(){
       }
       delete p.driver.fuelLog;
       delete p.driver.mode;   // Abrechnungsart ist wieder global (S.costMode), nicht pro Fahrer:in
+      // Auslagen: jede Auslage einer/mehreren Etappe(n) zuordnen (Vorgabe: alle Etappen)
+      const segIds=S.segments.map(s=>s.id);
+      (p.driver.extras||[]).forEach(e=>{
+        if(!Array.isArray(e.segs)) e.segs = segIds.slice();          // Migration: alte Auslagen → „Alle"
+        else e.segs = e.segs.filter(id=>segIds.includes(id));        // ungültige Etappen-Verweise entfernen
+      });
     }
   });
 }
@@ -960,6 +966,16 @@ function compute(){
     if(p.driver){ segs.forEach(s=>{ lo += driverSegCost(p,s.id); });
       (p.driver.extras||[]).forEach(e=> lo += (+e.amount||0)); }
     laidOutDrive[p.id]=lo;
+  });
+  // Fahrer-Auslagen (Maut/Parkplatz/Permit): je Auslage gleichmäßig auf die Mitfahrenden der zugeordneten Etappen (Vereinigung) verteilen
+  parts.forEach(p=>{ if(!p.driver) return;
+    (p.driver.extras||[]).forEach(ex=>{
+      const amt=+ex.amount||0; if(amt<=0) return;
+      const set=new Set();
+      (ex.segs||[]).forEach(sid=>{ (S.participation[sid]||[]).forEach(pid=>{ if(pById(pid)) set.add(pid); }); });
+      const arr=[...set];
+      if(arr.length>0){ const share=amt/arr.length; arr.forEach(pid=> fahrtAnteil[pid]+=share); }
+    });
   });
   // expenses: each expense total = Σ payments; perPerson = total/|appliesTo|
   const sonstAnteil={}, sonstAusgelegt={};
@@ -1087,10 +1103,19 @@ function renderFahrer(){
     const box=document.createElement("div");box.className="seg-block";
     let inner=`<h3>${esc(d.name)}</h3>`;
     (d.driver.extras||[]).forEach(e=>{
-      inner+=`<div class="pay-row">
+      inner+=`<div class="pay-row" style="margin-top:14px">
         <input type="text" value="${esc(e.name)}" placeholder="z.B. Streckenmaut" onchange="updExtra('${d.id}','${e.id}','name',this.value)">
         <span class="cur" style="flex:0 0 120px"><input type="number" inputmode="decimal" value="${e.amount}" step="0.01" style="width:100%;text-align:right" onchange="updExtra('${d.id}','${e.id}','amount',this.value)" placeholder="Betrag" aria-label="Betrag der Auslage"></span>
         <button class="iconbtn" onclick="delExtra('${d.id}','${e.id}')">${icon("i-x")}</button></div>`;
+      // Etappen-Zuordnung: auf wessen Mitfahrende wird die Auslage geteilt?
+      const set=new Set(); (e.segs||[]).forEach(sid=>{ (S.participation[sid]||[]).forEach(pid=>{ if(pById(pid)) set.add(pid); }); });
+      inner+=`<label class="fld" style="margin-top:8px">Aufteilen auf Mitfahrende der Etappe(n)</label><div class="seg-pills">`;
+      S.segments.forEach(s=>{ const on=(e.segs||[]).includes(s.id); const col=segColor(s.id);
+        inner+=`<button type="button" class="seg-pill${on?' on':''}" style="--c:${col}" aria-pressed="${on}" onclick="toggleExtraSeg('${d.id}','${e.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
+      const allOn=S.segments.length>0 && (e.segs||[]).length===S.segments.length;
+      inner+=`<button type="button" class="seg-pill${allOn?' on':''}" aria-pressed="${allOn}" onclick="extraAllSegs('${d.id}','${e.id}')">${allOn?icon("i-check"):""}Alle</button></div>`;
+      const amt=+e.amount||0;
+      inner+=`<p class="footnote">${set.size>0? `geteilt auf ${set.size} Mitfahrende${amt>0?` · ${eur(amt/set.size)}/Person`:''}` : '<span class="warn-txt">Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.</span>'}</p>`;
     });
     inner+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addExtra('${d.id}')">${icon("i-plus")}Auslage</button></div>`;
     box.innerHTML=inner;el.appendChild(box);
@@ -1339,10 +1364,18 @@ function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=+v||0;ren
 function updFuelAmount(id,v){const p=pById(id);if(p&&p.driver){p.driver.fuel=+v||0;renderFahrer();renderErgebnis();save();}}
 function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"rate"); renderFahrer(); renderErgebnis(); save(); }
 function setMergeGroups(on){ S.mergeGroups=!!on; renderErgebnis(); save(); }
-function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0});renderFahrer();save();}}
+function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0,segs:S.segments.map(s=>s.id)});renderFahrer();renderErgebnis();save();}}
 function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
   if(e){e[f]=f==="amount"?(+v||0):v;renderErgebnis();save();}}
 function delExtra(id,eid){const p=pById(id);if(p&&p.driver){p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();}}
+// Auslage einer Etappe zu-/abschalten bzw. „Alle" Etappen
+function toggleExtraSeg(id,eid,sid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
+  e.segs=Array.isArray(e.segs)?e.segs.slice():[];
+  if(e.segs.includes(sid)) e.segs=e.segs.filter(x=>x!==sid); else e.segs.push(sid);
+  renderFahrer();renderErgebnis();save();}
+function extraAllSegs(id,eid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
+  const all=S.segments.map(s=>s.id); e.segs=(e.segs&&e.segs.length===all.length)?[]:all;   // toggle Alle/keine
+  renderFahrer();renderErgebnis();save();}
 // participants
 function addParticipant(){const e=document.getElementById("part_new"),g=document.getElementById("part_group");
   if(!e.value.trim())return;S.participants.unshift({id:uid(),name:e.value.trim(),group:g.value.trim(),driver:null});
