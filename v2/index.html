@@ -176,7 +176,7 @@
   nav.tabs::-webkit-scrollbar{display:none}
   nav.tabs button{flex:0 0 auto;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:7px;
     padding:13px 12px;min-height:48px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;
-    border-bottom:3px solid transparent;border-radius:var(--r-pill);transition:color .15s,background .15s}
+    border-bottom:3px solid transparent;border-radius:var(--r-pill);transition:none}   /* kein Ein-/Ausblenden der Auswahl (Start-Flash & „De-Select"-Artefakt auf Android) */
   nav.tabs button .ic{font-size:17px}
   nav.tabs button .nav-lbl-m{display:none}
   nav.tabs button:hover{color:var(--brand-d);background:var(--bg-subtle)}
@@ -860,7 +860,7 @@ function normalize(){
       // Auslagen: jede Auslage einer/mehreren Etappe(n) zuordnen (Vorgabe: alle Etappen)
       const segIds=S.segments.map(s=>s.id);
       (p.driver.extras||[]).forEach(e=>{
-        if(!Array.isArray(e.segs)) e.segs = segIds.slice();          // Migration: alte Auslagen → „Alle"
+        if(!Array.isArray(e.segs)) e.segs = [];                      // Migration: unzugeordnete Auslagen → keine Etappe (bewusst zuordnen)
         else e.segs = e.segs.filter(id=>segIds.includes(id));        // ungültige Etappen-Verweise entfernen
       });
     }
@@ -1113,7 +1113,9 @@ function renderFahrer(){
       S.segments.forEach(s=>{ const on=(e.segs||[]).includes(s.id); const col=segColor(s.id);
         inner+=`<button type="button" class="seg-pill${on?' on':''}" style="--c:${col}" aria-pressed="${on}" onclick="toggleExtraSeg('${d.id}','${e.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
       const allOn=S.segments.length>0 && (e.segs||[]).length===S.segments.length;
-      inner+=`<button type="button" class="seg-pill${allOn?' on':''}" aria-pressed="${allOn}" onclick="extraAllSegs('${d.id}','${e.id}')">${allOn?icon("i-check"):""}Alle</button></div>`;
+      const noneOn=(e.segs||[]).length===0;
+      inner+=`<button type="button" class="seg-pill${allOn?' on':''}" aria-pressed="${allOn}" onclick="extraAllSegs('${d.id}','${e.id}')">${allOn?icon("i-check"):""}Alle</button>`;
+      inner+=`<button type="button" class="seg-pill${noneOn?' on':''}" aria-pressed="${noneOn}" onclick="extraNoneSegs('${d.id}','${e.id}')">${noneOn?icon("i-check"):""}Keine</button></div>`;
       const amt=+e.amount||0;
       inner+=`<p class="footnote">${set.size>0? `geteilt auf ${set.size} Mitfahrende${amt>0?` · ${eur(amt/set.size)}/Person`:''}` : '<span class="warn-txt">Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.</span>'}</p>`;
     });
@@ -1364,7 +1366,7 @@ function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=+v||0;ren
 function updFuelAmount(id,v){const p=pById(id);if(p&&p.driver){p.driver.fuel=+v||0;renderFahrer();renderErgebnis();save();}}
 function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"rate"); renderFahrer(); renderErgebnis(); save(); }
 function setMergeGroups(on){ S.mergeGroups=!!on; renderErgebnis(); save(); }
-function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0,segs:S.segments.map(s=>s.id)});renderFahrer();renderErgebnis();save();}}
+function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0,segs:[]});renderFahrer();renderErgebnis();save();}}
 function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
   if(e){e[f]=f==="amount"?(+v||0):v;renderErgebnis();save();}}
 function delExtra(id,eid){const p=pById(id);if(p&&p.driver){p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();}}
@@ -1374,8 +1376,9 @@ function toggleExtraSeg(id,eid,sid){const p=pById(id);if(!p||!p.driver)return;co
   if(e.segs.includes(sid)) e.segs=e.segs.filter(x=>x!==sid); else e.segs.push(sid);
   renderFahrer();renderErgebnis();save();}
 function extraAllSegs(id,eid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
-  const all=S.segments.map(s=>s.id); e.segs=(e.segs&&e.segs.length===all.length)?[]:all;   // toggle Alle/keine
-  renderFahrer();renderErgebnis();save();}
+  e.segs=S.segments.map(s=>s.id); renderFahrer();renderErgebnis();save();}
+function extraNoneSegs(id,eid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
+  e.segs=[]; renderFahrer();renderErgebnis();save();}
 // participants
 function addParticipant(){const e=document.getElementById("part_new"),g=document.getElementById("part_group");
   if(!e.value.trim())return;S.participants.unshift({id:uid(),name:e.value.trim(),group:g.value.trim(),driver:null});
