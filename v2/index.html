@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#eef3f5" id="metaTheme">
 <title>RapidSplit</title>
 <!-- PWA -->
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=19">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=19">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -73,15 +73,19 @@
   .ic.fill{fill:currentColor;stroke:none}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+  /* Textauswahl & Touch-Highlight in Markenfarbe statt Browser-Blau */
+  ::selection{background:color-mix(in srgb,var(--brand) 26%,transparent);color:var(--ink)}
+  ::-moz-selection{background:color-mix(in srgb,var(--brand) 26%,transparent);color:var(--ink)}
+  html{-webkit-tap-highlight-color:color-mix(in srgb,var(--brand) 22%,transparent)}
   /* ---------- Topbar / Header (frosted, immersiv: Inhalt scrollt durchscheinend darunter & hinter die OS-Statusleiste) ----------
      WICHTIG: Der frosted-Effekt (backdrop-filter) liegt auf header.app, NICHT auf #topbar.
      backdrop-filter auf #topbar würde dieses zum Containing-Block der fixed-positionierten
      mobilen Tab-Leiste (nav.tabs) machen → die untere Leiste würde an den oberen Rand
      (über die Android-Statusleiste) rutschen. */
   #topbar{position:fixed;top:0;left:0;right:0;z-index:50;
-    box-shadow:0 1px 0 var(--line),0 6px 18px rgba(15,39,48,.05)}
+    box-shadow:0 6px 18px rgba(15,39,48,.05)}
   /* Statischer, einzeiliger Header: Logo + „RapidSplit (Beta)" links, Dark-Mode-Schalter rechts */
-  header.app{padding:max(12px,env(safe-area-inset-top),var(--sys-top,0px)) 16px 11px;display:flex;align-items:center;justify-content:space-between;gap:12px;background-color:var(--card)}
+  header.app{padding:max(12px,env(safe-area-inset-top),var(--sys-top,0px)) max(16px,calc((100% - 920px)/2)) 11px;display:flex;align-items:center;justify-content:space-between;gap:12px;background-color:var(--card)}
   @supports (backdrop-filter:blur(18px)){
     header.app{background-color:color-mix(in srgb,var(--card) 70%,transparent);
       backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
@@ -147,10 +151,14 @@
   .picker-btn>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .picker-btn>.ic{flex:0 0 auto;color:var(--muted);font-size:18px;transform:rotate(90deg)}
   /* ---------- Navigation (Desktop: Underline-Tabs + Strömungslinie) ---------- */
-  nav.tabs{position:relative;display:flex;gap:2px;background:var(--card);padding:0 8px 5px;max-width:920px;margin:0 auto;
+  /* Desktop: Tab-Leiste zieht sich über die volle Fensterbreite (durchgängige Farbe), Buttons am 920er-Inhalt zentriert */
+  nav.tabs{position:relative;display:flex;gap:2px;background-color:var(--card);padding:0 max(8px,calc((100% - 920px)/2)) 6px;
     overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
     background-image:linear-gradient(90deg,var(--brand),var(--accent) 55%,var(--brand));
     background-size:100% 2px;background-position:0 100%;background-repeat:no-repeat}
+  @supports (backdrop-filter:blur(18px)){
+    nav.tabs{background-color:color-mix(in srgb,var(--card) 70%,transparent);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
+  }
   nav.tabs::-webkit-scrollbar{display:none}
   nav.tabs button{flex:0 0 auto;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:7px;
     padding:13px 12px;min-height:48px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;
@@ -592,7 +600,7 @@
       </a>
       <p class="hint" style="margin:16px 0 0">Mehr von mir findest du auf <a href="https://hantig.store" target="_blank" rel="noopener noreferrer" style="color:var(--brand-d);font-weight:600">hantig.store</a>.</p>
     </div>
-    <div id="showStartRow" style="display:none;text-align:center;margin-top:2px">
+    <div id="showStartRow" style="display:none;text-align:center;margin-top:2px;margin-bottom:14px">
       <button class="btn ghost sm" onclick="showStart()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Start-Hilfe wieder einblenden</button>
     </div>
   </section>
