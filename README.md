@@ -1,4 +1,4 @@
-# 🛶 Kajak-Tour Kostenrechner
+# 🛶 RapidSplit - Der Kajak-Tour Kostenrechner
 
 Eine kleine, eigenständige Web-App (PWA), um die Kosten einer Kajak-Tour
 **fair pro Teilnehmer:in zu berechnen und auszugleichen** — Fahrtkosten je Etappe,
