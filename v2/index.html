@@ -83,8 +83,8 @@
     .btn.ghost:hover{background:var(--brand-tint);filter:none}
     .btn.demo:hover{background:var(--demo-bg);filter:none}
     .btn.danger:hover{background:var(--card)}
-    nav.tabs button:hover{background:none;color:var(--brand-d)}
-    nav.tabs button.active:hover{background:var(--brand);color:var(--on-brand)}
+    nav.tabs button:hover{background:none;color:var(--muted)}
+    nav.tabs button.active:hover{background:var(--brand-d);color:var(--on-brand)}
     .picker-opt:hover{background:var(--card);border-color:var(--line)}
     .picker-btn:hover,.seg-pill:hover{border-color:var(--line)}
     .seg-toggle button:not(.on):hover{color:var(--muted)}
@@ -174,13 +174,14 @@
     overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   nav.tabs::-webkit-scrollbar{display:none}
   nav.tabs button{flex:0 0 auto;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:7px;
-    padding:13px 12px;min-height:48px;font-size:13.5px;font-weight:600;color:var(--brand-d);white-space:nowrap;
+    padding:13px 12px;min-height:48px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;
     border-bottom:3px solid transparent;border-radius:var(--r-pill);transition:none}   /* kein Ein-/Ausblenden der Auswahl (Start-Flash & „De-Select"-Artefakt auf Android) */
   nav.tabs button .ic{font-size:17px}
   nav.tabs button .nav-lbl-m{display:none}
   nav.tabs button:hover{color:var(--brand-d);background:var(--bg-subtle)}
-  nav.tabs button.active{color:var(--on-brand);background:var(--brand);border-bottom-color:transparent;border-radius:var(--r-pill)}
+  nav.tabs button.active{color:var(--on-brand);background:var(--brand-d);border-bottom-color:transparent;border-radius:var(--r-pill)}
   nav.tabs button.active:hover{background:var(--brand-d);color:var(--on-brand)}
+  :root[data-theme="dark"] nav.tabs button.active,:root[data-theme="dark"] nav.tabs button.active:hover{background:var(--brand)}
   main{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
     -webkit-overflow-scrolling:touch;padding:128px 14px 28px}  /* padding-top wird per JS an die Leistenhöhe + Abstand angepasst */
   .tab{display:none;max-width:920px;margin-left:auto;margin-right:auto}
@@ -424,7 +425,7 @@
     nav.tabs button .nav-lbl{display:none}
     nav.tabs button .nav-lbl-m{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1.28;padding-bottom:1px}
     nav.tabs button:hover{background:none}
-    nav.tabs button.active{color:var(--on-brand);background:var(--brand);box-shadow:none;border-radius:var(--r-pill)}
+    nav.tabs button.active{color:var(--on-brand);background:var(--brand-d);box-shadow:none;border-radius:var(--r-pill)}
     main{padding-top:72px;padding-left:12px;padding-right:12px;padding-bottom:calc(var(--navh) + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)))}
     body.wiz-on nav.tabs{display:none}
     .toast{bottom:calc(var(--navh) + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)) + 12px)}
