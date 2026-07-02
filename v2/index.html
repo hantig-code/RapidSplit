@@ -107,7 +107,7 @@
     #topbar{background-color:color-mix(in srgb,var(--card) 70%,transparent);
       backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
   }
-  /* Statischer, einzeiliger Header: Logo + „RapidSplit (Beta)" links, Dark-Mode-Schalter rechts */
+  /* Statischer, einzeiliger Header: Logo + „RapidSplit" links, Dark-Mode-Schalter rechts */
   header.app{padding:max(12px,env(safe-area-inset-top),var(--sys-top,0px)) max(16px,calc((100% - 920px)/2)) 11px;display:flex;align-items:center;justify-content:space-between;gap:12px}
   header.app .brand{display:flex;align-items:center;gap:10px;min-width:0}
   /* Dark-Mode-Schiebeschalter */
@@ -127,7 +127,6 @@
   :root[data-theme="dark"] .theme-switch .k-moon{display:block;color:#06222b}
   header.app .brand-logo{width:30px;height:30px;border-radius:8px;flex:0 0 auto;box-shadow:0 1px 2px rgba(15,39,48,.22)}
   header.app .brand-name{font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.1;color:var(--ink)}
-  header.app .brand-beta{font-weight:600;color:var(--muted);font-size:15px}
   /* Tour-Sub-Header (Tour-Titel + Reisezeitraum) im Tour-Reiter */
   .tour-subhead{margin:0 2px 16px}
   .tour-subhead h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.15;color:var(--ink)}
@@ -402,7 +401,6 @@
   @media (max-width:560px){
     :root{--navh:72px}
     header.app .brand-name{font-size:19px}
-    header.app .brand-beta{font-size:13.5px}
     .tour-subhead h1{font-size:20px}
     /* Mobil: kein frosted-Layer auf #topbar (würde die fixe Bottom-Nav einfangen) → Frost auf header.app */
     #topbar{box-shadow:none;border-bottom:1px solid var(--line);background:transparent;background-image:none;backdrop-filter:none;-webkit-backdrop-filter:none}
@@ -569,8 +567,8 @@
       <div style="height:14px"></div>
       <label class="fld">Reisezeitraum</label>
       <div class="row">
-        <div><label class="fld" style="font-weight:500">Start</label><input type="date" id="m_from"></div>
-        <div><label class="fld" style="font-weight:500">Ende</label><input type="date" id="m_to"></div>
+        <div><label class="fld" for="m_from" style="font-weight:500">Start</label><input type="date" id="m_from" aria-label="Startdatum"></div>
+        <div><label class="fld" for="m_to" style="font-weight:500">Ende</label><input type="date" id="m_to" aria-label="Enddatum"></div>
       </div>
       <div style="height:14px"></div>
       <label class="fld">Beschreibung der Tour</label>
@@ -649,10 +647,9 @@
 
   <!-- TEILNEHMER -->
   <section class="tab" id="tab-teilnehmer">
-    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Wer auf welcher Etappe dabei war, legst du im Reiter „Wer &amp; Wo“ fest.</div>
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Optional kann im zweiten Feld ein Verein oder Familienname angegeben werden. Dies ermöglicht es, diese Salden bei der Abrechnung zusammenzufassen. Wer auf welcher Etappe dabei war, legst du im Reiter „Wer &amp; Wo“ fest.</div>
     <div class="card">
       <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people3"></use></svg>Gruppe</h2>
-      <p class="hint">Optional kann im zweiten Feld ein Verein oder Familienname angegeben werden. Dies ermöglicht es, diese Salden bei der Abrechnung zusammenzufassen.</p>
       <div class="add-zone">
         <div class="add-row" style="margin:0">
           <div><label class="fld">Person hinzufügen</label><input type="text" id="part_new" placeholder="Name"></div>
@@ -687,7 +684,7 @@
   <section class="tab" id="tab-ergebnis">
     <div class="card" id="resHeader"></div>
     <div class="card">
-      <h2>Wer zahlt an wen? <span class="mini">(minimale Anzahl Überweisungen)</span></h2>
+      <h2>Wer zahlt an wen?</h2>
       <label class="opt-toggle" title="Bei Aus: jede Person zahlt/erhält einzeln, auch innerhalb einer Familie/eines Vereins">
         <input type="checkbox" id="mergeGroupsToggle" onchange="setMergeGroups(this.checked)">
         <span class="opt-track"><span class="opt-knob"></span></span>
@@ -810,7 +807,7 @@ function exampleData(){
      payments:[{id:uid(),paidBy:byName["Steve F."],amount:316}]},
   ];
   return {
-    meta:{title:"Wildwasserkajak-Tour 2026 – Una (BiH) & Soča (SLO)",
+    meta:{title:"Una (BiH) & Soča (SLO) 2026",
       dateFrom:"2026-05-23", dateTo:"2026-05-31",
       description:"Hinfahrt Sa 23.05. (München → Bihać/BiH), Weiterreise Mi 27.05. (Bihać → Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München."},
     segments, participants, participation, expenses
@@ -821,53 +818,98 @@ function emptyData(){
 }
 
 function load(){
-  try{ const raw=localStorage.getItem(LS_KEY); if(raw){S=JSON.parse(raw); normalize(); return;} }catch(e){}
+  let raw=null;
+  try{ raw=localStorage.getItem(LS_KEY); if(raw){S=JSON.parse(raw); normalize(); return;} }
+  catch(e){
+    // Beschädigten Stand nicht sofort überschreiben – als .corrupt sichern, damit Rettung möglich bleibt
+    try{ if(raw!=null && !localStorage.getItem(LS_KEY+".corrupt")) localStorage.setItem(LS_KEY+".corrupt", raw); }catch(_){}
+  }
   S=emptyData();
 }
 function normalize(){
-  S.meta = S.meta||{};
-  if(S.meta.title==null) S.meta.title="";
-  if(S.meta.dateFrom==null) S.meta.dateFrom="";
-  if(S.meta.dateTo==null) S.meta.dateTo="";
+  // Trust-Boundary: gilt für localStorage UND Import. Typen erzwingen, Zahlen casten,
+  // unsichere IDs (Import!) neu vergeben + alle Verweise umschreiben, Farben validieren.
+  if(!S || typeof S!=="object" || Array.isArray(S)) S={};
+  S.meta = (S.meta && typeof S.meta==="object" && !Array.isArray(S.meta)) ? S.meta : {};
+  if(typeof S.meta.title!=="string") S.meta.title = S.meta.title==null ? "" : String(S.meta.title);
+  if(typeof S.meta.dateFrom!=="string") S.meta.dateFrom="";
+  if(typeof S.meta.dateTo!=="string") S.meta.dateTo="";
   if(S.meta.description==null){
     S.meta.description = (Array.isArray(S.meta.rows)&&S.meta.rows.length)
-      ? S.meta.rows.map(r=>(r.k?r.k+": ":"")+(r.v||"")).join("\n") : "";
+      ? S.meta.rows.map(r=>(r&&r.k?r.k+": ":"")+((r&&r.v)||"")).join("\n") : "";
   }
+  if(typeof S.meta.description!=="string") S.meta.description=String(S.meta.description||"");
   delete S.meta.rows;
-  // Abrechnungsart gilt GLOBAL für alle Fahrer:innen: "rate" (km×€/km) oder "fuel" (Spritkosten-Gesamtbetrag)
   if(S.costMode!=="fuel" && S.costMode!=="rate"){
-    // Migration aus der Zwischenversion mit Abrechnung pro Fahrer:in (driver.mode)
-    S.costMode = (Array.isArray(S.participants) && S.participants.some(p=>p.driver && p.driver.mode==="fuel")) ? "fuel" : "rate";
+    S.costMode = (Array.isArray(S.participants) && S.participants.some(p=>p&&p.driver && p.driver.mode==="fuel")) ? "fuel" : "rate";
   }
-  if(S.mergeGroups==null) S.mergeGroups=false; // Verein/Familie bei der Abrechnung zusammenfassen (Vorgabe: aus)
-  S.segments = S.segments||[];
-  S.participants = S.participants||[];
-  S.participation = S.participation||{};
-  S.expenses = S.expenses||[];
-  S.segments.forEach(s=>{ if(!S.participation[s.id]) S.participation[s.id]=[]; if(!s.color) s.color=nextSegColor(); });
+  S.mergeGroups = (S.mergeGroups===true);
+
+  // Sammlungen erzwingen
+  S.segments     = Array.isArray(S.segments)     ? S.segments.filter(s=>s&&typeof s==="object")     : [];
+  S.participants = Array.isArray(S.participants) ? S.participants.filter(p=>p&&typeof p==="object") : [];
+  S.expenses     = Array.isArray(S.expenses)     ? S.expenses.filter(x=>x&&typeof x==="object")     : [];
+  if(!S.participation || typeof S.participation!=="object" || Array.isArray(S.participation)) S.participation={};
+
+  // --- ID-Sicherung: unsichere/kollidierende IDs neu vergeben, Referenzen umschreiben ---
+  const SAFE=/^[A-Za-z0-9]{1,24}$/, used=new Set();
+  const remap=(id,map)=>{ if(map.has(id)) return map.get(id);
+    let nid=(typeof id==="string"&&SAFE.test(id)&&!used.has(id))?id:uid(); while(used.has(nid))nid=uid();
+    used.add(nid); map.set(id,nid); return nid; };
+  const leafId=id=>{ let nid=(typeof id==="string"&&SAFE.test(id)&&!used.has(id))?id:uid(); while(used.has(nid))nid=uid(); used.add(nid); return nid; };
+  const segMap=new Map(), partMap=new Map();
+
+  S.segments.forEach(s=>{ s.id=remap(s.id,segMap);
+    if(typeof s.name!=="string") s.name=s.name==null?"":String(s.name);
+    if(typeof s.color!=="string" || !/^#[0-9a-f]{6}$/i.test(s.color)) s.color=nextSegColor(); });
+  const segIds=new Set(S.segments.map(s=>s.id));
+  S.participants.forEach(p=>{ p.id=remap(p.id,partMap);
+    if(typeof p.name!=="string") p.name=p.name==null?"":String(p.name);
+    if(p.group!=null && typeof p.group!=="string") p.group=String(p.group); });
+  const partIds=new Set(S.participants.map(p=>p.id));
+
+  // participation neu aufbauen (gemappt + gefiltert, keine Duplikate)
+  const partn={}; S.segments.forEach(s=>partn[s.id]=[]);
+  Object.keys(S.participation).forEach(oldSid=>{
+    const sid=segMap.get(oldSid); if(sid==null || !segIds.has(sid)) return;
+    const arr=Array.isArray(S.participation[oldSid])?S.participation[oldSid]:[];
+    partn[sid]=[...new Set(arr.map(pid=>partMap.get(pid)).filter(pid=>pid!=null && partIds.has(pid)))];
+  });
+  S.participation=partn;
+
   S.participants.forEach(p=>{
-    if(p.driver){ p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[];
-      if(typeof p.driver.rate!=="number") p.driver.rate=0.30;
-      S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; });
-      // Spritkosten: auf EINEN Gesamtbetrag (driver.fuel: number) vereinheitlichen
-      if(typeof p.driver.fuel!=="number"){
+    if(p.driver && typeof p.driver==="object" && !Array.isArray(p.driver)){
+      const km0=(p.driver.km&&typeof p.driver.km==="object"&&!Array.isArray(p.driver.km))?p.driver.km:{};
+      const km={}; Object.keys(km0).forEach(oldSid=>{ const sid=segMap.get(oldSid); if(sid!=null&&segIds.has(sid)) km[sid]=+km0[oldSid]||0; });
+      S.segments.forEach(s=>{ if(km[s.id]==null) km[s.id]=0; });
+      p.driver.km=km;
+      if(typeof p.driver.rate!=="number" || !isFinite(p.driver.rate)) p.driver.rate=0.30;
+      if(typeof p.driver.fuel!=="number" || !isFinite(p.driver.fuel)){
         let f=0;
-        if(Array.isArray(p.driver.fuelLog)) f=p.driver.fuelLog.reduce((a,b)=>a+(+b.amount||0),0);
+        if(Array.isArray(p.driver.fuelLog)) f=p.driver.fuelLog.reduce((a,b)=>a+(+(b&&b.amount)||0),0);
         else if(p.driver.fuel && typeof p.driver.fuel==="object") f=Object.values(p.driver.fuel).reduce((a,b)=>a+(+b||0),0);
         p.driver.fuel=f;
       }
-      delete p.driver.fuelLog;
-      delete p.driver.mode;   // Abrechnungsart ist wieder global (S.costMode), nicht pro Fahrer:in
-      // Auslagen: jede Auslage einer/mehreren Etappe(n) zuordnen (Vorgabe: alle Etappen)
-      const segIds=S.segments.map(s=>s.id);
-      (p.driver.extras||[]).forEach(e=>{
-        if(!Array.isArray(e.segs)) e.segs = [];                      // Migration: unzugeordnete Auslagen → keine Etappe (bewusst zuordnen)
-        else e.segs = e.segs.filter(id=>segIds.includes(id));        // ungültige Etappen-Verweise entfernen
-      });
-    }
+      delete p.driver.fuelLog; delete p.driver.mode;
+      p.driver.extras = Array.isArray(p.driver.extras) ? p.driver.extras.filter(e=>e&&typeof e==="object") : [];
+      p.driver.extras.forEach(e=>{ e.id=leafId(e.id);
+        if(typeof e.name!=="string") e.name=e.name==null?"":String(e.name);
+        e.amount=+e.amount||0;
+        e.segs = Array.isArray(e.segs) ? [...new Set(e.segs.map(id=>segMap.get(id)).filter(id=>id!=null&&segIds.has(id)))] : []; });
+    } else if(p.driver!=null){ delete p.driver; }
   });
+
+  S.expenses.forEach(ex=>{ ex.id=leafId(ex.id);
+    if(typeof ex.name!=="string") ex.name=ex.name==null?"":String(ex.name);
+    ex.appliesTo = Array.isArray(ex.appliesTo) ? [...new Set(ex.appliesTo.map(pid=>partMap.get(pid)).filter(pid=>pid!=null&&partIds.has(pid)))] : [];
+    ex.payments  = Array.isArray(ex.payments)  ? ex.payments.filter(pm=>pm&&typeof pm==="object") : [];
+    ex.payments.forEach(pm=>{ pm.id=leafId(pm.id);
+      pm.paidBy=partMap.get(pm.paidBy); if(pm.paidBy==null||!partIds.has(pm.paidBy)) pm.paidBy="";
+      pm.amount=+pm.amount||0; }); });
 }
-function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){} }
+let _saveWarned=false;
+function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(S)); _saveWarned=false;}
+  catch(e){ if(!_saveWarned){ _saveWarned=true; try{toast("Speichern fehlgeschlagen – Speicher evtl. voll. Sichere die Tour über den Export.");}catch(_){}} } }
 
 /* ---------------- Helpers ---------------- */
 const eur = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
@@ -963,32 +1005,41 @@ function compute(){
   parts.forEach(p=>{
     let a=0; segs.forEach(s=>{ if((S.participation[s.id]||[]).includes(p.id)) a+=segPer[s.id]; });
     fahrtAnteil[p.id]=a;
+    // Fahrer legt nur Etappen MIT Mitfahrenden aus – unverteilte Kosten (0 Personen) werden
+    // niemandem berechnet und dürfen der Fahrer:in daher auch nicht gutgeschrieben werden.
     let lo=0;
-    if(p.driver){ segs.forEach(s=>{ lo += driverSegCost(p,s.id); });
-      (p.driver.extras||[]).forEach(e=> lo += (+e.amount||0)); }
+    if(p.driver){ segs.forEach(s=>{ if(segPersons[s.id]>0) lo += driverSegCost(p,s.id); }); }
     laidOutDrive[p.id]=lo;
   });
-  // Fahrer-Auslagen (Maut/Parkplatz/Permit): je Auslage gleichmäßig auf die Mitfahrenden der zugeordneten Etappen (Vereinigung) verteilen
+  // Fahrer-Auslagen (Maut/Parkplatz/Permit) gleichmäßig auf die Mitfahrenden der zugeordneten
+  // Etappen (Vereinigung) verteilen. Nur TATSÄCHLICH verteilte Auslagen der Fahrer:in gutschreiben.
   parts.forEach(p=>{ if(!p.driver) return;
     (p.driver.extras||[]).forEach(ex=>{
       const amt=+ex.amount||0; if(amt<=0) return;
       const set=new Set();
       (ex.segs||[]).forEach(sid=>{ (S.participation[sid]||[]).forEach(pid=>{ if(pById(pid)) set.add(pid); }); });
       const arr=[...set];
-      if(arr.length>0){ const share=amt/arr.length; arr.forEach(pid=> fahrtAnteil[pid]+=share); }
+      if(arr.length>0){ const share=amt/arr.length; arr.forEach(pid=> fahrtAnteil[pid]+=share); laidOutDrive[p.id]+=amt; }
     });
   });
   // expenses: each expense total = Σ payments; perPerson = total/|appliesTo|
   const sonstAnteil={}, sonstAusgelegt={};
   parts.forEach(p=>{sonstAnteil[p.id]=0;sonstAusgelegt[p.id]=0;});
-  const expRows=[];
+  const expRows=[]; let totalExpDist=0;
   S.expenses.forEach(ex=>{
-    const total=(ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0);
+    const validPays=(ex.payments||[]).filter(pm=>pById(pm.paidBy));
+    const total=validPays.reduce((a,b)=>a+(+b.amount||0),0);
     const grp=(ex.appliesTo||[]).filter(id=>pById(id));
-    const per= grp.length>0 ? total/grp.length : 0;
-    grp.forEach(id=> sonstAnteil[id]+=per);
-    (ex.payments||[]).forEach(pm=>{ if(pById(pm.paidBy)) sonstAusgelegt[pm.paidBy]+=(+pm.amount||0); });
-    expRows.push({name:ex.name,total,persons:grp.length,per});
+    // Unvollständige Ausgabe (kein gültiger Zahler ODER niemand, für den sie gilt) wird nicht
+    // abgerechnet, damit die Salden aufgehen – sie wird mit Hinweis angezeigt.
+    const active = total>0 && grp.length>0;
+    const per= active ? total/grp.length : 0;
+    if(active){
+      grp.forEach(id=> sonstAnteil[id]+=per);
+      validPays.forEach(pm=> sonstAusgelegt[pm.paidBy]+=(+pm.amount||0));
+      totalExpDist += total;
+    }
+    expRows.push({name:ex.name,total,persons:grp.length,per,incomplete:!active});
   });
   // per person rows
   const rows=parts.map(p=>{
@@ -1015,7 +1066,7 @@ function compute(){
   const settlement=settle(grpArr.map(g=>({name:g.name,amount:g.saldo})));
   const segTotal=Object.values(segCost).reduce((a,b)=>a+b,0);                 // km-Kosten je Etappe (ohne Auslagen)
   const totalDrive=Object.values(fahrtAnteil).reduce((a,b)=>a+b,0);           // Fahrtkosten gesamt inkl. verteilter Fahrer-Auslagen
-  const totalExp=expRows.reduce((a,b)=>a+b.total,0);
+  const totalExp=totalExpDist;   // nur vollständig abgerechnete Ausgaben (Konservierung)
   return {segs,segCost,segPersons,segPer,rows,grpArr,settlement,expRows,totalDrive,totalExp,segTotal};
 }
 function settle(balances){
@@ -1058,7 +1109,7 @@ function renderFahrer(){
   S.segments.forEach((s)=>{
     const d=document.createElement("div");
     d.className="seg-item"; d.dataset.sid=s.id;
-    d.innerHTML=`<button class="drag-handle" type="button" aria-label="Etappe verschieben" title="Zum Verschieben ziehen">${icon("i-grip")}</button>
+    d.innerHTML=`<button class="drag-handle" type="button" aria-label="Etappe verschieben – Pfeiltasten hoch/runter" title="Ziehen oder Pfeiltasten ↑/↓" onkeydown="segHandleKey(event,'${s.id}')">${icon("i-grip")}</button>
       <span class="swatch" style="width:15px;height:15px;border-radius:4px;background:${segColor(s.id)};flex:0 0 auto" title="Etappenfarbe"></span>
       <input type="text" value="${esc(s.name)}" onchange="updSeg('${s.id}',this.value)" style="flex:1 1 auto;min-width:0">
       <button class="iconbtn" style="flex:0 0 auto" title="Etappe löschen" onclick="delSeg('${s.id}')">${icon("i-trash")}</button>`;
@@ -1084,7 +1135,7 @@ function renderFahrer(){
       h+="</tr>";
     });
     h+=`<tr class="sumrow"><td class="sticky-col"><b>Gesamt-km</b></td>`;
-    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0)); h+=`<td class="num"><b>${num(tot)}</b></td>`; });
+    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0)); h+=`<td class="num" id="sumkm-${d.id}"><b>${num(tot)}</b></td>`; });
     h+="</tr>";
     // Abrechnung GLOBAL (S.costMode): €/km-Pauschale ODER Spritkosten (Gesamtbetrag je Fahrer:in)
     const fuelMode = S.costMode==="fuel";
@@ -1094,7 +1145,7 @@ function renderFahrer(){
     });
     h+="</tr>";
     h+=`<tr class="sumrow"><td class="sticky-col"><b>Fahrtkosten</b></td>`;
-    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=driverSegCost(d,s.id)); h+=`<td class="num"><b>${eur(tot)}</b></td>`; });
+    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=driverSegCost(d,s.id)); h+=`<td class="num" id="sumcost-${d.id}"><b>${eur(tot)}</b></td>`; });
     h+="</tr></tbody>";
     t.innerHTML=h;
   }
@@ -1108,7 +1159,7 @@ function renderFahrer(){
       inner+=`<div class="pay-row" style="margin-top:14px">
         <input type="text" value="${esc(e.name)}" placeholder="z.B. Streckenmaut" onchange="updExtra('${d.id}','${e.id}','name',this.value)">
         <span class="cur" style="flex:0 0 120px"><input type="number" inputmode="decimal" value="${e.amount}" step="0.01" style="width:100%;text-align:right" onchange="updExtra('${d.id}','${e.id}','amount',this.value)" placeholder="Betrag" aria-label="Betrag der Auslage"></span>
-        <button class="iconbtn" onclick="delExtra('${d.id}','${e.id}')">${icon("i-x")}</button></div>`;
+        <button class="iconbtn" title="Auslage löschen" aria-label="Auslage löschen: ${esc(e.name||'unbenannt')}" onclick="delExtra('${d.id}','${e.id}')">${icon("i-x")}</button></div>`;
       // Etappen-Zuordnung: auf wessen Mitfahrende wird die Auslage geteilt?
       const set=new Set(); (e.segs||[]).forEach(sid=>{ (S.participation[sid]||[]).forEach(pid=>{ if(pById(pid)) set.add(pid); }); });
       inner+=`<label class="fld" style="margin-top:8px">Aufteilen auf Mitfahrende der Etappe(n)</label><div class="seg-pills">`;
@@ -1297,12 +1348,24 @@ function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"
 function addSegment(){const e=document.getElementById("seg_new");if(!e.value.trim())return;
   const id=uid();S.segments.push({id,name:e.value.trim(),color:nextSegColor()});S.participation[id]=[];
   S.participants.forEach(p=>{if(p.driver){p.driver.km[id]=0;}});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
-function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
+function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
 function delSeg(id){confirmDialog("Etappe löschen?","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(!ok)return;
   S.segments=S.segments.filter(x=>x.id!==id);delete S.participation[id];
-  S.participants.forEach(p=>{if(p.driver)delete p.driver.km[id];});renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();});}
+  S.participants.forEach(p=>{if(p.driver){delete p.driver.km[id]; (p.driver.extras||[]).forEach(e=>{if(Array.isArray(e.segs))e.segs=e.segs.filter(x=>x!==id);});}});renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();});}
 /* ---- Etappen per Drag & Drop sortieren (Touch + Maus, pointer-basiert) ---- */
 let segDrag=null;
+// Tastatur-Alternative zum Ziehen: Pfeil hoch/runter auf dem Griff verschiebt die Etappe.
+function segHandleKey(e,id){
+  if(e.key==="ArrowUp"||e.key==="ArrowDown"){ e.preventDefault(); moveSeg(id, e.key==="ArrowUp"?-1:1); }
+}
+function moveSeg(id,dir){
+  const i=S.segments.findIndex(s=>s.id===id), j=i+dir;
+  if(i<0||j<0||j>=S.segments.length) return;
+  const [s]=S.segments.splice(i,1); S.segments.splice(j,0,s);
+  renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
+  const row=document.querySelector('.seg-item[data-sid="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');
+  const h=row&&row.querySelector('.drag-handle'); if(h)h.focus();
+}
 function initSegDnD(){
   const list=document.getElementById("segList"); if(!list) return;
   list.querySelectorAll(".seg-item").forEach(row=>{
@@ -1363,15 +1426,26 @@ function toggleDriver(id,on){const p=pById(id);if(!p)return;
   }
 }
 function removeDriver(id){ toggleDriver(id,false); }
-function updKm(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.km[sid]=+v||0;renderFahrer();renderErgebnis();save();}}
-function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=+v||0;renderFahrer();renderErgebnis();save();}}
-function updFuelAmount(id,v){const p=pById(id);if(p&&p.driver){p.driver.fuel=+v||0;renderFahrer();renderErgebnis();save();}}
+// Nur die Summenzellen dieser Fahrer:in in-place aktualisieren, damit beim Tippen von km/€
+// der Fokus/die Tab-Reihenfolge NICHT durch ein renderFahrer() zerstört wird.
+function updDriverSums(id){const d=pById(id);if(!d||!d.driver)return;
+  let km=0;S.segments.forEach(s=>km+=(d.driver.km[s.id]||0));
+  let cost=0;S.segments.forEach(s=>cost+=driverSegCost(d,s.id));
+  const a=document.getElementById("sumkm-"+id); if(a)a.innerHTML="<b>"+num(km)+"</b>";
+  const b=document.getElementById("sumcost-"+id); if(b)b.innerHTML="<b>"+eur(cost)+"</b>";}
+function updKm(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.km[sid]=Math.max(0,+v||0);updDriverSums(id);renderErgebnis();save();}}
+function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=Math.max(0,+v||0);updDriverSums(id);renderErgebnis();save();}}
+function updFuelAmount(id,v){const p=pById(id);if(p&&p.driver){p.driver.fuel=Math.max(0,+v||0);updDriverSums(id);renderErgebnis();save();}}
 function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"rate"); renderFahrer(); renderErgebnis(); save(); }
 function setMergeGroups(on){ S.mergeGroups=!!on; renderErgebnis(); save(); }
 function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0,segs:[]});renderFahrer();renderErgebnis();save();}}
 function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
-  if(e){e[f]=f==="amount"?(+v||0):v;renderErgebnis();save();}}
-function delExtra(id,eid){const p=pById(id);if(p&&p.driver){p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();}}
+  if(e){e[f]=f==="amount"?Math.max(0,+v||0):v;renderErgebnis();save();}}
+function delExtra(id,eid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
+  const go=()=>{p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();};
+  const has=e&&(((e.name||"").trim())||(+e.amount||0)>0);
+  if(!has){go();return;}
+  confirmDialog("Auslage löschen?","„"+(((e.name||"").trim())||"Unbenannt")+"“"+((+e.amount>0)?" ("+eur(+e.amount)+")":"")+" wird entfernt.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(ok)go();});}
 // Auslage einer Etappe zu-/abschalten bzw. „Alle" Etappen
 function toggleExtraSeg(id,eid,sid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
   e.segs=Array.isArray(e.segs)?e.segs.slice():[];
@@ -1400,7 +1474,12 @@ function allSeg(sid,on){S.participation[sid]=on?S.participants.map(p=>p.id):[];r
 // expenses
 function addExpense(){S.expenses.unshift({id:uid(),name:"",appliesTo:[],payments:[{id:uid(),paidBy:"",amount:0}]});
   renderAusgaben();renderErgebnis();save();}
-function delExpense(id){S.expenses=S.expenses.filter(x=>x.id!==id);renderAusgaben();renderErgebnis();save();}
+function delExpense(id){const ex=S.expenses.find(x=>x.id===id);
+  const total=ex?((ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0)):0;
+  const go=()=>{S.expenses=S.expenses.filter(x=>x.id!==id);renderAusgaben();renderErgebnis();save();};
+  const has=ex&&(((ex.name||"").trim())||total>0||(ex.appliesTo||[]).length);
+  if(!has){go();return;}
+  confirmDialog("Ausgabe löschen?","„"+(((ex.name||"").trim())||"Unbenannt")+"“"+(total>0?" ("+eur(total)+")":"")+" wird entfernt.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(ok)go();});}
 function updExp(id,f,v){const ex=S.expenses.find(x=>x.id===id);if(ex){ex[f]=v;renderErgebnis();save();}}
 function toggleExpPart(id,pid,on){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;ex.appliesTo=ex.appliesTo||[];
   if(on){if(!ex.appliesTo.includes(pid))ex.appliesTo.push(pid);}else{ex.appliesTo=ex.appliesTo.filter(x=>x!==pid);}
@@ -1434,7 +1513,7 @@ function exportName(ext){ return (S.meta.title||"kajak-tour").replace(/[^\w\-]+/
 
 function exportJSON(){
   const text=JSON.stringify(S,null,2), name=exportName("json"), mime="application/json";
-  const ab=androidBridge(); if(ab){ ab.saveFile(name,mime,b64utf8(text)); toast("Exportiert"); return; }
+  const ab=androidBridge(); if(ab){ ab.saveFile(name,mime,b64utf8(text)); return; }  // Erfolgsmeldung kommt nativ nach dem Schreiben
   const mb=macBridge();     if(mb){ mb.postMessage({type:"saveFile",name:name,mime:mime,b64:b64utf8(text)}); toast("Exportiert"); return; }
   const blob=new Blob([text],{type:mime});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();toast("Exportiert");
@@ -1448,15 +1527,28 @@ function exportPDF(){
   const mb=macBridge();     if(mb){ mb.postMessage({type:"exportPDF"}); return; }
   setTimeout(()=>window.print(),120);
 }
-function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{try{S=JSON.parse(r.result);normalize();renderAll();toast("Importiert");}catch(e){alertDialog("Import fehlgeschlagen","Die Datei konnte nicht gelesen werden. Ist es eine gültige Export-Datei?");}};
-  r.readAsText(f);ev.target.value="";}
+function importJSON(ev){const f=ev.target.files[0]; ev.target.value=""; if(!f)return;
+  confirmDialog("Datei importieren?","Die importierte Tour ersetzt deine aktuellen Eingaben.",{danger:true,okText:"Importieren",cancelText:"Abbrechen"}).then(ok=>{
+    if(!ok)return;
+    const r=new FileReader();
+    r.onerror=()=>alertDialog("Import fehlgeschlagen","Die Datei konnte nicht gelesen werden.");
+    r.onload=()=>{
+      let data; try{ data=JSON.parse(r.result); }catch(e){ alertDialog("Import fehlgeschlagen","Die Datei ist keine gültige JSON-Datei."); return; }
+      if(!data || typeof data!=="object" || Array.isArray(data) || !("segments" in data || "participants" in data || "meta" in data)){
+        alertDialog("Import fehlgeschlagen","Das ist keine RapidSplit-Export-Datei."); return;
+      }
+      const prev=S;
+      try{ S=data; normalize(); renderAll(); save(); toast("Importiert"); }
+      catch(e){ S=prev; try{normalize();}catch(_){}; renderAll(); alertDialog("Import fehlgeschlagen","Die Datei enthält ungültige Daten. Deine bisherigen Eingaben wurden beibehalten."); }
+    };
+    r.readAsText(f);
+  });}
 function resetExample(){confirmDialog("Beispiel laden?","Die Beispiel-Tour (Una & Soča 2026) ersetzt deine aktuellen Daten.",{okText:"Laden",cancelText:"Abbrechen"}).then(ok=>{if(!ok)return;
   S=exampleData();normalize();renderAll();
   try{localStorage.removeItem(LS_KEY);}catch(e){}   // Beispiel ist nur temporär: erscheint NICHT beim App-Start, persistiert erst, wenn du es bearbeitest
   toast("Beispiel geladen");});}
 function clearAll(){confirmDialog("Alles leeren?","Alle Eingaben dieser Tour werden unwiderruflich gelöscht.",{danger:true,okText:"Leeren",icon:"i-trash"}).then(ok=>{if(!ok)return;
-  S={meta:{title:"",rows:[]},segments:[],participants:[],participation:{},expenses:[]};renderAll();toast("Geleert");});}
+  S=emptyData();normalize();renderAll();toast("Geleert");});}
 function doNewTrip(){
   S={meta:{title:"",rows:[]},segments:[],participants:[],participation:{},expenses:[]};
   normalize();renderAll();
@@ -1544,11 +1636,21 @@ const WIZ_STEPS=[
   {tab:"ergebnis",title:"6. Auswertung",text:"Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Über „PDF“ oder „Export“ teilst du alles."},
 ];
 let wizStepIdx=0, wizActive=false;
+// Android „Zurück": erst offenen Dialog schließen bzw. Wizard beenden; nur sonst App verlassen.
+window.handleAndroidBack=function(){
+  var ov=document.querySelector('.modal-overlay.show');
+  if(ov){ document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true})); return true; }
+  if(wizActive){ try{wizClose();}catch(e){} return true; }
+  return false;
+};
 function startWizard(){
-  confirmDialog("Wizard starten","Mit einer NEUEN, leeren Fahrt beginnen — oder die aktuellen Daten behalten?",{icon:"i-compass",okText:"Leer starten",cancelText:"Daten behalten"}).then(fresh=>{
-    if(fresh) doNewTrip();
-    wizActive=true; wizStepIdx=0; document.body.classList.add("wiz-on");
-    document.getElementById("wizBar").classList.add("show"); wizRender();
+  confirmDialog("Tutorial starten?","Ein kurzer geführter Rundgang durch die App.",{icon:"i-compass",okText:"Weiter",cancelText:"Abbrechen"}).then(go=>{
+    if(!go) return;   // Abbrechen / Escape / Klick daneben → Tutorial NICHT starten
+    confirmDialog("Neue oder aktuelle Fahrt?","Mit einer NEUEN, leeren Fahrt beginnen — oder die aktuellen Daten behalten?",{icon:"i-compass",okText:"Leer starten",cancelText:"Daten behalten"}).then(fresh=>{
+      if(fresh) doNewTrip();
+      wizActive=true; wizStepIdx=0; document.body.classList.add("wiz-on");
+      document.getElementById("wizBar").classList.add("show"); wizRender();
+    });
   });
 }
 function wizGo(d){
