@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e7490">
+<title>Kajak-Tour Kostenrechner</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kajak-Kosten">
+<style>
+  :root{
+    --bg:#f3f6f8; --card:#ffffff; --ink:#0f2730; --muted:#5b7682;
+    --line:#dbe6ea; --brand:#0e7490; --brand-d:#0b5d72; --accent:#0891b2;
+    --green:#15803d; --green-bg:#e7f6ec; --red:#b91c1c; --red-bg:#fdecec;
+    --warn:#b45309; --shadow:0 1px 3px rgba(15,39,48,.08),0 4px 16px rgba(15,39,48,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
+  #topbar{position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(11,93,114,.18)}
+  header.app{background:linear-gradient(135deg,var(--brand),var(--accent));color:#fff;padding:16px 16px 12px}
+  header.app .app-label{font-size:12px;font-weight:600;opacity:.82;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+  header.app h1{margin:3px 0 0;font-size:23px;font-weight:800;letter-spacing:.2px;line-height:1.15}
+  header.app .sub{margin:4px 0 0;font-size:13px;opacity:.95;font-weight:500;display:flex;align-items:center;gap:6px}
+  @media (max-width:560px){ header.app h1{font-size:20px} }
+  nav.tabs{display:flex;gap:4px;overflow-x:auto;background:var(--card);
+    border-bottom:1px solid var(--line);padding:0 6px;-webkit-overflow-scrolling:touch}
+  nav.tabs button{flex:0 0 auto;border:none;background:none;padding:12px 12px;font-size:13.5px;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+  nav.tabs button.active{color:var(--brand);border-bottom-color:var(--brand)}
+  main{max-width:920px;margin:0 auto;padding:14px 12px 90px}
+  .tab{display:none}
+  .tab.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px;box-shadow:var(--shadow)}
+  .card h2{margin:0 0 4px;font-size:15.5px;color:var(--brand-d)}
+  .card .hint{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+  label.fld{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:0 0 4px}
+  input[type=text],input[type=number],input[type=date],textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:9px;font-size:15px;background:#fff;color:var(--ink);font-family:inherit}
+  input:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(14,116,144,.12)}
+  input[type=number]{text-align:right}
+  textarea{resize:vertical;min-height:64px;line-height:1.4}
+  .swatch{display:inline-block;width:11px;height:11px;border-radius:3px;flex:0 0 auto;vertical-align:middle}
+  .seg-btn{border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1}
+  .seg-btn.active{box-shadow:0 0 0 2px #fff inset,0 0 0 3px currentColor}
+  .link-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:700}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  button.btn{background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 14px;font-size:14px;font-weight:600;cursor:pointer}
+  button.btn:hover{background:var(--brand-d)}
+  button.btn.ghost{background:#eef4f6;color:var(--brand-d)}
+  button.btn.ghost:hover{background:#e0ecef}
+  button.btn.sm{padding:6px 10px;font-size:13px}
+  button.btn.danger{background:#fff;color:var(--red);border:1px solid #f0c5c5}
+  button.btn.danger:hover{background:var(--red-bg)}
+  .iconbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:17px;line-height:1;padding:4px 6px;border-radius:7px}
+  .iconbtn:hover{background:#eef4f6;color:var(--red)}
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:100%}
+  th,td{padding:8px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);font-weight:700;background:#f7fafb;position:sticky;top:0}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  table input[type=number]{padding:6px 7px;font-size:13.5px;min-width:62px;border-radius:7px}
+  table input[type=text]{padding:6px 7px;font-size:13.5px;min-width:110px;border-radius:7px}
+  .matrix th.seg{writing-mode:initial;font-size:11px}
+  .chk{width:20px;height:20px;accent-color:var(--brand);cursor:pointer}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:700}
+  .pill.green{background:var(--green-bg);color:var(--green)}
+  .pill.red{background:var(--red-bg);color:var(--red)}
+  .pill.muted{background:#eef2f4;color:var(--muted)}
+  .add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:10px}
+  .add-row>div{flex:1;min-width:110px}
+  .totals{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 0}
+  .stat{flex:1;min-width:140px;background:#f7fafb;border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+  .stat .k{font-size:11.5px;color:var(--muted);font-weight:600}
+  .stat .v{font-size:19px;font-weight:700;color:var(--brand-d);margin-top:2px;font-variant-numeric:tabular-nums}
+  .seg-block{border:1px solid var(--line);border-radius:11px;padding:10px;margin-bottom:10px;background:#fbfdfe}
+  .seg-block h3{margin:0 0 8px;font-size:14px;color:var(--brand-d)}
+  .checklist{display:flex;flex-wrap:wrap;gap:6px}
+  .checklist label{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 11px 5px 9px;font-size:13px;cursor:pointer;user-select:none}
+  .checklist label.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .checklist input{display:none}
+  .pay-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+  .pay-row select,.pay-row input{flex:1;min-width:100px}
+  select{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:#fff;color:var(--ink)}
+  .result-person{display:flex;justify-content:space-between;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .result-person:last-child{border-bottom:none}
+  .rp-name{font-weight:600}
+  .rp-sub{font-size:12px;color:var(--muted)}
+  .settle{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:#fbfdfe;flex-wrap:wrap}
+  .settle .from{font-weight:600;color:var(--red)}
+  .settle .to{font-weight:600;color:var(--green)}
+  .settle .amt{margin-left:auto;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
+  .arrow{color:var(--muted)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .footnote{font-size:12px;color:var(--muted);margin-top:6px}
+  .banner{background:#eef7fa;border:1px solid #cde7ee;color:var(--brand-d);border-radius:11px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+  /* Wizard */
+  body.wiz-on main{padding-bottom:180px}
+  .wiz-bar{position:fixed;left:0;right:0;bottom:0;z-index:80;background:#fff;border-top:1px solid var(--line);
+    box-shadow:0 -4px 20px rgba(15,39,48,.12);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:none}
+  .wiz-bar.show{display:block;animation:wizup .25s ease}
+  @keyframes wizup{from{transform:translateY(100%)}to{transform:none}}
+  .wiz-inner{max-width:920px;margin:0 auto}
+  .wiz-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .wiz-step{font-size:11.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.4px}
+  .wiz-prog{flex:1;height:6px;background:#e7eef1;border-radius:999px;overflow:hidden}
+  .wiz-prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));border-radius:999px;transition:width .3s}
+  .wiz-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1}
+  .wiz-title{font-weight:700;font-size:15px;color:var(--ink);margin:0 0 2px}
+  .wiz-text{font-size:13px;color:var(--muted);margin:0 0 10px}
+  .wiz-nav{display:flex;gap:8px;align-items:center}
+  .wiz-nav .spacer{flex:1}
+  nav.tabs button.wiz-hl{animation:wpulse 1.3s ease-in-out infinite}
+  @keyframes wpulse{0%,100%{background:transparent}50%{background:#dff1f5}}
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;transition:.25s;z-index:100;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  details summary{cursor:pointer;font-weight:600;color:var(--brand-d);font-size:14px}
+  .right{text-align:right}
+  .mini{font-size:12px;color:var(--muted)}
+  @media (max-width:560px){
+    header.app h1{font-size:16px}
+    .stat .v{font-size:17px}
+  }
+  /* PDF / Druck: nur das Ergebnis sauber ausgeben */
+  @media print{
+    @page{ margin:14mm 12mm; }
+    #topbar,.wiz-bar,.toast,.no-print{ display:none !important; }
+    body{ background:#fff; font-size:12px; }
+    main{ max-width:none !important; margin:0 !important; padding:0 !important; }
+    .tab{ display:none !important; }
+    .tab.active{ display:block !important; }
+    .card{ box-shadow:none !important; border:1px solid #d0d8dc !important; break-inside:avoid; margin-bottom:10px; }
+    .settle,.seg-block,.stat{ break-inside:avoid; }
+    details>*:not(summary){ display:block !important; }
+    a{ color:inherit; text-decoration:none; }
+  }
+</style>
+</head>
+<body>
+<div id="topbar">
+  <header class="app">
+    <div class="app-label">🛶 Kajak-Tour Kostenrechner</div>
+    <h1 id="metaTitle">Unbenannte Tour</h1>
+    <div class="sub" id="metaSub">Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen</div>
+  </header>
+  <nav class="tabs" id="tabs">
+    <button data-tab="info" class="active">Tour-Info</button>
+    <button data-tab="teilnehmer">Teilnehmende</button>
+    <button data-tab="fahrer">Etappen &amp; Fahrer</button>
+    <button data-tab="teilnahme">Teilnahme</button>
+    <button data-tab="ausgaben">Sonstige Ausgaben</button>
+    <button data-tab="ergebnis">Ergebnis</button>
+  </nav>
+</div>
+
+<main>
+  <!-- TOUR INFO -->
+  <section class="tab active" id="tab-info">
+    <div class="card" style="border-color:#cde7ee;background:linear-gradient(135deg,#f3fbfd,#eef7fa)">
+      <h2>Start</h2>
+      <p class="hint">Neu hier? Lass dich Schritt für Schritt durch das Tool führen — oder starte direkt mit einer leeren Fahrt.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn" onclick="startWizard()">🧭 Wizard starten</button>
+        <button class="btn ghost" onclick="newTrip()">➕ Neue, leere Fahrt anlegen</button>
+      </div>
+      <p class="footnote">„Neue, leere Fahrt" löscht die vorausgefüllten Beispielwerte. Über „Beispiel laden" weiter unten holst du sie jederzeit zurück.</p>
+    </div>
+    <div class="card">
+      <h2>Tour-Eckdaten</h2>
+      <p class="hint">Diese Angaben erscheinen oben und im Ergebnis.</p>
+      <label class="fld">Titel der Tour</label>
+      <input type="text" id="m_title" placeholder="Titel eingeben.">
+      <div style="height:14px"></div>
+      <label class="fld">Reisezeitraum</label>
+      <div class="row">
+        <div><label class="fld" style="font-weight:500">von</label><input type="date" id="m_from"></div>
+        <div><label class="fld" style="font-weight:500">bis</label><input type="date" id="m_to"></div>
+      </div>
+      <div style="height:14px"></div>
+      <label class="fld">Beschreibung der Tour</label>
+      <textarea id="m_desc" placeholder="Anlass, gefahrene Flüsse, Schwierigkeit, Wasserstand, …"></textarea>
+    </div>
+    <div class="card">
+      <h2>Daten sichern</h2>
+      <p class="hint">Alle Eingaben werden automatisch auf diesem Gerät gespeichert. Den Export als Datei und das PDF findest du im Reiter „Ergebnis“.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn ghost" onclick="document.getElementById('importFile').click()">⬆︎ Import (Datei)</button>
+        <button class="btn danger" onclick="resetExample()">↻ Beispiel laden</button>
+        <button class="btn danger" onclick="clearAll()">🗑 Alles leeren</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(event)">
+      </div>
+    </div>
+  </section>
+
+  <!-- FAHRER -->
+  <section class="tab" id="tab-fahrer">
+    <div class="banner">Trage je Fahrer:in die gefahrenen Kilometer pro Etappe und die Kilometerpauschale (€/km) ein. Zusätzliche Auslagen (Vignette, Maut, Sprit …) kommen pro Fahrer:in dazu.</div>
+    <div class="card">
+      <h2>Fahrer:in hinzufügen</h2>
+      <p class="hint">Neue Fahrer:innen anlegen. Sie erscheinen automatisch auch in der Teilnehmer-Liste.</p>
+      <div class="add-row">
+        <div><label class="fld">Name</label><input type="text" id="drv_new" placeholder="z. B. Nouria N."></div>
+        <div style="flex:0 0 auto"><label class="fld">€/km</label><input type="number" id="drv_rate" value="0.30" step="0.01" style="width:90px"></div>
+        <div style="flex:0 0 auto"><button class="btn" onclick="addDriver()">+ Fahrer:in</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Etappen</h2>
+      <p class="hint">Die Abschnitte der Reise. Pro Etappe werden die Fahrtkosten unter den dort mitfahrenden Personen geteilt.</p>
+      <div id="segList"></div>
+      <div class="add-row">
+        <div><label class="fld">Neue Etappe</label><input type="text" id="seg_new" placeholder="z. B. SLO → München"></div>
+        <div style="flex:0 0 auto"><button class="btn sm" onclick="addSegment()">+ Etappe</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Fahrer:innen &amp; Kilometer</h2>
+      <p class="hint">km pro Etappe und die €/km-Pauschale. Fahrtkosten je Etappe = Σ(km × €/km) aller Autos.</p>
+      <div class="tbl-wrap">
+        <table id="kmTable"></table>
+      </div>
+      <div class="footnote">Neue Fahrer:innen legst du oben unter „Fahrer:in hinzufügen“ an. Mit „✕ Auto entf.“ über einer Spalte entfernst du die Fahrer-Rolle wieder.</div>
+    </div>
+    <div class="card">
+      <h2>Zusätzliche Auslagen je Fahrer:in</h2>
+      <p class="hint">Feste Kosten, die eine Fahrer:in fürs eigene Auto ausgelegt hat (Vignette, Maut, Tunnel, Sprit …).</p>
+      <div id="extrasList"></div>
+    </div>
+  </section>
+
+  <!-- TEILNEHMER -->
+  <section class="tab" id="tab-teilnehmer">
+    <div class="banner">Trage hier alle Personen ein (inkl. Fahrer:innen). Wer auf welcher Etappe dabei war, legst du anschließend im Reiter „Teilnahme“ fest.</div>
+    <div class="card">
+      <h2>Teilnehmende</h2>
+      <p class="hint">Alle Personen (inkl. Fahrer:innen). Optional ein Haushalt/Gruppe, um Salden am Ende zusammenzufassen (z. B. „Familie Jackson“).</p>
+      <div class="tbl-wrap"><table id="partTable"></table></div>
+      <div class="add-row">
+        <div><label class="fld">Person hinzufügen</label><input type="text" id="part_new" placeholder="Name"></div>
+        <div><label class="fld">Haushalt/Gruppe (optional)</label><input type="text" id="part_group" placeholder="z. B. Familie …"></div>
+        <div style="flex:0 0 auto"><button class="btn sm" onclick="addParticipant()">+ Person</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEILNAHME PRO ETAPPE -->
+  <section class="tab" id="tab-teilnahme">
+    <div class="banner">Wer war auf welcher Etappe dabei? Die Fahrtkosten einer Etappe werden gleichmäßig auf alle dort markierten Personen aufgeteilt.</div>
+    <div class="card">
+      <h2>Teilnahme pro Etappe</h2>
+      <p class="hint">Markiere, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung.</p>
+      <div id="participationBlocks"></div>
+    </div>
+  </section>
+
+  <!-- AUSGABEN -->
+  <section class="tab" id="tab-ausgaben">
+    <div class="banner">Gemeinsame Ausgaben (Einkäufe, Campingplatz …). Lege fest, für wen die Ausgabe gilt (wird gleichmäßig geteilt) und wer sie bezahlt hat.</div>
+    <div id="expenseList"></div>
+    <div class="card">
+      <button class="btn" onclick="addExpense()">+ Neue Ausgabe</button>
+    </div>
+  </section>
+
+  <!-- ERGEBNIS -->
+  <section class="tab" id="tab-ergebnis">
+    <div class="card no-print">
+      <h2>Exportieren</h2>
+      <p class="hint">Ergebnis als PDF sichern – oder alle Tour-Daten als Datei für Backup/Weitergabe exportieren.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn" onclick="exportPDF()">🖨 Als PDF exportieren</button>
+        <button class="btn ghost" onclick="exportJSON()">⬇︎ Export (Datei)</button>
+      </div>
+    </div>
+    <div class="card" id="resHeader"></div>
+    <div class="card">
+      <h2>Kosten pro Teilnehmer:in</h2>
+      <p class="hint">Eigener Anteil = Fahrtkosten-Anteil + Anteil sonstige Ausgaben. Das ist, was die Tour die Person netto kostet.</p>
+      <div class="tbl-wrap"><table id="costTable"></table></div>
+    </div>
+    <div class="card">
+      <h2>Saldo &amp; Ausgleich</h2>
+      <p class="hint">Saldo = ausgelegtes Geld − eigener Anteil. <span class="pill green">＋ bekommt zurück</span> &nbsp; <span class="pill red">－ zahlt ein</span></p>
+      <div class="tbl-wrap"><table id="balanceTable"></table></div>
+    </div>
+    <div class="card">
+      <h2>Wer zahlt wem <span class="mini">(minimale Anzahl Überweisungen)</span></h2>
+      <div id="settlement"></div>
+    </div>
+    <div class="card">
+      <details>
+        <summary>Details: Fahrtkosten je Etappe</summary>
+        <div class="tbl-wrap" style="margin-top:10px"><table id="segCostTable"></table></div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<div class="wiz-bar" id="wizBar">
+  <div class="wiz-inner">
+    <div class="wiz-top">
+      <span class="wiz-step" id="wizStep"></span>
+      <span class="wiz-prog"><i id="wizProg"></i></span>
+      <button class="wiz-close" title="Wizard beenden" onclick="wizClose()">✕</button>
+    </div>
+    <p class="wiz-title" id="wizTitle"></p>
+    <p class="wiz-text" id="wizText"></p>
+    <div class="wiz-nav">
+      <button class="btn ghost sm" id="wizBack" onclick="wizGo(-1)">← Zurück</button>
+      <div class="spacer"></div>
+      <button class="btn sm" id="wizNext" onclick="wizGo(1)">Weiter →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- State ---------------- */
+const LS_KEY = "kajak_kostenrechner_v1";
+let S = null;
+let uid = () => Math.random().toString(36).slice(2,9);
+
+function exampleData(){
+  const sIds = ["s1","s2","s3","s4","s5"];
+  const segments = [
+    {id:"s1",name:"MUC → BiH"},
+    {id:"s2",name:"Shutteln BiH"},
+    {id:"s3",name:"BiH → SLO"},
+    {id:"s4",name:"Shutteln SLO"},
+    {id:"s5",name:"SLO → MUC"},
+  ];
+  // participants (master). drivers carry car data.
+  const P = (name,group="",driver=null)=>({id:uid(),name,group,driver});
+  const flo = P("Olaf O.","",{rate:0.35,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[]});
+  const rob = P("Steve F.","",{rate:0.40,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[]});
+  const ste = P("Rush S.","",{rate:0.30,km:{s1:686,s2:247,s3:521,s4:100,s5:398},extras:[]});
+  const ker = P("Emily J.","Familie Jackson",{rate:0.30,km:{s1:0,s2:90,s3:0,s4:76,s5:0},extras:[]});
+  const aida=P("Nouria N."), max=P("Tyler B."), amar=P("Rafa O."), car=P("Adriene L."),
+        chr=P("Adrian M."), bredt=P("Familie Serrasolses"), nicki=P("Dane J.","Familie Jackson"),
+        sam=P("Sam S."), thor=P("Ben M.");
+  const participants=[rob,aida,max,amar,car,chr,bredt,flo,ker,nicki,sam,ste,thor];
+  const byName={};participants.forEach(p=>byName[p.name]=p.id);
+  const on=(names)=>names.map(n=>byName[n]);
+  const participation={
+    s1:on(["Steve F.","Rafa O.","Adriene L.","Adrian M.","Olaf O.","Sam S.","Rush S.","Ben M."]),
+    s2:on(["Steve F.","Nouria N.","Tyler B.","Rafa O.","Adriene L.","Adrian M.","Familie Serrasolses","Olaf O.","Emily J.","Dane J.","Sam S.","Rush S.","Ben M."]),
+    s3:on(["Steve F.","Adriene L.","Adrian M.","Olaf O.","Sam S.","Rush S.","Ben M."]),
+    s4:on(["Steve F.","Adriene L.","Adrian M.","Olaf O.","Emily J.","Dane J.","Sam S.","Rush S.","Ben M."]),
+    s5:on(["Steve F.","Olaf O.","Rush S.","Ben M."]),
+  };
+  const einkaufAppliesTo = participation.s2.filter(id=>id!==byName["Familie Serrasolses"]);
+  const expenses=[
+    {id:uid(),name:"Einkauf Gruppe",appliesTo:einkaufAppliesTo.slice(),
+     payments:[{id:uid(),paidBy:byName["Steve F."],amount:42},{id:uid(),paidBy:byName["Olaf O."],amount:26}]},
+    {id:uid(),name:"Camp Liza",appliesTo:participation.s4.slice(),
+     payments:[{id:uid(),paidBy:byName["Steve F."],amount:316}]},
+  ];
+  return {
+    meta:{title:"Wildwasserkajak-Tour 2026 – Una (BiH) & Soča (SLO)",
+      dateFrom:"2026-05-23", dateTo:"2026-05-31",
+      description:"Hinfahrt Sa 23.05. (München → Bihać/BiH), Weiterreise Mi 27.05. (Bihać → Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München."},
+    segments, participants, participation, expenses
+  };
+}
+function emptyData(){
+  return {meta:{title:"",dateFrom:"",dateTo:"",description:""},segments:[],participants:[],participation:{},expenses:[]};
+}
+
+function load(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(raw){S=JSON.parse(raw); normalize(); return;} }catch(e){}
+  S=emptyData();
+}
+function normalize(){
+  S.meta = S.meta||{};
+  if(S.meta.title==null) S.meta.title="";
+  if(S.meta.dateFrom==null) S.meta.dateFrom="";
+  if(S.meta.dateTo==null) S.meta.dateTo="";
+  if(S.meta.description==null){
+    S.meta.description = (Array.isArray(S.meta.rows)&&S.meta.rows.length)
+      ? S.meta.rows.map(r=>(r.k?r.k+": ":"")+(r.v||"")).join("\n") : "";
+  }
+  delete S.meta.rows;
+  S.segments = S.segments||[];
+  S.participants = S.participants||[];
+  S.participation = S.participation||{};
+  S.expenses = S.expenses||[];
+  S.segments.forEach(s=>{ if(!S.participation[s.id]) S.participation[s.id]=[]; });
+  S.participants.forEach(p=>{
+    if(p.driver){ p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[];
+      S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; }); }
+  });
+}
+function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){} }
+
+/* ---------------- Helpers ---------------- */
+const eur = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const num = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{maximumFractionDigits:2});
+const pById = id => S.participants.find(p=>p.id===id);
+const pName = id => (pById(id)||{}).name || "—";
+const SEG_COLORS=["#0e7490","#b45309","#7c3aed","#15803d","#be185d","#0369a1","#a16207","#9333ea","#0d9488","#c2410c"];
+function segColor(sid){const i=S.segments.findIndex(s=>s.id===sid);return i<0?"#94a3b8":SEG_COLORS[i%SEG_COLORS.length];}
+function segName(sid){const s=S.segments.find(x=>x.id===sid);return s?s.name:"";}
+function tint(hex,a){const c=hex.replace("#","");const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);return `rgba(${r},${g},${b},${a==null?0.10:a})`;}
+function sameSet(a,b){if(a.length!==b.length)return false;const sb=new Set(b);return a.every(x=>sb.has(x));}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
+
+/* ---------------- Computation (mirrors xlsx) ---------------- */
+function compute(){
+  const segs=S.segments, parts=S.participants;
+  // per-segment total cost = Σ(km × rate) over drivers; persons = count in participation; perPerson
+  const segCost={}, segPersons={}, segPer={};
+  segs.forEach(s=>{
+    let tot=0;
+    parts.forEach(p=>{ if(p.driver){ tot += (p.driver.km[s.id]||0)*(p.driver.rate||0); } });
+    const persons=(S.participation[s.id]||[]).length;
+    segCost[s.id]=tot; segPersons[s.id]=persons; segPer[s.id]= persons>0 ? tot/persons : 0;
+  });
+  // per person: fahrtkosten-Anteil = Σ over segments they are on of segPer
+  const fahrtAnteil={}, laidOutDrive={};
+  parts.forEach(p=>{
+    let a=0; segs.forEach(s=>{ if((S.participation[s.id]||[]).includes(p.id)) a+=segPer[s.id]; });
+    fahrtAnteil[p.id]=a;
+    let lo=0;
+    if(p.driver){ segs.forEach(s=>{ lo += (p.driver.km[s.id]||0)*(p.driver.rate||0); });
+      (p.driver.extras||[]).forEach(e=> lo += (+e.amount||0)); }
+    laidOutDrive[p.id]=lo;
+  });
+  // expenses: each expense total = Σ payments; perPerson = total/|appliesTo|
+  const sonstAnteil={}, sonstAusgelegt={};
+  parts.forEach(p=>{sonstAnteil[p.id]=0;sonstAusgelegt[p.id]=0;});
+  const expRows=[];
+  S.expenses.forEach(ex=>{
+    const total=(ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0);
+    const grp=(ex.appliesTo||[]).filter(id=>pById(id));
+    const per= grp.length>0 ? total/grp.length : 0;
+    grp.forEach(id=> sonstAnteil[id]+=per);
+    (ex.payments||[]).forEach(pm=>{ if(pById(pm.paidBy)) sonstAusgelegt[pm.paidBy]+=(+pm.amount||0); });
+    expRows.push({name:ex.name,total,persons:grp.length,per});
+  });
+  // per person rows
+  const rows=parts.map(p=>{
+    const saldoFahrt = laidOutDrive[p.id]-fahrtAnteil[p.id];
+    const eigenAnteil = fahrtAnteil[p.id]+sonstAnteil[p.id];
+    const gesamtSaldo = saldoFahrt + sonstAusgelegt[p.id] - sonstAnteil[p.id];
+    return {id:p.id,name:p.name,group:p.group||"",
+      laidOutDrive:laidOutDrive[p.id], fahrtAnteil:fahrtAnteil[p.id],
+      saldoFahrt, sonstAusgelegt:sonstAusgelegt[p.id], sonstAnteil:sonstAnteil[p.id],
+      eigenAnteil, gesamtSaldo};
+  });
+  // group merge for balances/settlement
+  const groups={};
+  rows.forEach(r=>{
+    const key = r.group ? "g:"+r.group : "p:"+r.id;
+    if(!groups[key]) groups[key]={name:r.group||r.name, isGroup:!!r.group, members:[], saldo:0, eigenAnteil:0, laidOut:0};
+    groups[key].members.push(r.name);
+    groups[key].saldo += r.gesamtSaldo;
+    groups[key].eigenAnteil += r.eigenAnteil;
+    groups[key].laidOut += r.laidOutDrive + r.sonstAusgelegt;
+  });
+  const grpArr=Object.values(groups);
+  const settlement=settle(grpArr.map(g=>({name:g.name,amount:g.saldo})));
+  const totalDrive=Object.values(segCost).reduce((a,b)=>a+b,0);
+  const totalExp=expRows.reduce((a,b)=>a+b.total,0);
+  return {segs,segCost,segPersons,segPer,rows,grpArr,settlement,expRows,totalDrive,totalExp};
+}
+function settle(balances){
+  const cred=balances.filter(b=>b.amount>0.005).map(b=>({...b})).sort((a,b)=>b.amount-a.amount);
+  const deb=balances.filter(b=>b.amount<-0.005).map(b=>({name:b.name,amount:-b.amount})).sort((a,b)=>b.amount-a.amount);
+  const tx=[];let i=0,j=0;
+  while(i<deb.length&&j<cred.length){
+    const pay=Math.min(deb[i].amount,cred[j].amount);
+    if(pay>0.005) tx.push({from:deb[i].name,to:cred[j].name,amount:pay});
+    deb[i].amount-=pay;cred[j].amount-=pay;
+    if(deb[i].amount<0.005)i++; if(cred[j].amount<0.005)j++;
+  }
+  return tx;
+}
+
+/* ---------------- Rendering ---------------- */
+function renderAll(){ renderInfo();renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();
+  updateSub(); save(); }
+function fmtDate(d){ if(!d)return ""; const p=d.split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d; }
+function dateRangeText(){
+  const f=fmtDate(S.meta.dateFrom), t=fmtDate(S.meta.dateTo);
+  if(f&&t) return f+" – "+t; return f||t||"";
+}
+function updateSub(){
+  const dr=dateRangeText();
+  document.getElementById("metaTitle").textContent=S.meta.title||"Unbenannte Tour";
+  document.getElementById("metaSub").textContent= dr ? ("📅 "+dr) : "Kosten pro Teilnehmer:in fair berechnen & ausgleichen";
+}
+function renderInfo(){
+  document.getElementById("m_title").value=S.meta.title||"";
+  document.getElementById("m_from").value=S.meta.dateFrom||"";
+  document.getElementById("m_to").value=S.meta.dateTo||"";
+  document.getElementById("m_desc").value=S.meta.description||"";
+}
+function renderFahrer(){
+  // segments list
+  const sl=document.getElementById("segList");sl.innerHTML="";
+  S.segments.forEach((s,i)=>{
+    const d=document.createElement("div");d.className="row";d.style.marginBottom="6px";d.style.alignItems="center";
+    d.innerHTML=`<div style="flex:0 0 auto;color:var(--muted);font-size:13px;min-width:18px">${i+1}.</div>
+      <div><input type="text" value="${esc(s.name)}" onchange="updSeg('${s.id}',this.value)"></div>
+      <div style="flex:0 0 auto"><button class="iconbtn" title="Etappe löschen" onclick="delSeg('${s.id}')">🗑</button></div>`;
+    sl.appendChild(d);
+  });
+  // km table
+  const drivers=S.participants.filter(p=>p.driver);
+  const t=document.getElementById("kmTable");
+  let h="<thead><tr><th>Etappe</th>";
+  drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}<br><button class="iconbtn" title="Als Fahrer:in entfernen" style="font-size:11.5px;color:var(--red)" onclick="removeDriver('${d.id}')">✕ Auto entf.</button></th>`);
+  h+="</tr></thead><tbody>";
+  if(drivers.length===0) h+=`<tr><td colspan="1"><span class="mini">Noch keine Fahrer:innen — unten hinzufügen.</span></td></tr>`;
+  S.segments.forEach(s=>{
+    h+=`<tr><td>${esc(s.name)}</td>`;
+    drivers.forEach(d=> h+=`<td class="num"><input type="number" value="${d.driver.km[s.id]||0}" min="0" step="1" onchange="updKm('${d.id}','${s.id}',this.value)"></td>`);
+    h+="</tr>";
+  });
+  // total km
+  h+=`<tr><td><b>Gesamt-km</b></td>`;
+  drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0)); h+=`<td class="num"><b>${num(tot)}</b></td>`; });
+  h+="</tr>";
+  // rate
+  h+=`<tr><td>€/km Pauschale</td>`;
+  drivers.forEach(d=> h+=`<td class="num"><input type="number" value="${d.driver.rate}" min="0" step="0.01" onchange="updRate('${d.id}',this.value)"></td>`);
+  h+="</tr>";
+  // fahrtkosten pauschale
+  h+=`<tr><td><b>Fahrtkosten (km×€)</b></td>`;
+  drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0));h+=`<td class="num"><b>${eur(tot*d.driver.rate)}</b></td>`; });
+  h+="</tr>";
+  h+="</tbody>";
+  t.innerHTML=h;
+  // extras
+  const el=document.getElementById("extrasList");el.innerHTML="";
+  if(drivers.length===0){ el.innerHTML='<p class="mini">Noch keine Fahrer:innen angelegt.</p>'; }
+  drivers.forEach(d=>{
+    const box=document.createElement("div");box.className="seg-block";
+    let inner=`<h3>${esc(d.name)}</h3>`;
+    (d.driver.extras||[]).forEach(e=>{
+      inner+=`<div class="pay-row">
+        <input type="text" value="${esc(e.name)}" placeholder="Bezeichnung (z. B. Vignette)" onchange="updExtra('${d.id}','${e.id}','name',this.value)">
+        <input type="number" style="flex:0 0 110px" value="${e.amount}" step="0.01" onchange="updExtra('${d.id}','${e.id}','amount',this.value)" placeholder="€">
+        <button class="iconbtn" onclick="delExtra('${d.id}','${e.id}')">✕</button></div>`;
+    });
+    inner+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addExtra('${d.id}')">+ Auslage</button></div>`;
+    box.innerHTML=inner;el.appendChild(box);
+  });
+}
+function renderTeilnehmer(){
+  const t=document.getElementById("partTable");
+  let h="<thead><tr><th>Name</th><th>Haushalt/Gruppe</th><th>Fahrer:in</th><th></th></tr></thead><tbody>";
+  S.participants.forEach(p=>{
+    h+=`<tr>
+      <td><input type="text" value="${esc(p.name)}" onchange="updPartName('${p.id}',this.value)"></td>
+      <td><input type="text" value="${esc(p.group||'')}" placeholder="—" onchange="updPartGroup('${p.id}',this.value)"></td>
+      <td>${p.driver?`<span class="pill green">Auto ✓</span> <button class="btn danger sm" style="padding:3px 8px" onclick="removeDriver('${p.id}')">entfernen</button>`:`<button class="btn ghost sm" style="padding:3px 8px" onclick="makeDriver('${p.id}')">+ als Fahrer:in</button>`}</td>
+      <td><button class="iconbtn" title="Person löschen" onclick="delParticipant('${p.id}')">🗑</button></td></tr>`;
+  });
+  h+="</tbody>";t.innerHTML=h;
+  // participation blocks
+  const pb=document.getElementById("participationBlocks");pb.innerHTML="";
+  S.segments.forEach(s=>{
+    const sel=S.participation[s.id]||[];const col=segColor(s.id);
+    const box=document.createElement("div");box.className="seg-block";
+    box.style.borderLeft="5px solid "+col;box.style.background=tint(col,0.06);
+    let inner=`<h3 style="color:${col}"><span class="swatch" style="background:${col};margin-right:6px"></span>${esc(s.name)} <span class="mini">(${sel.length} Pers.)</span></h3>
+      <div style="margin-bottom:8px"><button class="btn ghost sm" onclick="allSeg('${s.id}',true)">Alle</button>
+      <button class="btn ghost sm" onclick="allSeg('${s.id}',false)">Keine</button></div><div class="checklist">`;
+    S.participants.forEach(p=>{
+      const on=sel.includes(p.id);
+      inner+=`<label class="${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleSeg('${s.id}','${p.id}',this.checked)">${esc(p.name)}</label>`;
+    });
+    inner+="</div>";box.innerHTML=inner;pb.appendChild(box);
+  });
+}
+function renderAusgaben(){
+  const c=document.getElementById("expenseList");c.innerHTML="";
+  if(S.expenses.length===0) c.innerHTML='<div class="card"><p class="mini">Noch keine Ausgaben. Füge unten eine hinzu.</p></div>';
+  S.expenses.forEach(ex=>{
+    const total=(ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0);
+    const grp=(ex.appliesTo||[]).filter(id=>pById(id));
+    const per=grp.length>0?total/grp.length:0;
+    const linkedSeg = ex.segRef && S.segments.find(s=>s.id===ex.segRef) ? ex.segRef : "";
+    const lcol = linkedSeg ? segColor(linkedSeg) : "";
+    const card=document.createElement("div");card.className="card";
+    if(linkedSeg){ card.style.borderLeft="6px solid "+lcol; }
+    let h=`<div class="row" style="align-items:center"><div style="flex:2"><label class="fld">Bezeichnung</label>
+      <input type="text" value="${esc(ex.name)}" onchange="updExp('${ex.id}','name',this.value)"></div>
+      <div style="flex:0 0 auto;align-self:flex-end"><button class="iconbtn" onclick="delExpense('${ex.id}')">🗑</button></div></div>`;
+    // link badge
+    if(linkedSeg){
+      const mism = !sameSet((ex.appliesTo||[]).filter(id=>pById(id)), (S.participation[linkedSeg]||[]));
+      h+=`<div style="margin:10px 0 2px"><span class="link-badge" style="background:${tint(lcol,0.14)};color:${lcol};border:1px solid ${lcol}">
+        <span class="swatch" style="background:${lcol}"></span> Zugeordnet: ${esc(segName(linkedSeg))}${mism?' <span style="font-weight:500">(Personen angepasst)</span>':''}
+        <span style="cursor:pointer;font-weight:700;margin-left:2px" title="Zuordnung lösen" onclick="unlinkExp('${ex.id}')">✕</span></span></div>`;
+    }
+    h+=`<div class="totals" style="margin:10px 0">
+      <div class="stat"><div class="k">Summe</div><div class="v">${eur(total)}</div></div>
+      <div class="stat"><div class="k">Personen</div><div class="v">${grp.length}</div></div>
+      <div class="stat"><div class="k">pro Person</div><div class="v">${eur(per)}</div></div></div>`;
+    // appliesTo
+    h+=`<label class="fld">Gilt für (wird geteilt) — Etappe wählen oder Personen einzeln an-/abhaken</label>
+      <div style="margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px">`;
+    S.segments.forEach(s=>{ const col=segColor(s.id); const act=linkedSeg===s.id;
+      h+=`<button class="seg-btn ${act?'active':''}" style="color:${col};border:1px solid ${col};background:${act?tint(col,0.18):tint(col,0.06)}" onclick="expFromSeg('${ex.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
+    h+=`</div><div class="checklist">`;
+    S.participants.forEach(p=>{
+      const on=(ex.appliesTo||[]).includes(p.id);
+      h+=`<label class="${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleExpPart('${ex.id}','${p.id}',this.checked)">${esc(p.name)}</label>`;
+    });
+    h+=`</div>`;
+    // payments
+    h+=`<label class="fld" style="margin-top:12px">Bezahlt von</label>`;
+    (ex.payments||[]).forEach(pm=>{
+      h+=`<div class="pay-row"><select onchange="updPay('${ex.id}','${pm.id}','paidBy',this.value)">${optList(pm.paidBy)}</select>
+        <input type="number" style="flex:0 0 110px" value="${pm.amount}" step="0.01" placeholder="€" onchange="updPay('${ex.id}','${pm.id}','amount',this.value)">
+        <button class="iconbtn" onclick="delPay('${ex.id}','${pm.id}')">✕</button></div>`;
+    });
+    h+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addPay('${ex.id}')">+ Zahlung</button></div>`;
+    card.innerHTML=h;c.appendChild(card);
+  });
+}
+function optList(sel){ return S.participants.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.name)}</option>`).join(""); }
+
+function renderErgebnis(){
+  const R=compute();
+  // header
+  const dh=document.getElementById("resHeader");
+  const dr=dateRangeText();
+  dh.innerHTML=`<h2>${esc(S.meta.title||"Tour")}</h2>
+    ${dr?`<div class="mini" style="margin:0 0 4px">📅 ${esc(dr)}</div>`:""}
+    ${S.meta.description?`<p class="hint" style="margin:0 0 6px">${esc(S.meta.description)}</p>`:""}
+    <div class="totals" style="margin-top:8px">
+      <div class="stat"><div class="k">Fahrtkosten gesamt</div><div class="v">${eur(R.totalDrive)}</div></div>
+      <div class="stat"><div class="k">Sonstige Ausgaben</div><div class="v">${eur(R.totalExp)}</div></div>
+      <div class="stat"><div class="k">Gesamtkosten</div><div class="v">${eur(R.totalDrive+R.totalExp)}</div></div>
+      <div class="stat"><div class="k">Teilnehmende</div><div class="v">${S.participants.length}</div></div>
+    </div>`;
+  // cost table
+  const ct=document.getElementById("costTable");
+  let h=`<thead><tr><th>Person</th><th class="num">Fahrtkosten</th><th class="num">Sonstige</th><th class="num">Eigener Anteil</th></tr></thead><tbody>`;
+  R.rows.slice().sort((a,b)=>b.eigenAnteil-a.eigenAnteil).forEach(r=>{
+    h+=`<tr><td>${esc(r.name)}</td><td class="num">${eur(r.fahrtAnteil)}</td><td class="num">${eur(r.sonstAnteil)}</td><td class="num"><b>${eur(r.eigenAnteil)}</b></td></tr>`;
+  });
+  const sumAnteil=R.rows.reduce((a,b)=>a+b.eigenAnteil,0);
+  h+=`<tr><td><b>Summe</b></td><td class="num"></td><td class="num"></td><td class="num"><b>${eur(sumAnteil)}</b></td></tr></tbody>`;
+  ct.innerHTML=h;
+  // balance table (grouped)
+  const bt=document.getElementById("balanceTable");
+  let bh=`<thead><tr><th>Person / Haushalt</th><th class="num">Ausgelegt</th><th class="num">Eigener Anteil</th><th class="num">Saldo</th></tr></thead><tbody>`;
+  R.grpArr.slice().sort((a,b)=>b.saldo-a.saldo).forEach(g=>{
+    const cls=g.saldo>0.005?'green':(g.saldo<-0.005?'red':'muted');
+    const txt=g.saldo>0.005?('+'+eur(g.saldo)):eur(g.saldo);
+    const memb=g.isGroup?`<div class="rp-sub">${esc(g.members.join(", "))}</div>`:"";
+    bh+=`<tr><td>${esc(g.name)}${memb}</td><td class="num">${eur(g.laidOut)}</td><td class="num">${eur(g.eigenAnteil)}</td><td class="num"><span class="pill ${cls}">${txt}</span></td></tr>`;
+  });
+  bh+=`</tbody>`;bt.innerHTML=bh;
+  // settlement
+  const st=document.getElementById("settlement");
+  if(R.settlement.length===0){ st.innerHTML='<p class="mini">Alles ausgeglichen — keine Zahlungen nötig.</p>'; }
+  else{
+    st.innerHTML=R.settlement.map(t=>`<div class="settle"><span class="from">${esc(t.from)}</span><span class="arrow">→</span><span class="to">${esc(t.to)}</span><span class="amt">${eur(t.amount)}</span></div>`).join("");
+    const tot=R.settlement.reduce((a,b)=>a+b.amount,0);
+    st.innerHTML+=`<p class="footnote">${R.settlement.length} Überweisung(en), Summe ${eur(tot)}.</p>`;
+  }
+  // seg cost detail
+  const sct=document.getElementById("segCostTable");
+  let sh=`<thead><tr><th>Etappe</th><th class="num">Gesamtkosten</th><th class="num">Personen</th><th class="num">pro Person</th></tr></thead><tbody>`;
+  R.segs.forEach(s=> sh+=`<tr><td>${esc(s.name)}</td><td class="num">${eur(R.segCost[s.id])}</td><td class="num">${R.segPersons[s.id]}</td><td class="num">${eur(R.segPer[s.id])}</td></tr>`);
+  sh+=`<tr><td><b>Summe</b></td><td class="num"><b>${eur(R.totalDrive)}</b></td><td></td><td></td></tr></tbody>`;
+  sct.innerHTML=sh;
+}
+
+/* ---------------- Mutations ---------------- */
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+// segments
+function addSegment(){const e=document.getElementById("seg_new");if(!e.value.trim())return;
+  const id=uid();S.segments.push({id,name:e.value.trim()});S.participation[id]=[];
+  S.participants.forEach(p=>{if(p.driver)p.driver.km[id]=0;});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
+function delSeg(id){if(!confirm("Etappe wirklich löschen?"))return;S.segments=S.segments.filter(x=>x.id!==id);delete S.participation[id];
+  S.participants.forEach(p=>{if(p.driver)delete p.driver.km[id];});renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+// drivers
+function addDriver(){const e=document.getElementById("drv_new"),r=document.getElementById("drv_rate");
+  if(!e.value.trim())return;const name=e.value.trim();
+  let p=S.participants.find(x=>x.name===name);
+  const km={};S.segments.forEach(s=>km[s.id]=0);
+  if(p){ p.driver={rate:+r.value||0,km,extras:[]}; }
+  else{ p={id:uid(),name,group:"",driver:{rate:+r.value||0,km,extras:[]}};S.participants.push(p); }
+  e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function makeDriver(id){const p=pById(id);if(!p||p.driver)return;const km={};S.segments.forEach(s=>km[s.id]=0);
+  p.driver={rate:0.30,km,extras:[]};renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast(p.name+" ist jetzt Fahrer:in");}
+function removeDriver(id){const p=pById(id);if(!p||!p.driver)return;
+  if(!confirm("„"+p.name+"“ als Fahrer:in entfernen?\nKilometer & Auslagen dieses Autos werden gelöscht. Die Person bleibt als Teilnehmer:in erhalten."))return;
+  p.driver=null;renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();toast("Fahrer:in entfernt");}
+function updKm(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.km[sid]=+v||0;renderFahrer();renderErgebnis();save();}}
+function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=+v||0;renderFahrer();renderErgebnis();save();}}
+function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0});renderFahrer();save();}}
+function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
+  if(e){e[f]=f==="amount"?(+v||0):v;renderErgebnis();save();}}
+function delExtra(id,eid){const p=pById(id);if(p&&p.driver){p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();}}
+// participants
+function addParticipant(){const e=document.getElementById("part_new"),g=document.getElementById("part_group");
+  if(!e.value.trim())return;S.participants.push({id:uid(),name:e.value.trim(),group:g.value.trim(),driver:null});
+  e.value="";g.value="";renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function updPartName(id,v){const p=pById(id);if(p){p.name=v;renderFahrer();renderAusgaben();renderErgebnis();save();}}
+function updPartGroup(id,v){const p=pById(id);if(p){p.group=v.trim();renderErgebnis();save();}}
+function delParticipant(id){if(!confirm("Person löschen? (auch aus allen Etappen/Ausgaben)"))return;
+  S.participants=S.participants.filter(x=>x.id!==id);
+  Object.keys(S.participation).forEach(k=>S.participation[k]=S.participation[k].filter(x=>x!==id));
+  S.expenses.forEach(ex=>{ex.appliesTo=(ex.appliesTo||[]).filter(x=>x!==id);ex.payments=(ex.payments||[]).filter(pm=>pm.paidBy!==id);});
+  renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+// participation
+function toggleSeg(sid,pid,on){let arr=S.participation[sid]||[];
+  if(on){if(!arr.includes(pid))arr.push(pid);}else{arr=arr.filter(x=>x!==pid);}
+  S.participation[sid]=arr;renderTeilnehmer();renderErgebnis();save();}
+function allSeg(sid,on){S.participation[sid]=on?S.participants.map(p=>p.id):[];renderTeilnehmer();renderErgebnis();save();}
+// expenses
+function addExpense(){S.expenses.push({id:uid(),name:"Neue Ausgabe",appliesTo:[],payments:[{id:uid(),paidBy:(S.participants[0]||{}).id,amount:0}]});
+  renderAusgaben();renderErgebnis();save();}
+function delExpense(id){S.expenses=S.expenses.filter(x=>x.id!==id);renderAusgaben();renderErgebnis();save();}
+function updExp(id,f,v){const ex=S.expenses.find(x=>x.id===id);if(ex){ex[f]=v;renderErgebnis();save();}}
+function toggleExpPart(id,pid,on){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;ex.appliesTo=ex.appliesTo||[];
+  if(on){if(!ex.appliesTo.includes(pid))ex.appliesTo.push(pid);}else{ex.appliesTo=ex.appliesTo.filter(x=>x!==pid);}
+  renderAusgaben();renderErgebnis();save();}
+function expFromSeg(id,sid){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.appliesTo=(S.participation[sid]||[]).slice();ex.segRef=sid;renderAusgaben();renderErgebnis();save();toast("Etappe „"+segName(sid)+"“ zugeordnet — Einzelne abwählbar");}}
+function unlinkExp(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.segRef="";renderAusgaben();save();}}
+function addPay(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.payments=ex.payments||[];ex.payments.push({id:uid(),paidBy:(S.participants[0]||{}).id,amount:0});renderAusgaben();save();}}
+function updPay(id,pid,f,v){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;const pm=ex.payments.find(x=>x.id===pid);
+  if(pm){pm[f]=f==="amount"?(+v||0):v;renderAusgaben();renderErgebnis();save();}}
+function delPay(id,pid){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.payments=ex.payments.filter(x=>x.id!==pid);renderAusgaben();renderErgebnis();save();}}
+
+/* ---------------- Import / Export / Reset ---------------- */
+/* Native-Brücke (macOS/Android); im Browser/PWA -> null, dann Fallback unten */
+function macBridge(){ return (window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.kajak)?window.webkit.messageHandlers.kajak:null; }
+function androidBridge(){ return (typeof window.KajakNative!=="undefined")?window.KajakNative:null; }
+function b64utf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+function exportName(ext){ return (S.meta.title||"kajak-tour").replace(/[^\w\-]+/g,"_").slice(0,40)+"."+ext; }
+
+function exportJSON(){
+  const text=JSON.stringify(S,null,2), name=exportName("json"), mime="application/json";
+  const ab=androidBridge(); if(ab){ ab.saveFile(name,mime,b64utf8(text)); toast("Exportiert"); return; }
+  const mb=macBridge();     if(mb){ mb.postMessage({type:"saveFile",name:name,mime:mime,b64:b64utf8(text)}); toast("Exportiert"); return; }
+  const blob=new Blob([text],{type:mime});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();toast("Exportiert");
+}
+
+function exportPDF(){
+  // Ergebnis-Reiter aktivieren und alle Detail-Bereiche aufklappen, damit das PDF vollständig ist
+  const tb=document.querySelector('#tabs button[data-tab="ergebnis"]'); if(tb) tb.click();
+  document.querySelectorAll('#tab-ergebnis details').forEach(d=>d.open=true);
+  const ab=androidBridge(); if(ab){ ab.exportPDF(); return; }
+  const mb=macBridge();     if(mb){ mb.postMessage({type:"exportPDF"}); return; }
+  setTimeout(()=>window.print(),120);
+}
+function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{S=JSON.parse(r.result);normalize();renderAll();toast("Importiert");}catch(e){alert("Datei konnte nicht gelesen werden.");}};
+  r.readAsText(f);ev.target.value="";}
+function resetExample(){if(!confirm("Beispiel-Tour (Una & Soča 2026) laden? Aktuelle Daten werden ersetzt."))return;S=exampleData();normalize();renderAll();toast("Beispiel geladen");}
+function clearAll(){if(!confirm("Wirklich alle Daten leeren?"))return;
+  S={meta:{title:"Neue Tour",rows:[]},segments:[],participants:[],participation:{},expenses:[]};renderAll();toast("Geleert");}
+function newTrip(skipConfirm){
+  if(!skipConfirm && !confirm("Neue, leere Fahrt anlegen?\nAlle aktuellen Eingaben werden gelöscht.\n(Mit „Beispiel laden“ holst du die Vorlage zurück.)"))return false;
+  S={meta:{title:"Neue Tour",rows:[]},segments:[],participants:[],participation:{},expenses:[]};
+  normalize();renderAll();
+  document.querySelector('#tabs button[data-tab="info"]').click();
+  document.getElementById("m_title").select&&document.getElementById("m_title").focus();
+  toast("Neue Fahrt angelegt");return true;}
+
+/* ---------------- Tabs & init ---------------- */
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");document.getElementById("tab-"+b.dataset.tab).classList.add("active");
+  if(b.dataset.tab==="ergebnis")renderErgebnis();
+  window.scrollTo(0,0);
+});
+document.getElementById("m_title").addEventListener("input",e=>{S.meta.title=e.target.value;updateSub();save();});
+document.getElementById("m_from").addEventListener("change",e=>{S.meta.dateFrom=e.target.value;updateSub();renderErgebnis();save();});
+document.getElementById("m_to").addEventListener("change",e=>{S.meta.dateTo=e.target.value;updateSub();renderErgebnis();save();});
+document.getElementById("m_desc").addEventListener("input",e=>{S.meta.description=e.target.value;renderErgebnis();save();});
+// enter-to-add
+["seg_new","drv_new","part_new","part_group"].forEach(id=>{
+  document.getElementById(id).addEventListener("keydown",e=>{if(e.key==="Enter"){
+    if(id==="seg_new")addSegment();else if(id==="drv_new"||id==="drv_rate")addDriver();else addParticipant();}});
+});
+/* ---------------- Wizard ---------------- */
+const WIZ_STEPS=[
+  {tab:"info",title:"1. Tour benennen",text:"Gib deiner Fahrt einen Titel, wähle den Reisezeitraum und trage optional eine Beschreibung ein."},
+  {tab:"teilnehmer",title:"2. Teilnehmende eintragen",text:"Trage alle Personen ein. Haushalte/Gruppen (z. B. Familien) werden am Ende im Saldo zusammengefasst."},
+  {tab:"fahrer",title:"3. Etappen anlegen",text:"Lege die Abschnitte der Tour an (z. B. Hinfahrt, Shuttle, Rückfahrt). Pro Etappe werden die Fahrtkosten später auf die Mitfahrenden geteilt."},
+  {tab:"fahrer",title:"4. Fahrer:innen & Kilometer",text:"Füge die Fahrer:innen hinzu und trage je Etappe die gefahrenen Kilometer sowie die €/km-Pauschale ein. Auslagen wie Vignette oder Maut kommen darunter dazu."},
+  {tab:"teilnahme",title:"5. Teilnahme pro Etappe",text:"Hake an, wer auf welcher Etappe mitgefahren ist. Die Etappenfarben helfen bei der Zuordnung."},
+  {tab:"ausgaben",title:"6. Sonstige Ausgaben",text:"Erfasse gemeinsame Ausgaben (Einkäufe, Campingplatz …): Betrag, für wen sie gilt (Knopf „= Etappe“ hilft) und wer bezahlt hat."},
+  {tab:"ergebnis",title:"7. Fertig — Ergebnis",text:"Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Über „Drucken/PDF“ oder „Export“ kannst du alles teilen."},
+];
+let wizStepIdx=0, wizActive=false;
+function startWizard(){
+  const fresh=confirm("Wizard starten.\n\nMöchtest du mit einer NEUEN, leeren Fahrt beginnen?\n\nOK = leer starten   ·   Abbrechen = aktuelle Daten behalten");
+  if(fresh) newTrip(true);
+  wizActive=true; wizStepIdx=0; document.body.classList.add("wiz-on");
+  document.getElementById("wizBar").classList.add("show"); wizRender();
+}
+function wizGo(d){
+  const n=wizStepIdx+d;
+  if(n<0)return;
+  if(n>=WIZ_STEPS.length){ wizClose(); toast("Wizard abgeschlossen 🎉"); return; }
+  wizStepIdx=n; wizRender();
+}
+function wizRender(){
+  const s=WIZ_STEPS[wizStepIdx];
+  document.querySelector('#tabs button[data-tab="'+s.tab+'"]').click();
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('wiz-hl'));
+  document.querySelector('#tabs button[data-tab="'+s.tab+'"]').classList.add('wiz-hl');
+  document.getElementById("wizStep").textContent="Schritt "+(wizStepIdx+1)+" / "+WIZ_STEPS.length;
+  document.getElementById("wizProg").style.width=Math.round((wizStepIdx+1)/WIZ_STEPS.length*100)+"%";
+  document.getElementById("wizTitle").textContent=s.title;
+  document.getElementById("wizText").textContent=s.text;
+  document.getElementById("wizBack").style.visibility=wizStepIdx===0?"hidden":"visible";
+  document.getElementById("wizNext").textContent=wizStepIdx===WIZ_STEPS.length-1?"Fertig ✓":"Weiter →";
+  window.scrollTo(0,0);
+}
+function wizClose(){
+  wizActive=false; document.body.classList.remove("wiz-on");
+  document.getElementById("wizBar").classList.remove("show");
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('wiz-hl'));
+}
+
+load();renderAll();
+
+/* ---------------- PWA: Service Worker ---------------- */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
