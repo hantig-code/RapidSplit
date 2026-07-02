@@ -1,7 +1,7 @@
 /* Kajak-Tour Kostenrechner — Service Worker
    Cache-first App-Shell, damit die App vollständig offline läuft.
    Bei jeder inhaltlichen Änderung CACHE_VERSION erhöhen. */
-const CACHE_VERSION = "kajak-v2app-v31";
+const CACHE_VERSION = "kajak-v2app-v32";
 const APP_SHELL = [
   "./",
   "./index.html",

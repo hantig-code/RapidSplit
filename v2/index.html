@@ -275,6 +275,7 @@
   .pill.muted{background:var(--bg-subtle);color:var(--muted)}
   .add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:12px}
   .add-row>div{flex:1;min-width:120px}
+  .add-row .btn.sm{min-height:44px}
   /* hervorgehobene Eingabe-Zone (hebt sich von der darunterliegenden Liste ab) */
   .add-zone{background:var(--brand-tint);border:1px solid color-mix(in srgb,var(--brand) 30%,transparent);
     border-radius:var(--r-md);padding:12px;margin-bottom:14px}
@@ -784,8 +785,8 @@ function exampleData(){
   ];
   // participants (master). drivers carry car data.
   const P = (name,group="",driver=null)=>({id:uid(),name,group,driver});
-  const pa = P("Olaf O.","",{rate:0.35,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[]});
-  const pb = P("Steve F.","",{rate:0.40,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[]});
+  const pa = P("Olaf O.","",{rate:0.35,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[{id:uid(),name:"Maut Österreich",amount:40,segs:["s1","s5"]}]});
+  const pb = P("Steve F.","",{rate:0.40,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[{id:uid(),name:"Permit Soča",amount:30,segs:["s4"]}]});
   const pc = P("Rush S.","",{rate:0.30,km:{s1:686,s2:247,s3:521,s4:100,s5:398},extras:[]});
   const pd = P("Emily J.","Familie Jackson",{rate:0.30,km:{s1:0,s2:90,s3:0,s4:76,s5:0},extras:[]});
   const pe=P("Nouria N."), pf=P("Tyler B."), pg=P("Rafa O."), ph=P("Adriene L."),
@@ -1012,9 +1013,10 @@ function compute(){
   });
   const grpArr=Object.values(groups);
   const settlement=settle(grpArr.map(g=>({name:g.name,amount:g.saldo})));
-  const totalDrive=Object.values(segCost).reduce((a,b)=>a+b,0);
+  const segTotal=Object.values(segCost).reduce((a,b)=>a+b,0);                 // km-Kosten je Etappe (ohne Auslagen)
+  const totalDrive=Object.values(fahrtAnteil).reduce((a,b)=>a+b,0);           // Fahrtkosten gesamt inkl. verteilter Fahrer-Auslagen
   const totalExp=expRows.reduce((a,b)=>a+b.total,0);
-  return {segs,segCost,segPersons,segPer,rows,grpArr,settlement,expRows,totalDrive,totalExp};
+  return {segs,segCost,segPersons,segPer,rows,grpArr,settlement,expRows,totalDrive,totalExp,segTotal};
 }
 function settle(balances){
   const cred=balances.filter(b=>b.amount>0.005).map(b=>({...b})).sort((a,b)=>b.amount-a.amount);
@@ -1285,7 +1287,7 @@ function renderErgebnis(){
   const sct=document.getElementById("segCostTable");
   let sh=`<thead><tr><th>Etappe</th><th class="num"><span class="th-full">Gesamtkosten</span><span class="th-short">Kosten</span></th><th class="num"><span class="th-full">Personen</span><span class="th-short">Pers.</span></th><th class="num"><span class="th-full">pro Person</span><span class="th-short">/Pers.</span></th></tr></thead><tbody>`;
   R.segs.forEach(s=> sh+=`<tr><td>${esc(s.name)}</td><td class="num">${eur(R.segCost[s.id])}</td><td class="num">${R.segPersons[s.id]}</td><td class="num">${eur(R.segPer[s.id])}</td></tr>`);
-  sh+=`<tr><td><b>Summe</b></td><td class="num"><b>${eur(R.totalDrive)}</b></td><td></td><td></td></tr></tbody>`;
+  sh+=`<tr><td><b>Summe</b></td><td class="num"><b>${eur(R.segTotal)}</b></td><td></td><td></td></tr></tbody>`;
   sct.innerHTML=sh;
 }
 
