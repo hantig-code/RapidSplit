@@ -39,6 +39,8 @@ Danach startet RapidSplit im eigenen Fenster und funktioniert vollständig offli
 | Ordner | Inhalt |
 |--------|--------|
 | [`v2/`](v2/) | **Die aktuelle App (Version 3)** — live unter [/RapidSplit/v2/](https://hantig-code.github.io/RapidSplit/v2/) |
+| [`android/`](android/) | **Quellcode der nativen Android-App** (WebView-Wrapper um die Offline-PWA, Gradle-Projekt, Paket `app.rapidsplit`) |
+| [`fastlane/`](fastlane/) | App-Store-Metadaten (Beschreibungen, Icon) für F-Droid & Co. |
 | [`v1/`](v1/) | 📦 Archiv: die ursprüngliche Version 1 („Kajak-Tour Kostenrechner"), weiterhin lauffähig unter [/RapidSplit/v1/](https://hantig-code.github.io/RapidSplit/v1/) |
 
 Die frühere Root-Adresse leitet automatisch zur aktuellen App weiter.
@@ -52,3 +54,25 @@ Die Rechenlogik ist gegen einen unabhängigen Vergleichsrechner mit über
 
 Die Beispiel-Tour nutzt zur Veranschaulichung Namen bekannter
 Wildwasser-Kajak-Fahrer:innen — rein illustrativ.
+
+## Android-App selbst bauen
+
+Die native Android-App ist ein schlanker WebView-Wrapper (keine externen
+Abhängigkeiten, keine Tracker) um die Offline-PWA. Bauen mit Gradle:
+
+```
+cd android
+./gradlew assembleRelease
+```
+
+Ergebnis: `android/app/build/outputs/apk/release/app-release-unsigned.apk`
+(benötigt JDK 17 und das Android SDK, compileSdk 34). Details zur
+F-Droid-Aufnahme: [`android/FDROID.md`](android/FDROID.md).
+
+## Lizenz
+
+RapidSplit ist Freie Software unter der
+[GNU General Public License v3.0](LICENSE) (GPL-3.0). Du darfst die App
+nutzen, untersuchen, ändern und weitergeben — abgeleitete, verbreitete
+Versionen müssen ebenfalls unter der GPL stehen. Name und Logo
+„RapidSplit" sind davon ausgenommen.
