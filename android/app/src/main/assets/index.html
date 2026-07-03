@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#eef3f5" id="metaTheme">
+<title>RapidSplit</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/favicon.png?v=20">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RapidSplit">
+<script>
+  /* Theme vor dem ersten Paint setzen (kein Flackern) */
+  (function(){try{var t=localStorage.getItem('kajak_theme');
+    if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+<style>
+  /* ============================================================
+     Designsystem "Ledger Stromlinie" (v2) — Fintech-Klarheit
+     in Refactoring-UI-Disziplin. Light + Dark, AA-geprüft.
+     ============================================================ */
+  :root{
+    /* Flächen (Tiefe über Stufen statt Linien) */
+    --bg:#eef3f5; --bg-subtle:#f7fafb; --card:#ffffff;
+    /* Text */
+    --ink:#0f2730; --ink-2:#33525e; --muted:#52707b;
+    /* Linien */
+    --line:#dbe6ea; --line-strong:#c3d2d7;
+    /* Marke — abgeleitet vom €-Logo (Teal-Anteil betont) */
+    --brand:#0f766e; --brand-d:#0a5b54; --brand-tint:#e1f0ee; --accent:#b89422;
+    --on-brand:#ffffff;
+    /* Semantik (AA-korrigiert) */
+    --green:#166534; --green-bg:#e7f6ec; --red:#b91c1c; --red-bg:#fdecec; --warn:#92400e;
+    --demo:#0d8f7e; --demo-bg:#e3f5f1;   /* grün/türkis für „Beispiel laden" */
+    /* Effekte */
+    --focus:#0f766e;
+    --shadow:0 1px 3px rgba(15,39,48,.08),0 4px 16px rgba(15,39,48,.06);
+    --sh-raised:0 -6px 24px rgba(15,39,48,.10);
+    --r-sm:8px; --r-md:12px; --r-pill:999px;
+    --navh:88px;
+  }
+  /* Dark Mode wird per Schalter über [data-theme] gesetzt (Vorgabe = OS, siehe Head-Skript) */
+  :root[data-theme="dark"]{
+    --bg:#0a1418; --bg-subtle:#10222a; --card:#15303a;
+    --ink:#eaf2f4; --ink-2:#b3c6cd; --muted:#8aa1a9;
+    --line:#244852; --line-strong:#33545f;
+    --brand:#33cdb4; --brand-d:#6fe3ce; --brand-tint:#0f302b; --accent:#d8bb52;
+    --on-brand:#062420;
+    --green:#4ade80; --green-bg:#0f2e1d; --red:#f87171; --red-bg:#34161a; --warn:#f59e0b;
+    --demo:#2dd4bf; --demo-bg:#10302c;   /* grün/türkis für „Beispiel laden" (Dark) */
+    --focus:#6fe3ce;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+    --sh-raised:0 -8px 24px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  html{height:100%}
+  html,body{margin:0;padding:0;overflow-x:hidden;overflow-x:clip}
+  /* Bars (Titel-/Navigationsleiste) liegen als fixe Overlays über dem Scroller <main>.
+     Nur <main> scrollt → beim Über-Scrollen zeigt nur der Inhalt den Bounce, die Leisten bleiben statisch. */
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%;
+    padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);
+    height:100vh;height:100dvh;overflow:hidden;position:relative}
+  /* inline-SVG-Icons via <use href="#i-..."> */
+  .ic{width:1em;height:1em;flex:0 0 auto;vertical-align:-.14em;fill:none;stroke:currentColor;
+    stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .ic.fill{fill:currentColor;stroke:none}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+  /* Textauswahl in Markenfarbe; KEIN aufblitzendes Touch-Rechteck beim Berühren */
+  ::selection{background:color-mix(in srgb,var(--brand) 26%,transparent);color:var(--ink)}
+  ::-moz-selection{background:color-mix(in srgb,var(--brand) 26%,transparent);color:var(--ink)}
+  html{-webkit-tap-highlight-color:transparent}
+  /* Auf Touch-Geräten Hover-Flächen neutralisieren (kein „hängender" Hover-Flash nach dem Tippen) */
+  @media (hover:none){
+    .btn:hover{background:var(--brand)}
+    .btn.ghost:hover{background:var(--brand-tint);filter:none}
+    .btn.demo:hover{background:var(--demo-bg);filter:none}
+    .btn.danger:hover{background:var(--card)}
+    nav.tabs button:hover{background:none;color:var(--muted)}
+    nav.tabs button.active:hover{background:var(--brand-d);color:var(--on-brand)}
+    .picker-opt:hover{background:var(--card);border-color:var(--line)}
+    .picker-btn:hover,.seg-pill:hover{border-color:var(--line)}
+    .seg-toggle button:not(.on):hover{color:var(--muted)}
+    .drag-handle:hover{background:none;color:var(--muted)}
+    .hide-link:hover{background:none;color:var(--muted)}
+    .iconbtn:hover{background:none;color:inherit}
+    .wiz-close:hover,.theme-switch:hover{background:none;filter:none}
+  }
+  /* ---------- Topbar / Header (frosted, immersiv: Inhalt scrollt durchscheinend darunter & hinter die OS-Statusleiste) ----------
+     DESKTOP: EIN einziger frosted-Layer auf #topbar (sauber & nahtlos über Titel + Tabs), volle Breite,
+     solide (nicht Verlaufs-)Trennlinie unten. MOBIL wird der frosted-Effekt stattdessen auf header.app
+     (oben) bzw. die fixe nav.tabs (unten) gelegt und auf #topbar entfernt — sonst würde #topbar zum
+     Containing-Block der fixed Mobile-Tab-Leiste und diese nach oben rutschen. */
+  #topbar{position:fixed;top:0;left:0;right:0;z-index:50;
+    background-color:var(--card);
+    background-image:linear-gradient(var(--brand),var(--brand));
+    background-size:100% 2px;background-position:0 100%;background-repeat:no-repeat;
+    box-shadow:0 6px 18px rgba(15,39,48,.05)}
+  @supports (backdrop-filter:blur(18px)){
+    #topbar{background-color:color-mix(in srgb,var(--card) 70%,transparent);
+      backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
+  }
+  /* Statischer, einzeiliger Header: Logo + „RapidSplit" links, Dark-Mode-Schalter rechts */
+  header.app{padding:max(12px,env(safe-area-inset-top),var(--sys-top,0px)) max(16px,calc((100% - 920px)/2)) 11px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  header.app .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  /* Dark-Mode-Schiebeschalter */
+  .theme-switch{flex:0 0 auto;position:relative;width:58px;height:32px;border-radius:var(--r-pill);
+    border:1px solid var(--line-strong);background:var(--bg-subtle);cursor:pointer;padding:0;display:block;
+    transition:background .2s,border-color .2s}
+  .theme-switch:hover{filter:brightness(.98)}
+  .theme-switch .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.3,.9,.3,1);display:flex;align-items:center;justify-content:center}
+  .theme-switch .knob .ic{font-size:15px}
+  .theme-switch .k-sun{color:#b45309;display:block}
+  .theme-switch .k-moon{display:none}
+  /* Dark: heller Knopf auf mittlerem Track + dunkles Mond-Icon = klarer Kontrast */
+  :root[data-theme="dark"] .theme-switch{background:var(--line-strong);border-color:transparent}
+  :root[data-theme="dark"] .theme-switch .knob{transform:translateX(26px);background:var(--brand-d)}
+  :root[data-theme="dark"] .theme-switch .k-sun{display:none}
+  :root[data-theme="dark"] .theme-switch .k-moon{display:block;color:#06222b}
+  header.app .brand-logo{width:30px;height:30px;border-radius:8px;flex:0 0 auto;box-shadow:0 1px 2px rgba(15,39,48,.22)}
+  header.app .brand-name{font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.1;color:var(--ink)}
+  /* Tour-Sub-Header (Tour-Titel + Reisezeitraum) im Tour-Reiter */
+  .tour-subhead{margin:0 2px 16px}
+  .tour-subhead h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1.15;color:var(--ink)}
+  .tour-subhead .sub{margin:5px 0 0;font-size:13.5px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
+  .tour-subhead .sub .ic{font-size:14px;color:var(--brand)}
+  /* €-Symbol in Geld-Eingabefeldern */
+  .cur{position:relative;display:inline-flex;align-items:center}
+  .cur::before{content:"€";position:absolute;left:10px;color:var(--muted);font-weight:600;font-size:13.5px;pointer-events:none;z-index:1}
+  .cur>input{padding-left:22px}
+  /* Native-artiges Modal (gleiches Designschema, konsistent in der Android-App) */
+  .modal-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;overflow-y:auto;
+    padding:24px;padding-bottom:max(24px,env(safe-area-inset-bottom));
+    background:rgba(8,18,22,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .modal-overlay.show{display:flex;animation:fade .14s ease}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 56px rgba(8,18,22,.4);
+    max-width:380px;width:100%;padding:22px;animation:modalpop .18s cubic-bezier(.2,.9,.3,1)}
+  @keyframes modalpop{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
+  .modal-title{margin:0 0 9px;font-size:17px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:9px}
+  .modal-title .ic{font-size:20px;flex:0 0 auto}
+  .modal-title.danger .ic{color:var(--red)}
+  .modal-msg{margin:0 0 20px;font-size:14px;color:var(--ink-2);line-height:1.55;white-space:pre-line}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+  .modal-actions .btn{min-width:104px;justify-content:center}
+  body.modal-open{overflow:hidden}
+  /* Personen-Auswahl (Popup wie „Beispiel laden") statt nativem Dropdown */
+  .picker-list{display:flex;flex-direction:column;gap:5px;max-height:min(52vh,420px);overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0 0 16px;padding:1px}
+  .picker-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);
+    border-radius:var(--r-sm);background:var(--card);color:var(--ink);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;min-height:52px;transition:background .12s,border-color .12s}
+  .picker-opt:hover{background:var(--bg-subtle);border-color:var(--line-strong)}
+  .picker-opt.on{border-color:var(--brand);background:var(--brand-tint)}
+  .picker-opt>span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .picker-opt .av{flex:0 0 auto}
+  .picker-opt>.ic{flex:0 0 auto;color:var(--brand);font-size:18px}
+  .picker-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;width:100%;
+    padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card);color:var(--ink);
+    font-family:inherit;font-size:16px;min-height:44px;cursor:pointer}
+  :root[data-theme="dark"] .picker-btn{background:var(--bg-subtle);border-color:var(--line-strong)}
+  .picker-btn.placeholder{color:var(--muted);font-weight:400}
+  .picker-btn:hover{border-color:var(--line-strong)}
+  .picker-btn>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .picker-btn>.ic{flex:0 0 auto;color:var(--muted);font-size:18px;transform:rotate(90deg)}
+  /* ---------- Navigation (Desktop: Underline-Tabs + Strömungslinie) ---------- */
+  /* Desktop: Tab-Leiste transparent (der frosted #topbar zeigt sich durchgängig über die volle Breite); Buttons am 920er-Inhalt zentriert */
+  nav.tabs{position:relative;display:flex;gap:2px;background:transparent;padding:0 max(8px,calc((100% - 920px)/2)) 6px;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  nav.tabs button{flex:0 0 auto;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:7px;
+    padding:13px 12px;min-height:48px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;
+    border-bottom:3px solid transparent;border-radius:var(--r-pill);transition:none}   /* kein Ein-/Ausblenden der Auswahl (Start-Flash & „De-Select"-Artefakt auf Android) */
+  nav.tabs button .ic{font-size:17px}
+  nav.tabs button .nav-lbl-m{display:none}
+  nav.tabs button:hover{color:var(--brand-d);background:var(--bg-subtle)}
+  nav.tabs button.active{color:var(--on-brand);background:var(--brand-d);border-bottom-color:transparent;border-radius:var(--r-pill)}
+  nav.tabs button.active:hover{background:var(--brand-d);color:var(--on-brand)}
+  :root[data-theme="dark"] nav.tabs button.active,:root[data-theme="dark"] nav.tabs button.active:hover{background:var(--brand)}
+  main{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;padding:128px 14px 28px}  /* padding-top wird per JS an die Leistenhöhe + Abstand angepasst */
+  .tab{display:none;max-width:920px;margin-left:auto;margin-right:auto}
+  .tab.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  /* ---------- Karten ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;margin:0 0 14px;box-shadow:var(--shadow)}
+  .card.accent{border-left:3px solid var(--brand)}
+  .card h2{margin:0 0 4px;font-size:15.5px;font-weight:700;letter-spacing:-.1px;color:var(--brand-d);display:flex;align-items:center;gap:8px}
+  .card h2 .ic{font-size:17px;color:var(--brand)}
+  .card .hint{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+  label.fld{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:0 0 4px}
+  input[type=text],input[type=number],input[type=date],textarea,select{width:100%;padding:11px 12px;border:1px solid var(--line);
+    border-radius:var(--r-sm);font-size:16px;background:var(--card);color:var(--ink);font-family:inherit;min-height:44px}
+  :root[data-theme="dark"] input[type=text],:root[data-theme="dark"] input[type=number],:root[data-theme="dark"] input[type=date],:root[data-theme="dark"] textarea,:root[data-theme="dark"] select{background:var(--bg-subtle);border-color:var(--line-strong)}
+  input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px rgba(14,116,144,.18)}
+  input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+  textarea{resize:vertical;min-height:72px;line-height:1.45}
+  .swatch{display:inline-block;width:11px;height:11px;border-radius:3px;flex:0 0 auto;vertical-align:middle}
+  /* Etappen-Liste (sortierbar per Drag&Drop) */
+  .seg-item{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .seg-item.dragging{opacity:.75;background:var(--bg-subtle);border-radius:var(--r-sm);box-shadow:var(--shadow)}
+  .drag-handle{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:34px;min-height:40px;padding:0;
+    border:none;background:none;color:var(--muted);cursor:grab;touch-action:none;border-radius:var(--r-sm)}
+  .drag-handle:hover{color:var(--brand-d);background:var(--bg-subtle)}
+  .drag-handle:active{cursor:grabbing}
+  .drag-handle .ic{font-size:18px}
+  /* ---------- Buttons (gilt für <button> und <a class="btn">) ---------- */
+  .btn{background:var(--brand);color:var(--on-brand);border:none;border-radius:var(--r-sm);padding:10px 16px;
+    min-height:44px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;line-height:1;transition:background .15s,transform .05s;text-decoration:none}
+  .btn .ic{font-size:16px}
+  .btn:hover{background:var(--brand-d)}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:var(--brand-tint);color:var(--brand-d);border:1px solid color-mix(in srgb,var(--brand) 40%,transparent)}
+  .btn.ghost:hover{background:var(--brand-tint);filter:brightness(.96)}
+  .btn.sm{padding:7px 12px;min-height:40px;font-size:13px}
+  .btn.danger{background:var(--card);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 40%,transparent)}
+  .btn.demo{background:var(--demo-bg);color:var(--demo);border:1px solid color-mix(in srgb,var(--demo) 45%,transparent)}
+  .btn.demo:hover{background:var(--demo-bg);filter:brightness(.97)}
+  /* Ko-fi-Button im App-Stil (Marke wie „+ Etappe"); Herz in der Tasse bleibt rot */
+  .kofi-btn .kofi-ic{flex:0 0 auto}
+  /* dezenter „Ausblenden"-Link in Kartenköpfen */
+  .hide-link{flex:0 0 auto;background:none;border:none;color:var(--muted);font-size:12.5px;font-weight:600;cursor:pointer;
+    padding:5px 7px;border-radius:7px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .hide-link .ic{font-size:14px}
+  .hide-link:hover{color:var(--ink-2);background:var(--bg-subtle)}
+  /* Schiebeschalter-Option (z. B. Familien zusammenfassen) */
+  .opt-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:13.5px;font-weight:600;color:var(--ink-2);margin:2px 0 14px}
+  .opt-toggle input{position:absolute;opacity:0;width:0;height:0}
+  .opt-track{position:relative;flex:0 0 auto;width:44px;height:26px;border-radius:var(--r-pill);background:var(--line-strong);transition:background .2s}
+  .opt-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35);transition:transform .2s}
+  .opt-toggle input:checked + .opt-track{background:var(--brand)}
+  .opt-toggle input:checked + .opt-track .opt-knob{transform:translateX(18px)}
+  .opt-toggle input:focus-visible + .opt-track{outline:3px solid var(--focus);outline-offset:2px}
+  .btn.danger:hover{background:var(--red-bg)}
+  .iconbtn{background:none;border:none;color:var(--muted);cursor:pointer;line-height:0;padding:11px;border-radius:var(--r-sm);
+    display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
+  .iconbtn .ic{font-size:18px}
+  .iconbtn:hover{background:var(--red-bg);color:var(--red)}
+  .seg-btn{border-radius:var(--r-pill);padding:6px 12px;min-height:40px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1}
+  .seg-btn.active{box-shadow:0 0 0 2px var(--card) inset,0 0 0 3px currentColor}
+  .link-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  /* ---------- Tabellen ---------- */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;border-radius:var(--r-sm)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:100%}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{color:var(--ink-2)}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);font-weight:700;
+    background:var(--bg-subtle);position:sticky;top:0;z-index:3;border-bottom:1px solid var(--line-strong)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  td.num{color:var(--ink);font-weight:600}
+  td.sticky-col{position:sticky;left:0;background:var(--bg-subtle);z-index:2;color:var(--ink)}
+  th.sticky-col{position:sticky;left:0;top:0;background:var(--bg-subtle);z-index:4;color:var(--ink)}
+  tr.sumrow td{background:var(--bg-subtle);font-weight:700;color:var(--ink)}
+  table input[type=number]{padding:7px 8px;font-size:16px;min-width:66px;min-height:40px;border-radius:var(--r-sm)}
+  table input[type=text]{padding:7px 8px;font-size:16px;min-width:120px;min-height:40px;border-radius:var(--r-sm)}
+  /* Segmentierter Regler (z. B. Abrechnungsart €/km ⇄ Sprit, global für alle Fahrer:innen) */
+  .seg-toggle{display:flex;gap:3px;margin:2px 0 14px;padding:3px;background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--r-pill)}
+  .seg-toggle button{flex:1 1 0;border:none;background:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:9px 12px;border-radius:var(--r-pill);min-height:38px;white-space:nowrap;transition:background .15s,color .15s}
+  .seg-toggle button.on{background:var(--brand);color:var(--on-brand);box-shadow:var(--shadow)}
+  .seg-toggle button:not(.on):hover{color:var(--brand-d)}
+  .chk{width:20px;height:20px;accent-color:var(--brand);cursor:pointer}
+  .th-short{display:none}
+  /* ---------- Pills (Saldo mit ▲/▼) ---------- */
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-pill);font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+  .pill .ic{font-size:12px}
+  .pill.green{background:var(--green-bg);color:var(--green)}
+  .pill.red{background:var(--red-bg);color:var(--red)}
+  .pill.muted{background:var(--bg-subtle);color:var(--muted)}
+  .add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:12px}
+  .add-row>div{flex:1;min-width:120px}
+  .add-row .btn.sm{min-height:44px}
+  /* hervorgehobene Eingabe-Zone (hebt sich von der darunterliegenden Liste ab) */
+  .add-zone{background:var(--brand-tint);border:1px solid color-mix(in srgb,var(--brand) 30%,transparent);
+    border-radius:var(--r-md);padding:12px;margin-bottom:14px}
+  .add-zone .fld{color:var(--brand-d)}
+  /* Segment-Umschalter (Erfassungsart Fahrtkosten) */
+  .segmented{display:flex;width:100%;background:var(--bg-subtle);border:1px solid var(--line);
+    border-radius:var(--r-pill);padding:3px;gap:3px}
+  .segmented button{flex:1 1 0;min-width:0;border:none;background:none;cursor:pointer;border-radius:var(--r-pill);
+    padding:9px 10px;min-height:42px;font-size:13px;font-weight:600;color:var(--muted);
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;transition:background .15s,color .15s}
+  .segmented button .ic{font-size:16px;flex:0 0 auto}
+  .segmented button.active{background:var(--brand);color:var(--on-brand);box-shadow:var(--shadow)}
+  /* ausklappbare Karten-Überschrift im Auswertung-Reiter */
+  summary.as-h2{font-size:15.5px;font-weight:700;color:var(--brand-d);letter-spacing:-.1px}
+  summary.as-h2 .ic{font-size:17px;color:var(--brand)}
+  #m_desc{min-height:104px}
+  /* Etappen-Auswahl als Pillen (Ausgaben) */
+  .seg-pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+  .seg-pill{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r-pill);padding:8px 13px;min-height:42px;font-size:13.5px;font-weight:600;color:var(--ink-2);
+    cursor:pointer;user-select:none;transition:background .12s,color .12s,border-color .12s}
+  .seg-pill .ic{font-size:14px}
+  .seg-pill .swatch{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .seg-pill:hover{border-color:var(--line-strong)}
+  .seg-pill.on{background:var(--c,var(--brand));color:#fff;border-color:transparent}
+  .seg-pill.on .swatch{background:#fff !important;opacity:.92}
+  .seg-pill:has(:focus-visible),.seg-pill:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  /* ---------- Statkacheln ---------- */
+  .totals{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 0}
+  .stat{flex:1;min-width:140px;background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
+  .stat.anchor{background:var(--brand-tint);border-color:transparent}
+  .stat .k{font-size:11.5px;color:var(--muted);font-weight:600}
+  .stat .v{font-size:19px;font-weight:700;color:var(--brand-d);margin-top:3px;font-variant-numeric:tabular-nums;line-height:1.2}
+  .stat .v.neg{color:var(--red)}
+  #resHeader .totals .stat .v{font-size:26px;font-weight:800;line-height:1.1}
+  #resHeader .totals .stat.anchor .v{font-size:32px;color:var(--ink)}
+  /* ---------- Etappen-Blöcke / Chips ---------- */
+  .seg-block{border:1px solid var(--line);border-radius:var(--r-md);padding:12px;margin-bottom:10px;background:var(--bg-subtle)}
+  .seg-block h3{margin:0 0 8px;font-size:14px;font-weight:700;color:var(--brand-d);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .checklist{display:flex;flex-wrap:wrap;gap:7px}
+  .checklist label{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r-pill);padding:8px 13px;min-height:44px;font-size:14px;color:var(--ink-2);cursor:pointer;user-select:none;transition:background .12s,color .12s,border-color .12s}
+  .checklist label .ic{font-size:14px;opacity:0;width:0;margin-right:-6px;transition:opacity .12s}
+  .checklist label.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+  .checklist label.on .ic{opacity:1;width:1em;margin-right:0}
+  .checklist label:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+  .checklist input{position:absolute;opacity:0;width:0;height:0}
+  .pay-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .pay-row select,.pay-row input{flex:1;min-width:92px}
+  .pay-row .iconbtn{flex:0 0 auto;min-width:40px;padding:9px}
+  /* Teilnehmer-Liste (umbruchfähig, kein horizontales Scrollen) */
+  .plist{display:flex;flex-direction:column}
+  .prow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .prow:first-child{padding-top:2px}
+  .prow:last-child{border-bottom:none;padding-bottom:2px}
+  .prow .p-name{flex:2 1 150px;min-width:0;font-weight:600}
+  .prow .p-group{flex:1 1 130px;min-width:0}
+  .prow .drv-toggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 13px;
+    border:1px solid var(--line);border-radius:var(--r-pill);cursor:pointer;color:var(--ink-2);font-size:13px;font-weight:600;
+    user-select:none;background:var(--card);transition:background .12s,color .12s,border-color .12s;white-space:nowrap}
+  .prow .drv-toggle .ic{font-size:16px}
+  .prow .drv-toggle input{position:absolute;opacity:0;width:0;height:0}
+  .prow .drv-toggle.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+  .prow .drv-toggle:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+  .prow .iconbtn{flex:0 0 auto}
+  /* ---------- Avatare + Anteils-Balken (additive Daten-Viz) ---------- */
+  .av{flex:0 0 auto;width:30px;height:30px;border-radius:var(--r-pill);display:inline-flex;align-items:center;justify-content:center;
+    font-size:11.5px;font-weight:700;letter-spacing:.2px;background:color-mix(in srgb,var(--c,#0e7490) 20%,var(--card));
+    color:color-mix(in srgb,var(--c,#0e7490) 72%,#000);line-height:1}
+  :root[data-theme="dark"] .av{background:color-mix(in srgb,var(--c,#22b8d6) 30%,var(--card));color:color-mix(in srgb,var(--c,#22b8d6) 60%,#fff)}
+  .bar{height:8px;border-radius:var(--r-pill);background:var(--bg-subtle);overflow:hidden;margin-top:6px;max-width:220px}
+  .bar>i{display:block;height:100%;border-radius:var(--r-pill);transition:width .3s ease}
+  .rp-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  /* ---------- Settle (Held: wer zahlt wem) ---------- */
+  .settle{display:flex;align-items:center;gap:9px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);
+    margin-bottom:8px;background:var(--bg-subtle);flex-wrap:wrap;min-height:44px}
+  .settle .from{font-weight:600;color:var(--red)}
+  .settle .to{font-weight:600;color:var(--green)}
+  .settle .arrow{color:var(--muted);font-size:18px;display:inline-flex}
+  .settle .amt{margin-left:auto;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;color:var(--brand-d)}
+  /* ---------- Sonstiges ---------- */
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .footnote{font-size:12px;color:var(--muted);margin-top:8px}
+  .banner{background:var(--bg-subtle);border-left:3px solid var(--brand);color:var(--ink-2);border-radius:var(--r-md);
+    padding:12px 14px;font-size:13px;margin-bottom:14px;display:flex;gap:9px;align-items:flex-start}
+  .banner .ic{font-size:17px;color:var(--brand);flex:0 0 auto;margin-top:1px}
+  .warn-txt{color:var(--warn);font-weight:600}
+  details summary{cursor:pointer;font-weight:600;color:var(--brand-d);font-size:14px;list-style:none;display:flex;align-items:center;gap:7px}
+  details summary::-webkit-details-marker{display:none}
+  details summary .ic{font-size:15px;transition:transform .2s}
+  details[open] summary .ic{transform:rotate(90deg)}
+  .right{text-align:right}
+  .mini{font-size:12px;color:var(--muted);font-weight:500}
+  /* ---------- Wizard ---------- */
+  body.wiz-on main{padding-bottom:200px}
+  /* bottom folgt der eingeblendeten Tastatur (--kb-*), damit der Wizard nie verdeckt wird */
+  .wiz-bar{position:fixed;left:0;right:0;bottom:max(var(--kb-vv,0px), var(--kb-native,0px));z-index:80;background:var(--card);border-top:1px solid var(--line);
+    box-shadow:var(--sh-raised);border-radius:16px 16px 0 0;transition:bottom .18s ease;
+    padding:14px 16px calc(14px + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)));display:none}
+  .wiz-bar.show{display:block;animation:wizup .25s ease}
+  @keyframes wizup{from{transform:translateY(100%)}to{transform:none}}
+  .wiz-inner{max-width:920px;margin:0 auto}
+  .wiz-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .wiz-step{font-size:11.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.4px}
+  .wiz-prog{flex:1;height:6px;background:var(--brand-tint);border-radius:var(--r-pill);overflow:hidden}
+  .wiz-prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));border-radius:var(--r-pill);transition:width .3s}
+  .wiz-close{background:none;border:none;color:var(--muted);cursor:pointer;padding:8px;line-height:0;border-radius:var(--r-sm);min-width:40px;min-height:40px}
+  .wiz-close .ic{font-size:18px}
+  .wiz-close:hover{background:var(--bg-subtle)}
+  .wiz-title{font-weight:700;font-size:15.5px;color:var(--ink);margin:0 0 2px}
+  .wiz-text{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5}
+  .wiz-nav{display:flex;gap:8px;align-items:center}
+  .wiz-nav .spacer{flex:1}
+  nav.tabs button.wiz-hl{animation:wpulse 1.3s ease-in-out infinite}
+  @keyframes wpulse{0%,100%{background:transparent}50%{background:var(--brand-tint)}}
+  /* ---------- Toast ---------- */
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:var(--r-pill);font-size:13.5px;font-weight:600;
+    box-shadow:var(--shadow);opacity:0;transition:.25s;z-index:100;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* ============================================================
+     MOBILE: dieselbe nav.tabs wird zur fixen Bottom-Tab-Bar
+     ============================================================ */
+  @media (max-width:720px){
+    :root{--navh:72px}
+    header.app .brand-name{font-size:19px}
+    .tour-subhead h1{font-size:20px}
+    /* Mobil: kein frosted-Layer auf #topbar (würde die fixe Bottom-Nav einfangen) → Frost auf header.app */
+    #topbar{box-shadow:none;border-bottom:1px solid var(--line);background:transparent;background-image:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+    header.app{background-color:var(--card)}
+    @supports (backdrop-filter:blur(18px)){
+      header.app{background-color:color-mix(in srgb,var(--card) 70%,transparent);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%)}
+    }
+    .settle .amt{margin-left:0;width:100%;text-align:right}
+    nav.tabs{position:fixed;left:0;right:auto;width:100vw;bottom:0;top:auto;z-index:60;max-width:none;margin:0;gap:0;overflow:hidden;
+      padding:6px 4px calc(6px + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)));box-shadow:var(--sh-raised);
+      background-color:var(--card);
+      background-image:linear-gradient(var(--brand),var(--brand));
+      background-size:100% 2px;background-position:0 0;background-repeat:no-repeat}
+    @supports (backdrop-filter:blur(20px)){
+      nav.tabs{background-color:color-mix(in srgb,var(--card) 70%,transparent);
+        backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%)}
+    }
+    nav.tabs button{flex:1 1 0;min-width:0;flex-direction:column;gap:3px;padding:6px 2px;min-height:56px;
+      border-bottom:none;border-radius:10px;font-size:10.5px;font-weight:600;color:var(--muted)}
+    nav.tabs button .ic{font-size:22px}
+    nav.tabs button .nav-lbl{display:none}
+    nav.tabs button .nav-lbl-m{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1.28;padding-bottom:1px}
+    nav.tabs button:hover{background:none}
+    nav.tabs button.active{color:var(--on-brand);background:var(--brand-d);box-shadow:none;border-radius:var(--r-pill)}
+    main{padding-top:72px;padding-left:12px;padding-right:12px;padding-bottom:calc(var(--navh) + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)))}
+    body.wiz-on nav.tabs{display:none}
+    .toast{bottom:calc(var(--navh) + max(env(safe-area-inset-bottom), var(--sys-bottom,0px)) + 12px)}
+    .stat .v{font-size:17px}
+    #resHeader .totals{display:grid;grid-template-columns:1fr 1fr}
+    #resHeader .totals .stat{min-width:0}
+    #resHeader .totals .stat .v{font-size:21px;white-space:nowrap}
+    #resHeader .totals .stat.anchor .v{font-size:24px}
+    /* Ergebnis-Tabellen kompakter, damit sie ohne Seitwärts-Scrollen passen */
+    #costTable td,#segCostTable td,#balanceTable td{padding:6px 5px;font-size:12px}
+    #costTable th,#segCostTable th,#balanceTable th{padding:6px 5px;font-size:10px;letter-spacing:.1px}
+    #balanceTable td:nth-child(2),#balanceTable th:nth-child(2){display:none}
+    #balanceTable .bar{max-width:96px}
+    #balanceTable .av{width:26px;height:26px;font-size:10.5px}
+    #balanceTable .rp-sub{white-space:normal}
+    .th-full{display:none}
+    .th-short{display:inline}
+  }
+  @media (max-width:360px){
+    nav.tabs button{font-size:9.5px}
+    nav.tabs button .ic{font-size:20px}
+  }
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+    nav.tabs button.wiz-hl{animation:none;background:var(--brand-tint)}
+  }
+  /* ---------- PDF / Druck: nur das Ergebnis, hell & monochrom-lesbar ---------- */
+  @media print{
+    @page{ margin:14mm 12mm; }
+    /* PDF/Druck IMMER im hellen Day-Mode – auch wenn die App im Dark-Mode läuft
+       (dark hat höhere Spezifität, daher hier explizit mit überschreiben) */
+    :root, :root[data-theme="dark"]{
+      --bg:#fff; --bg-subtle:#f4f6f7; --card:#fff; --ink:#0f2730; --ink-2:#33525e; --muted:#52707b;
+      --line:#d0d8dc; --line-strong:#c3d2d7; --brand:#0b5d72; --brand-d:#0b5d72; --brand-tint:#eef4f6; --accent:#0891b2;
+      --green:#166534; --green-bg:#e7f6ec; --red:#b91c1c; --red-bg:#fdecec; --warn:#92400e; --on-brand:#fff;
+    }
+    :root[data-theme="dark"] input,:root[data-theme="dark"] textarea,:root[data-theme="dark"] select,
+    :root[data-theme="dark"] .picker-btn{ background:#fff !important; color:#0f2730 !important; }
+    #topbar,.wiz-bar,.toast,.no-print,nav.tabs{ display:none !important; }
+    /* Scroll-Modell (main = fixer Scroller) für den Druck in normalen Fluss zurücksetzen → alle Seiten */
+    html,body{ height:auto !important; overflow:visible !important; position:static !important; }
+    body{ background:#fff; font-size:12px; }
+    main{ position:static !important; inset:auto !important; height:auto !important; overflow:visible !important;
+      max-width:none !important; margin:0 !important; padding:0 !important; }
+    .tab{ display:none !important; }
+    .tab.active{ display:block !important; max-width:none !important; margin:0 !important; }
+    .card{ box-shadow:none !important; border:1px solid var(--line) !important; break-inside:avoid; margin-bottom:10px; }
+    .settle,.seg-block,.stat{ break-inside:avoid; }
+    details>*:not(summary){ display:block !important; }
+    .av,.pill,.bar,.bar>i,.stat.anchor{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .bar>i{ outline:1px solid #888; }
+    a{ color:inherit; text-decoration:none; }
+  }
+</style>
+</head>
+<body>
+<!-- inline-SVG-Icon-Sprite (offline, currentColor) -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <symbol id="i-kayak" viewBox="0 0 24 24"><path d="M3 12c3 2 15 2 18 0M3 12c3-2 15-2 18 0M6.5 8l11 8"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 3v18M5 4h11l-2 3 2 3H5"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M16 6a3 3 0 0 1 0 6"/><path d="M21 20c0-2.5-2-4-4.5-4.5"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h14l-1.5-5a2 2 0 0 0-1.9-1.4H8.4A2 2 0 0 0 6.5 12L5 17z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3v18l2-1 2 1 2-1 2 1 2-1 2 1V3l-2 1-2-1-2 1-2-1-2 1L6 3z"/><path d="M9 8h6M9 12h6"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7l-2.5 5a2.5 2.5 0 0 0 5 0L5 7zM19 7l-2.5 5a2.5 2.5 0 0 0 5 0L19 7z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 10-11"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 7l6 10H6z"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 17l6-10H6z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M8 14h8v6H8z"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2.2 4.8-4.8 2.2 2.2-4.8z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-people3" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.6"/><path d="M7.5 18.5c0-2.5 2-4.3 4.5-4.3s4.5 1.8 4.5 4.3"/><circle cx="5" cy="9" r="2.1"/><path d="M2 18c0-1.9 1.3-3.4 3-3.7"/><circle cx="19" cy="9" r="2.1"/><path d="M22 18c0-1.9-1.3-3.4-3-3.7"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M6 8.4v4.1a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6s5.5-1.2 5.5-2.6V7"/><path d="M14.5 11.5c2.6.2 5 1.3 5 2.6 0 1.4-2.5 2.6-5.5 2.6-1.2 0-2.3-.2-3.2-.5"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a7.5 7.5 0 0 1-10.8 6.8L4 20l1.7-5.1A7.5 7.5 0 1 1 21 11.5z"/><path d="M8.5 11h7M8.5 14h4.5"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-8 8M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7.5l8 5.5 8-5.5"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24"><path d="M9 6h.01M9 12h.01M9 18h.01M15 6h.01M15 12h.01M15 18h.01"/></symbol>
+  </defs>
+</svg>
+<div id="topbar">
+  <header class="app">
+    <div class="brand">
+      <img class="brand-logo" id="brandLogo" src="icons/icon-192.png?v=19" alt="" width="30" height="30">
+      <span class="brand-name">RapidSplit</span>
+    </div>
+    <button class="theme-switch" id="themeSwitch" type="button" role="switch" aria-checked="false" aria-label="Dunkelmodus umschalten" title="Hell/Dunkel umschalten" onclick="toggleTheme()">
+      <span class="knob">
+        <svg class="ic k-sun" aria-hidden="true" focusable="false"><use href="#i-sun"></use></svg>
+        <svg class="ic k-moon" aria-hidden="true" focusable="false"><use href="#i-moon"></use></svg>
+      </span>
+    </button>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Bereiche">
+    <button data-tab="info" class="active" aria-current="page" aria-label="Tour"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-flag"></use></svg><span class="nav-lbl">Tour</span><span class="nav-lbl-m">Tour</span></button>
+    <button data-tab="teilnehmer" aria-label="Gruppe"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people3"></use></svg><span class="nav-lbl">Gruppe</span><span class="nav-lbl-m">Gruppe</span></button>
+    <button data-tab="teilnahme" aria-label="Wer und Wo"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg><span class="nav-lbl">Wer &amp; Wo</span><span class="nav-lbl-m">Wer&amp;Wo</span></button>
+    <button data-tab="fahrer" aria-label="Fahrtkosten"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg><span class="nav-lbl">Fahrtkosten</span><span class="nav-lbl-m">Fahrt</span></button>
+    <button data-tab="ausgaben" aria-label="Ausgaben"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-receipt"></use></svg><span class="nav-lbl">Ausgaben</span><span class="nav-lbl-m">Ausgab.</span></button>
+    <button data-tab="ergebnis" aria-label="Auswertung"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-scale"></use></svg><span class="nav-lbl">Auswertung</span><span class="nav-lbl-m">Auswert.</span></button>
+  </nav>
+</div>
+
+<main>
+  <!-- TOUR INFO -->
+  <section class="tab active" id="tab-info">
+    <div class="tour-subhead">
+      <h1 id="metaTitle">Unbenannte Tour</h1>
+      <div class="sub" id="metaSub">Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen</div>
+    </div>
+    <div class="card accent" id="startCard">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <h2 style="margin:0">Start</h2>
+        <button class="hide-link" onclick="hideStart()" title="Start-Block dauerhaft ausblenden"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>Ausblenden</button>
+      </div>
+      <p class="hint" style="margin-top:6px">Neu hier? Lass dich Schritt für Schritt durch das Tool führen, oder lade eine Beispiel-Fahrt.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn" onclick="startWizard()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Tutorial</button>
+        <button class="btn demo" onclick="resetExample()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rotate"></use></svg>Beispiel laden</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Tour-Eckdaten</h2>
+      <label class="fld">Titel der Tour</label>
+      <input type="text" id="m_title" placeholder="Titel">
+      <div style="height:14px"></div>
+      <label class="fld">Reisezeitraum</label>
+      <div class="row">
+        <div><label class="fld" for="m_from" style="font-weight:500">Start</label><input type="date" id="m_from" aria-label="Startdatum"></div>
+        <div><label class="fld" for="m_to" style="font-weight:500">Ende</label><input type="date" id="m_to" aria-label="Enddatum"></div>
+      </div>
+      <div style="height:14px"></div>
+      <label class="fld">Beschreibung der Tour</label>
+      <textarea id="m_desc" rows="3" style="height:104px" placeholder="Anlass, gefahrene Flüsse, Schwierigkeit, Wasserstand, …"></textarea>
+    </div>
+    <div class="card">
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg>Etappen</h2>
+      <p class="hint">Die Abschnitte der Reise (z. B. Hinfahrt, Shuttle, Rückfahrt). Pro Etappe werden die Fahrtkosten unter den dort mitfahrenden Personen geteilt.</p>
+      <div class="add-zone">
+        <div class="add-row" style="margin:0;flex-wrap:nowrap">
+          <div style="flex:1 1 auto;min-width:0"><label class="fld">Neue Etappe</label><input type="text" id="seg_new" placeholder="z.B. Bootshaus bis Einstieg"></div>
+          <div style="flex:0 0 auto;min-width:0"><button class="btn sm" onclick="addSegment()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Etappe</button></div>
+        </div>
+      </div>
+      <div id="segList"></div>
+    </div>
+    <div class="card">
+      <h2>Daten</h2>
+      <p class="hint">Alle Eingaben werden automatisch auf diesem Gerät gespeichert. Den Export als PDF oder Datei findest du im Reiter „Auswertung“.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn ghost" onclick="document.getElementById('importFile').click()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-upload"></use></svg>Import (Datei)</button>
+        <button class="btn danger" onclick="clearAll()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg>Alles leeren</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(event)">
+      </div>
+    </div>
+    <div class="card">
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chat"></use></svg>Feedback &amp; Kontakt</h2>
+      <p class="hint">Fehler gefunden, Wunsch oder Idee? Schreib mir per E-Mail oder leg ein Issue auf GitHub an.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <a class="btn ghost" href="mailto:contact@rapidsplit.app" style="text-decoration:none">
+          <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-mail"></use></svg>E-Mail
+        </a>
+        <a class="btn ghost" href="https://github.com/hantig-code/RapidSplit/issues" target="_blank" rel="noopener noreferrer" style="text-decoration:none">
+          <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-external"></use></svg>GitHub
+        </a>
+        <a class="btn ghost" href="https://rapidsplit.app" target="_blank" rel="noopener noreferrer" style="text-decoration:none">
+          <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-globe"></use></svg>Website
+        </a>
+      </div>
+      <p class="hint" style="margin:16px 0 8px">Gefällt dir RapidSplit? Unterstütze die Entwicklung:</p>
+      <a class="btn kofi-btn" href="https://ko-fi.com/W3A722A6DU" target="_blank" rel="noopener noreferrer" style="text-decoration:none" aria-label="Support me on Ko-fi">
+        <svg class="kofi-ic" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4.5 8.5H15V14a3.5 3.5 0 0 1-3.5 3.5H8A3.5 3.5 0 0 1 4.5 14V8.5Z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M15 9.6h2.3a2.4 2.4 0 0 1 0 4.8H15" fill="none" stroke="currentColor" stroke-width="1.7"/>
+          <path d="M9.75 14C7.5 12.4 6.7 11.5 6.7 10.5c0-.8.6-1.4 1.4-1.4.6 0 1.2.35 1.65 1 .45-.65 1.05-1 1.65-1 .8 0 1.4.6 1.4 1.4 0 1-.8 1.9-3.05 3.5Z" fill="#e2352b"/>
+        </svg>Support me on Ko-fi
+      </a>
+      <p class="hint" style="margin:16px 0 0">Mehr von mir findest du auf <a href="https://hantig.store" target="_blank" rel="noopener noreferrer" style="color:var(--brand-d);font-weight:600">hantig.store</a>.</p>
+    </div>
+    <div id="showStartRow" style="display:none;text-align:center;margin-top:2px;margin-bottom:14px">
+      <button class="btn ghost sm" onclick="showStart()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-compass"></use></svg>Start-Hilfe wieder einblenden</button>
+    </div>
+  </section>
+
+  <!-- FAHRER -->
+  <section class="tab" id="tab-fahrer">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Hier trägst du je Fahrer:in (festgelegt unter „Gruppe“ per „Fahrer:in“-Häkchen) die Fahrtkosten ein. Zusätzliche Auslagen (Streckenmaut, Parkplatz, Permit, …) kommen pro Fahrer:in dazu.</div>
+    <div class="card">
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg>Kilometer je Fahrer:in</h2>
+      <p class="hint">km pro Etappe eintragen. Wähle unten einmal für alle Fahrer:innen, ob die Fahrtkosten über eine €/km-Pauschale oder über die Spritkosten (Gesamtbetrag je Fahrer:in) abgerechnet werden.</p>
+      <div class="seg-toggle" id="costModeToggle" role="tablist" aria-label="Abrechnungsart für alle Fahrer:innen">
+        <button type="button" role="tab" data-mode="rate" onclick="setCostMode('rate')">€/km-Pauschale</button>
+        <button type="button" role="tab" data-mode="fuel" onclick="setCostMode('fuel')">Spritkosten</button>
+      </div>
+      <div class="tbl-wrap" id="kmTableWrap">
+        <table id="kmTable"></table>
+      </div>
+      <div class="footnote">Fahrer:innen legst du im Reiter „Gruppe“ über das „Fahrer:in“-Häkchen fest.</div>
+    </div>
+    <div class="card">
+      <h2>Zusätzliche Auslagen je Fahrer:in</h2>
+      <p class="hint">Auslagen die eine Fahrer:in für das eigene Auto ausgelegt hat (Streckenmaut, Parkplatz, Permit, …). Ordne jede Auslage einer oder mehreren Etappen zu (oder „Alle") – sie wird dann gleichmäßig auf die Mitfahrenden dieser Etappen geteilt.</p>
+      <div id="extrasList"></div>
+    </div>
+  </section>
+
+  <!-- TEILNEHMER -->
+  <section class="tab" id="tab-teilnehmer">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Trage hier alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Optional kann im zweiten Feld ein Verein oder Familienname angegeben werden. Dies ermöglicht es, diese Salden bei der Abrechnung zusammenzufassen. Wer auf welcher Etappe dabei war, legst du im Reiter „Wer &amp; Wo“ fest.</div>
+    <div class="card">
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people3"></use></svg>Gruppe</h2>
+      <div class="add-zone">
+        <div class="add-row" style="margin:0">
+          <div><label class="fld">Person hinzufügen</label><input type="text" id="part_new" placeholder="Name"></div>
+          <div><label class="fld">Verein/Familie (optional)</label><input type="text" id="part_group" placeholder="Verein/Familie"></div>
+          <div style="flex:0 0 auto"><button class="btn sm" onclick="addParticipant()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Person</button></div>
+        </div>
+      </div>
+      <div id="partTable" class="plist"></div>
+    </div>
+  </section>
+
+  <!-- TEILNAHME PRO ETAPPE -->
+  <section class="tab" id="tab-teilnahme">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Wer war auf welcher Etappe dabei? Die Fahrtkosten einer Etappe werden gleichmäßig auf alle dort markierten Personen aufgeteilt.</div>
+    <div class="card">
+      <h2><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg>Wer war wo dabei?</h2>
+      <p class="hint">Markiere, wer auf welcher Etappe mitgefahren ist.</p>
+      <div id="participationBlocks"></div>
+    </div>
+  </section>
+
+  <!-- AUSGABEN -->
+  <section class="tab" id="tab-ausgaben">
+    <div class="banner"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"></use></svg>Gemeinsame Ausgaben (Einkäufe, Campingplatz …). Trage Betrag und Bezahler:in ein und lege fest, für wen die Ausgabe gilt (wird gleichmäßig geteilt).</div>
+    <div class="card" style="text-align:center">
+      <button class="btn" onclick="addExpense()" style="width:100%;justify-content:center"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg>Neue Ausgabe</button>
+    </div>
+    <div id="expenseList"></div>
+  </section>
+
+  <!-- ERGEBNIS -->
+  <section class="tab" id="tab-ergebnis">
+    <div class="card" id="resHeader"></div>
+    <div class="card">
+      <h2>Wer zahlt an wen?</h2>
+      <label class="opt-toggle" title="Bei Aus: jede Person zahlt/erhält einzeln, auch innerhalb einer Familie/eines Vereins">
+        <input type="checkbox" id="mergeGroupsToggle" onchange="setMergeGroups(this.checked)">
+        <span class="opt-track"><span class="opt-knob"></span></span>
+        <span class="opt-lbl">Verein/Familie als Einheit abrechnen</span>
+      </label>
+      <div id="settlement"></div>
+    </div>
+    <div class="card">
+      <details open>
+        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Saldo &amp; Ausgleich</summary>
+        <p class="hint" style="margin-top:10px">Saldo = ausgelegtes Geld − eigener Anteil. <span class="pill green"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-up"></use></svg>bekommt zurück</span> &nbsp; <span class="pill red"><svg class="ic fill" aria-hidden="true" focusable="false"><use href="#i-down"></use></svg>zahlt ein</span></p>
+        <div class="tbl-wrap"><table id="balanceTable"></table></div>
+      </details>
+    </div>
+    <div class="card">
+      <details>
+        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Kosten pro Teilnehmer:in</summary>
+        <p class="hint" style="margin-top:10px">Eigener Anteil = Fahrtkosten-Anteil + Anteil sonstige Ausgaben. Das ist, was die Tour die Person netto kostet.</p>
+        <div class="tbl-wrap"><table id="costTable"></table></div>
+      </details>
+    </div>
+    <div class="card">
+      <details>
+        <summary class="as-h2"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>Fahrtkosten je Etappe</summary>
+        <div class="tbl-wrap" style="margin-top:10px"><table id="segCostTable"></table></div>
+      </details>
+    </div>
+    <div class="card no-print">
+      <h2>Exportieren</h2>
+      <p class="hint">Auswertung als PDF sichern – oder alle Tour-Daten als Datei für Backup/Weitergabe exportieren.</p>
+      <div class="toolbar" style="margin-bottom:0">
+        <button class="btn" onclick="exportPDF()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-printer"></use></svg>Als PDF exportieren</button>
+        <button class="btn ghost" onclick="exportJSON()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-download"></use></svg>Export (Datei)</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="wiz-bar" id="wizBar">
+  <div class="wiz-inner">
+    <div class="wiz-top">
+      <span class="wiz-step" id="wizStep"></span>
+      <span class="wiz-prog"><i id="wizProg"></i></span>
+      <button class="wiz-close" title="Wizard beenden" aria-label="Wizard beenden" onclick="wizClose()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
+    </div>
+    <p class="wiz-title" id="wizTitle"></p>
+    <p class="wiz-text" id="wizText"></p>
+    <div class="wiz-nav">
+      <button class="btn ghost sm" id="wizBack" onclick="wizGo(-1)">← Zurück</button>
+      <div class="spacer"></div>
+      <button class="btn sm" id="wizNext" onclick="wizGo(1)">Weiter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Native-artiges Modal (ersetzt alle confirm()/alert()) -->
+<div class="modal-overlay" id="modalOverlay" role="presentation">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalMsg">
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <p class="modal-msg" id="modalMsg"></p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="modalCancel" type="button">Abbrechen</button>
+      <button class="btn" id="modalOk" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pickerOverlay" role="presentation">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+    <h3 class="modal-title" id="pickerTitle"></h3>
+    <div class="picker-list" id="pickerList"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="pickerCancel" type="button">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+/* ---------------- State ---------------- */
+const LS_KEY = "kajak_kostenrechner_v2app_r3";  // r3: garantiert leerer Start (alter gespeicherter Stand inkl. Beispiel verworfen)
+let S = null;
+let uid = () => Math.random().toString(36).slice(2,9);
+
+function exampleData(){
+  const sIds = ["s1","s2","s3","s4","s5"];
+  // Beispiel-Reihenfolge: Hinfahrt zuerst … Rückfahrt zuletzt
+  const segments = [
+    {id:"s1",name:"MUC → BiH"},
+    {id:"s2",name:"Shutteln BiH"},
+    {id:"s3",name:"BiH → SLO"},
+    {id:"s4",name:"Shutteln SLO"},
+    {id:"s5",name:"SLO → MUC"},
+  ];
+  // participants (master). drivers carry car data.
+  const P = (name,group="",driver=null)=>({id:uid(),name,group,driver});
+  const pa = P("Olaf O.","",{rate:0.35,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[{id:uid(),name:"Maut Österreich",amount:40,segs:["s1","s5"]}]});
+  const pb = P("Steve F.","",{rate:0.40,km:{s1:686,s2:247,s3:521,s4:140,s5:398},extras:[{id:uid(),name:"Permit Soča",amount:30,segs:["s4"]}]});
+  const pc = P("Rush S.","",{rate:0.30,km:{s1:686,s2:247,s3:521,s4:100,s5:398},extras:[]});
+  const pd = P("Emily J.","Familie Jackson",{rate:0.30,km:{s1:0,s2:90,s3:0,s4:76,s5:0},extras:[]});
+  const pe=P("Nouria N."), pf=P("Tyler B."), pg=P("Rafa O."), ph=P("Adriene L."),
+        pi=P("Adrian M."), pj=P("Aniol S."), pk=P("Dane J.","Familie Jackson"),
+        pl=P("Sam S."), pm=P("Ben M.");
+  const participants=[pb,pe,pf,pg,ph,pi,pj,pa,pd,pk,pl,pc,pm];
+  const byName={};participants.forEach(p=>byName[p.name]=p.id);
+  const on=(names)=>names.map(n=>byName[n]);
+  const participation={
+    s1:on(["Steve F.","Rafa O.","Adriene L.","Adrian M.","Olaf O.","Sam S.","Rush S.","Ben M."]),
+    s2:on(["Steve F.","Nouria N.","Tyler B.","Rafa O.","Adriene L.","Adrian M.","Aniol S.","Olaf O.","Emily J.","Dane J.","Sam S.","Rush S.","Ben M."]),
+    s3:on(["Steve F.","Adriene L.","Adrian M.","Olaf O.","Sam S.","Rush S.","Ben M."]),
+    s4:on(["Steve F.","Adriene L.","Adrian M.","Olaf O.","Emily J.","Dane J.","Sam S.","Rush S.","Ben M."]),
+    s5:on(["Steve F.","Olaf O.","Rush S.","Ben M."]),
+  };
+  const einkaufAppliesTo = participation.s2.filter(id=>id!==byName["Aniol S."]);
+  const expenses=[
+    {id:uid(),name:"Einkauf Gruppe",appliesTo:einkaufAppliesTo.slice(),
+     payments:[{id:uid(),paidBy:byName["Steve F."],amount:42},{id:uid(),paidBy:byName["Olaf O."],amount:26}]},
+    {id:uid(),name:"Camp Liza",appliesTo:participation.s4.slice(),
+     payments:[{id:uid(),paidBy:byName["Steve F."],amount:316}]},
+  ];
+  return {
+    meta:{title:"Una (BiH) & Soča (SLO) 2026",
+      dateFrom:"2026-05-23", dateTo:"2026-05-31",
+      description:"Hinfahrt Sa 23.05. (München → Bihać/BiH), Weiterreise Mi 27.05. (Bihać → Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München."},
+    segments, participants, participation, expenses
+  };
+}
+function emptyData(){
+  return {meta:{title:"",dateFrom:"",dateTo:"",description:""},segments:[],participants:[],participation:{},expenses:[]};
+}
+
+function load(){
+  let raw=null;
+  try{ raw=localStorage.getItem(LS_KEY); if(raw){S=JSON.parse(raw); normalize(); return;} }
+  catch(e){
+    // Beschädigten Stand nicht sofort überschreiben – als .corrupt sichern, damit Rettung möglich bleibt
+    try{ if(raw!=null && !localStorage.getItem(LS_KEY+".corrupt")) localStorage.setItem(LS_KEY+".corrupt", raw); }catch(_){}
+  }
+  S=emptyData();
+}
+function normalize(){
+  // Trust-Boundary: gilt für localStorage UND Import. Typen erzwingen, Zahlen casten,
+  // unsichere IDs (Import!) neu vergeben + alle Verweise umschreiben, Farben validieren.
+  if(!S || typeof S!=="object" || Array.isArray(S)) S={};
+  S.meta = (S.meta && typeof S.meta==="object" && !Array.isArray(S.meta)) ? S.meta : {};
+  if(typeof S.meta.title!=="string") S.meta.title = S.meta.title==null ? "" : String(S.meta.title);
+  if(typeof S.meta.dateFrom!=="string") S.meta.dateFrom="";
+  if(typeof S.meta.dateTo!=="string") S.meta.dateTo="";
+  if(S.meta.description==null){
+    S.meta.description = (Array.isArray(S.meta.rows)&&S.meta.rows.length)
+      ? S.meta.rows.map(r=>(r&&r.k?r.k+": ":"")+((r&&r.v)||"")).join("\n") : "";
+  }
+  if(typeof S.meta.description!=="string") S.meta.description=String(S.meta.description||"");
+  delete S.meta.rows;
+  if(S.costMode!=="fuel" && S.costMode!=="rate"){
+    S.costMode = (Array.isArray(S.participants) && S.participants.some(p=>p&&p.driver && p.driver.mode==="fuel")) ? "fuel" : "rate";
+  }
+  S.mergeGroups = (S.mergeGroups===true);
+
+  // Sammlungen erzwingen
+  S.segments     = Array.isArray(S.segments)     ? S.segments.filter(s=>s&&typeof s==="object")     : [];
+  S.participants = Array.isArray(S.participants) ? S.participants.filter(p=>p&&typeof p==="object") : [];
+  S.expenses     = Array.isArray(S.expenses)     ? S.expenses.filter(x=>x&&typeof x==="object")     : [];
+  if(!S.participation || typeof S.participation!=="object" || Array.isArray(S.participation)) S.participation={};
+
+  // --- ID-Sicherung: unsichere/kollidierende IDs neu vergeben, Referenzen umschreiben ---
+  const SAFE=/^[A-Za-z0-9]{1,24}$/, used=new Set();
+  const remap=(id,map)=>{ if(map.has(id)) return map.get(id);
+    let nid=(typeof id==="string"&&SAFE.test(id)&&!used.has(id))?id:uid(); while(used.has(nid))nid=uid();
+    used.add(nid); map.set(id,nid); return nid; };
+  const leafId=id=>{ let nid=(typeof id==="string"&&SAFE.test(id)&&!used.has(id))?id:uid(); while(used.has(nid))nid=uid(); used.add(nid); return nid; };
+  const segMap=new Map(), partMap=new Map();
+
+  S.segments.forEach(s=>{ s.id=remap(s.id,segMap);
+    if(typeof s.name!=="string") s.name=s.name==null?"":String(s.name);
+    if(typeof s.color!=="string" || !/^#[0-9a-f]{6}$/i.test(s.color)) s.color=nextSegColor(); });
+  const segIds=new Set(S.segments.map(s=>s.id));
+  S.participants.forEach(p=>{ p.id=remap(p.id,partMap);
+    if(typeof p.name!=="string") p.name=p.name==null?"":String(p.name);
+    if(p.group!=null && typeof p.group!=="string") p.group=String(p.group); });
+  const partIds=new Set(S.participants.map(p=>p.id));
+
+  // participation neu aufbauen (gemappt + gefiltert, keine Duplikate)
+  const partn={}; S.segments.forEach(s=>partn[s.id]=[]);
+  Object.keys(S.participation).forEach(oldSid=>{
+    const sid=segMap.get(oldSid); if(sid==null || !segIds.has(sid)) return;
+    const arr=Array.isArray(S.participation[oldSid])?S.participation[oldSid]:[];
+    partn[sid]=[...new Set(arr.map(pid=>partMap.get(pid)).filter(pid=>pid!=null && partIds.has(pid)))];
+  });
+  S.participation=partn;
+
+  S.participants.forEach(p=>{
+    if(p.driver && typeof p.driver==="object" && !Array.isArray(p.driver)){
+      const km0=(p.driver.km&&typeof p.driver.km==="object"&&!Array.isArray(p.driver.km))?p.driver.km:{};
+      const km={}; Object.keys(km0).forEach(oldSid=>{ const sid=segMap.get(oldSid); if(sid!=null&&segIds.has(sid)) km[sid]=+km0[oldSid]||0; });
+      S.segments.forEach(s=>{ if(km[s.id]==null) km[s.id]=0; });
+      p.driver.km=km;
+      if(typeof p.driver.rate!=="number" || !isFinite(p.driver.rate)) p.driver.rate=0.30;
+      if(typeof p.driver.fuel!=="number" || !isFinite(p.driver.fuel)){
+        let f=0;
+        if(Array.isArray(p.driver.fuelLog)) f=p.driver.fuelLog.reduce((a,b)=>a+(+(b&&b.amount)||0),0);
+        else if(p.driver.fuel && typeof p.driver.fuel==="object") f=Object.values(p.driver.fuel).reduce((a,b)=>a+(+b||0),0);
+        p.driver.fuel=f;
+      }
+      delete p.driver.fuelLog; delete p.driver.mode;
+      p.driver.extras = Array.isArray(p.driver.extras) ? p.driver.extras.filter(e=>e&&typeof e==="object") : [];
+      p.driver.extras.forEach(e=>{ e.id=leafId(e.id);
+        if(typeof e.name!=="string") e.name=e.name==null?"":String(e.name);
+        e.amount=+e.amount||0;
+        e.segs = Array.isArray(e.segs) ? [...new Set(e.segs.map(id=>segMap.get(id)).filter(id=>id!=null&&segIds.has(id)))] : []; });
+    } else if(p.driver!=null){ delete p.driver; }
+  });
+
+  S.expenses.forEach(ex=>{ ex.id=leafId(ex.id);
+    if(typeof ex.name!=="string") ex.name=ex.name==null?"":String(ex.name);
+    ex.appliesTo = Array.isArray(ex.appliesTo) ? [...new Set(ex.appliesTo.map(pid=>partMap.get(pid)).filter(pid=>pid!=null&&partIds.has(pid)))] : [];
+    ex.payments  = Array.isArray(ex.payments)  ? ex.payments.filter(pm=>pm&&typeof pm==="object") : [];
+    ex.payments.forEach(pm=>{ pm.id=leafId(pm.id);
+      pm.paidBy=partMap.get(pm.paidBy); if(pm.paidBy==null||!partIds.has(pm.paidBy)) pm.paidBy="";
+      pm.amount=+pm.amount||0; }); });
+}
+let _saveWarned=false;
+function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(S)); _saveWarned=false;}
+  catch(e){ if(!_saveWarned){ _saveWarned=true; try{toast("Speichern fehlgeschlagen – Speicher evtl. voll. Sichere die Tour über den Export.");}catch(_){}} } }
+
+/* ---------------- Helpers ---------------- */
+const eur = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const num = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{maximumFractionDigits:2});
+const pById = id => S.participants.find(p=>p.id===id);
+const pName = id => (pById(id)||{}).name || "—";
+// Etappen, auf denen die Fahrer:in mitfährt; sonst alle Etappen mit Teilnehmer:innen (Fallback ohne km)
+function driverFuelPool(p){ let pool=S.segments.filter(s=>(S.participation[s.id]||[]).includes(p.id));
+  if(pool.length===0) pool=S.segments.filter(s=>(S.participation[s.id]||[]).length>0); return pool; }
+// Fahrtkosten eines Autos für eine Etappe – Abrechnung GLOBAL (S.costMode): "rate" (km×€/km) oder "fuel" (Gesamt-Spritkosten, nach km-Anteil verteilt)
+function driverSegCost(p,segId){ if(!p||!p.driver) return 0;
+  if(S.costMode==="fuel"){
+    const total=+p.driver.fuel||0; if(total<=0) return 0;
+    let totalKm=0; S.segments.forEach(s=>totalKm+=(p.driver.km[s.id]||0));
+    if(totalKm>0) return total*((p.driver.km[segId]||0)/totalKm);
+    const pool=driverFuelPool(p); return (pool.length && pool.some(s=>s.id===segId)) ? total/pool.length : 0;
+  }
+  return (p.driver.km[segId]||0)*(p.driver.rate||0); }
+const SEG_COLORS=["#0e7490","#b45309","#7c3aed","#15803d","#be185d","#0369a1","#a16207","#9333ea","#0d9488","#c2410c"];
+function segColor(sid){const s=S.segments.find(x=>x.id===sid);if(s&&s.color)return s.color;
+  const i=S.segments.findIndex(x=>x.id===sid);return i<0?"#94a3b8":SEG_COLORS[i%SEG_COLORS.length];}
+function nextSegColor(){const used=new Set((S.segments||[]).map(s=>s.color).filter(Boolean));
+  return SEG_COLORS.find(c=>!used.has(c))||SEG_COLORS[(S.segments||[]).length%SEG_COLORS.length];}
+function segName(sid){const s=S.segments.find(x=>x.id===sid);return s?s.name:"";}
+function tint(hex,a){const c=hex.replace("#","");const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);return `rgba(${r},${g},${b},${a==null?0.10:a})`;}
+function sameSet(a,b){if(a.length!==b.length)return false;const sb=new Set(b);return a.every(x=>sb.has(x));}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600);}
+/* ---------- inline-SVG-Icon + Avatar-Helfer (rein additiv, keine State-Mutation) ---------- */
+function icon(id){return `<svg class="ic" aria-hidden="true" focusable="false"><use href="#${id}"></use></svg>`;}
+function iconF(id){return `<svg class="ic fill" aria-hidden="true" focusable="false"><use href="#${id}"></use></svg>`;}
+const AV_PALETTE=["#0e7490","#0369a1","#7c3aed","#15803d","#be185d","#a16207","#0d9488","#c2410c","#4f46e5","#9333ea"];
+function avColor(name){let h=0;const s=String(name||"");for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return AV_PALETTE[h%AV_PALETTE.length];}
+function avInitials(name){const p=String(name||"").trim().split(/\s+/).filter(Boolean);
+  if(!p.length)return "–"; if(p.length===1)return p[0].slice(0,2).toUpperCase();
+  return (p[0][0]+p[p.length-1][0]).toUpperCase();}
+function avatar(name){return `<span class="av" style="--c:${avColor(name)}" aria-hidden="true">${esc(avInitials(name))}</span>`;}
+/* ---------- Native-artige Modal-Dialoge (ersetzen confirm/alert, ein Designschema) ---------- */
+function showModal(opts){
+  return new Promise(resolve=>{
+    const ov=document.getElementById('modalOverlay');
+    const titleEl=document.getElementById('modalTitle');
+    titleEl.className='modal-title'+(opts.danger?' danger':'');
+    titleEl.innerHTML=icon(opts.icon||'i-info')+'<span></span>';
+    titleEl.querySelector('span').textContent=opts.title||'';
+    document.getElementById('modalMsg').textContent=opts.message||'';
+    const ok=document.getElementById('modalOk'), cancel=document.getElementById('modalCancel');
+    ok.textContent=opts.okText||'OK';
+    ok.className='btn'+(opts.danger?' danger':'');
+    cancel.textContent=opts.cancelText||'Abbrechen';
+    cancel.style.display=opts.noCancel?'none':'';
+    const prevFocus=document.activeElement;
+    const inertEls=[document.getElementById('topbar'),document.querySelector('main'),document.getElementById('wizBar')].filter(Boolean);
+    inertEls.forEach(el=>{try{el.inert=true;}catch(e){} el.setAttribute('aria-hidden','true');});
+    ov.classList.add('show'); document.body.classList.add('modal-open');
+    setTimeout(()=>{try{ok.focus();}catch(e){}},0);
+    function done(val){ ov.classList.remove('show'); document.body.classList.remove('modal-open');
+      inertEls.forEach(el=>{try{el.inert=false;}catch(e){} el.removeAttribute('aria-hidden');}); cleanup();
+      if(prevFocus&&prevFocus.focus){try{prevFocus.focus();}catch(e){}} resolve(val); }
+    const onOk=()=>done(true), onCancel=()=>done(false);
+    const focusables=()=>[cancel,ok].filter(b=>b.style.display!=='none');
+    const onKey=e=>{
+      if(e.key==='Escape'&&!opts.noCancel){e.preventDefault();onCancel();}
+      else if(e.key==='Enter'){ if(document.activeElement===cancel)return; e.preventDefault();onOk(); }
+      else if(e.key==='Tab'){ const f=focusables(); if(!f.length){e.preventDefault();return;}
+        const first=f[0], last=f[f.length-1];
+        if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
+        else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();} }
+    };
+    const onBackdrop=e=>{ if(e.target===ov && !opts.noCancel)onCancel(); };
+    function cleanup(){ ok.removeEventListener('click',onOk);cancel.removeEventListener('click',onCancel);
+      document.removeEventListener('keydown',onKey,true);ov.removeEventListener('click',onBackdrop); }
+    ok.addEventListener('click',onOk);cancel.addEventListener('click',onCancel);
+    document.addEventListener('keydown',onKey,true);ov.addEventListener('click',onBackdrop);
+  });
+}
+function confirmDialog(title,message,opts){ opts=opts||{}; return showModal({title,message,
+  okText:opts.okText||'Ja',cancelText:opts.cancelText||'Abbrechen',danger:opts.danger,icon:opts.icon}); }
+function alertDialog(title,message){ return showModal({title,message,okText:'OK',noCancel:true}); }
+
+/* ---------------- Computation (mirrors xlsx) ---------------- */
+function compute(){
+  const segs=S.segments, parts=S.participants;
+  // per-segment total cost = Σ(km × rate) over drivers; persons = count in participation; perPerson
+  const segCost={}, segPersons={}, segPer={};
+  segs.forEach(s=>{
+    let tot=0;
+    parts.forEach(p=>{ if(p.driver){ tot += driverSegCost(p,s.id); } });
+    const persons=(S.participation[s.id]||[]).length;
+    segCost[s.id]=tot; segPersons[s.id]=persons; segPer[s.id]= persons>0 ? tot/persons : 0;
+  });
+  // per person: fahrtkosten-Anteil = Σ over segments they are on of segPer
+  const fahrtAnteil={}, laidOutDrive={};
+  parts.forEach(p=>{
+    let a=0; segs.forEach(s=>{ if((S.participation[s.id]||[]).includes(p.id)) a+=segPer[s.id]; });
+    fahrtAnteil[p.id]=a;
+    // Fahrer legt nur Etappen MIT Mitfahrenden aus – unverteilte Kosten (0 Personen) werden
+    // niemandem berechnet und dürfen der Fahrer:in daher auch nicht gutgeschrieben werden.
+    let lo=0;
+    if(p.driver){ segs.forEach(s=>{ if(segPersons[s.id]>0) lo += driverSegCost(p,s.id); }); }
+    laidOutDrive[p.id]=lo;
+  });
+  // Fahrer-Auslagen (Maut/Parkplatz/Permit) gleichmäßig auf die Mitfahrenden der zugeordneten
+  // Etappen (Vereinigung) verteilen. Nur TATSÄCHLICH verteilte Auslagen der Fahrer:in gutschreiben.
+  parts.forEach(p=>{ if(!p.driver) return;
+    (p.driver.extras||[]).forEach(ex=>{
+      const amt=+ex.amount||0; if(amt<=0) return;
+      const set=new Set();
+      (ex.segs||[]).forEach(sid=>{ (S.participation[sid]||[]).forEach(pid=>{ if(pById(pid)) set.add(pid); }); });
+      const arr=[...set];
+      if(arr.length>0){ const share=amt/arr.length; arr.forEach(pid=> fahrtAnteil[pid]+=share); laidOutDrive[p.id]+=amt; }
+    });
+  });
+  // expenses: each expense total = Σ payments; perPerson = total/|appliesTo|
+  const sonstAnteil={}, sonstAusgelegt={};
+  parts.forEach(p=>{sonstAnteil[p.id]=0;sonstAusgelegt[p.id]=0;});
+  const expRows=[]; let totalExpDist=0;
+  S.expenses.forEach(ex=>{
+    const validPays=(ex.payments||[]).filter(pm=>pById(pm.paidBy));
+    const total=validPays.reduce((a,b)=>a+(+b.amount||0),0);
+    const grp=(ex.appliesTo||[]).filter(id=>pById(id));
+    // Unvollständige Ausgabe (kein gültiger Zahler ODER niemand, für den sie gilt) wird nicht
+    // abgerechnet, damit die Salden aufgehen – sie wird mit Hinweis angezeigt.
+    const active = total>0 && grp.length>0;
+    const per= active ? total/grp.length : 0;
+    if(active){
+      grp.forEach(id=> sonstAnteil[id]+=per);
+      validPays.forEach(pm=> sonstAusgelegt[pm.paidBy]+=(+pm.amount||0));
+      totalExpDist += total;
+    }
+    expRows.push({name:ex.name,total,persons:grp.length,per,incomplete:!active});
+  });
+  // per person rows
+  const rows=parts.map(p=>{
+    const saldoFahrt = laidOutDrive[p.id]-fahrtAnteil[p.id];
+    const eigenAnteil = fahrtAnteil[p.id]+sonstAnteil[p.id];
+    const gesamtSaldo = saldoFahrt + sonstAusgelegt[p.id] - sonstAnteil[p.id];
+    return {id:p.id,name:p.name,group:p.group||"",
+      laidOutDrive:laidOutDrive[p.id], fahrtAnteil:fahrtAnteil[p.id],
+      saldoFahrt, sonstAusgelegt:sonstAusgelegt[p.id], sonstAnteil:sonstAnteil[p.id],
+      eigenAnteil, gesamtSaldo};
+  });
+  // group merge for balances/settlement
+  const groups={};
+  rows.forEach(r=>{
+    const merge = (S.mergeGroups===true) && !!r.group;   // Verein/Familie nur zusammenfassen, wenn ausdrücklich aktiviert (Vorgabe: aus)
+    const key = merge ? "g:"+r.group : "p:"+r.id;
+    if(!groups[key]) groups[key]={name:merge?r.group:r.name, isGroup:merge, members:[], saldo:0, eigenAnteil:0, laidOut:0};
+    groups[key].members.push(r.name);
+    groups[key].saldo += r.gesamtSaldo;
+    groups[key].eigenAnteil += r.eigenAnteil;
+    groups[key].laidOut += r.laidOutDrive + r.sonstAusgelegt;
+  });
+  const grpArr=Object.values(groups);
+  const settlement=settle(grpArr.map(g=>({name:g.name,amount:g.saldo})));
+  const segTotal=Object.values(segCost).reduce((a,b)=>a+b,0);                 // km-Kosten je Etappe (ohne Auslagen)
+  const totalDrive=Object.values(fahrtAnteil).reduce((a,b)=>a+b,0);           // Fahrtkosten gesamt inkl. verteilter Fahrer-Auslagen
+  const totalExp=totalExpDist;   // nur vollständig abgerechnete Ausgaben (Konservierung)
+  return {segs,segCost,segPersons,segPer,rows,grpArr,settlement,expRows,totalDrive,totalExp,segTotal};
+}
+function settle(balances){
+  const cred=balances.filter(b=>b.amount>0.005).map(b=>({...b})).sort((a,b)=>b.amount-a.amount);
+  const deb=balances.filter(b=>b.amount<-0.005).map(b=>({name:b.name,amount:-b.amount})).sort((a,b)=>b.amount-a.amount);
+  const tx=[];let i=0,j=0;
+  while(i<deb.length&&j<cred.length){
+    const pay=Math.min(deb[i].amount,cred[j].amount);
+    if(pay>0.005) tx.push({from:deb[i].name,to:cred[j].name,amount:pay});
+    deb[i].amount-=pay;cred[j].amount-=pay;
+    if(deb[i].amount<0.005)i++; if(cred[j].amount<0.005)j++;
+  }
+  return tx;
+}
+
+/* ---------------- Rendering ---------------- */
+function renderAll(){ renderInfo();renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();
+  updateSub(); save(); }
+function fmtDate(d){ if(!d)return ""; const p=d.split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d; }
+function dateRangeText(){
+  const f=fmtDate(S.meta.dateFrom), t=fmtDate(S.meta.dateTo);
+  if(f&&t) return f+" – "+t; return f||t||"";
+}
+function updateSub(){
+  const dr=dateRangeText();
+  document.getElementById("metaTitle").textContent=S.meta.title||"Unbenannte Tour";
+  const sub=document.getElementById("metaSub");
+  if(dr){ sub.innerHTML=icon("i-calendar")+" "+esc(dr); }
+  else{ sub.textContent="Kosten pro Teilnehmer:in fair berechnen & ausgleichen"; }
+}
+function renderInfo(){
+  document.getElementById("m_title").value=S.meta.title||"";
+  document.getElementById("m_from").value=S.meta.dateFrom||"";
+  document.getElementById("m_to").value=S.meta.dateTo||"";
+  document.getElementById("m_desc").value=S.meta.description||"";
+}
+function renderFahrer(){
+  // segments list
+  const sl=document.getElementById("segList");sl.innerHTML="";
+  S.segments.forEach((s)=>{
+    const d=document.createElement("div");
+    d.className="seg-item"; d.dataset.sid=s.id;
+    d.innerHTML=`<button class="drag-handle" type="button" aria-label="Etappe verschieben – Pfeiltasten hoch/runter" title="Ziehen oder Pfeiltasten ↑/↓" onkeydown="segHandleKey(event,'${s.id}')">${icon("i-grip")}</button>
+      <span class="swatch" style="width:15px;height:15px;border-radius:4px;background:${segColor(s.id)};flex:0 0 auto" title="Etappenfarbe"></span>
+      <input type="text" value="${esc(s.name)}" onchange="updSeg('${s.id}',this.value)" style="flex:1 1 auto;min-width:0">
+      <button class="iconbtn" style="flex:0 0 auto" title="Etappe löschen" onclick="delSeg('${s.id}')">${icon("i-trash")}</button>`;
+    sl.appendChild(d);
+  });
+  initSegDnD();
+  const drivers=S.participants.filter(p=>p.driver);
+  // globalen Abrechnungs-Regler (€/km ⇄ Sprit) spiegeln
+  const cmt=document.getElementById("costModeToggle");
+  if(cmt){ cmt.querySelectorAll("button").forEach(b=>{ const on=b.dataset.mode===(S.costMode==="fuel"?"fuel":"rate"); b.classList.toggle("on",on); b.setAttribute("aria-selected",on?"true":"false"); }); }
+  const t=document.getElementById("kmTable");
+  let h="<thead><tr><th class=\"sticky-col\">Etappe</th>";
+  drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}</th>`);
+  h+="</tr></thead><tbody>";
+  if(drivers.length===0){
+    h+=`<tr><td><span class="mini">Noch keine Fahrer:innen angelegt.</span></td></tr></tbody>`;
+    t.innerHTML=h;
+  } else {
+    // km je Etappe (immer erforderlich)
+    S.segments.forEach(s=>{
+      h+=`<tr><td class="sticky-col">${esc(s.name)}</td>`;
+      drivers.forEach(d=> h+=`<td class="num"><input type="number" inputmode="numeric" value="${d.driver.km[s.id]||0}" min="0" step="1" aria-label="Kilometer ${esc(d.name)} – ${esc(s.name)}" onchange="updKm('${d.id}','${s.id}',this.value)"></td>`);
+      h+="</tr>";
+    });
+    h+=`<tr class="sumrow"><td class="sticky-col"><b>Gesamt-km</b></td>`;
+    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=(d.driver.km[s.id]||0)); h+=`<td class="num" id="sumkm-${d.id}"><b>${num(tot)}</b></td>`; });
+    h+="</tr>";
+    // Abrechnung GLOBAL (S.costMode): €/km-Pauschale ODER Spritkosten (Gesamtbetrag je Fahrer:in)
+    const fuelMode = S.costMode==="fuel";
+    h+=`<tr><td class="sticky-col">${fuelMode?'Spritkosten (€)':'€/km-Pauschale'}</td>`;
+    drivers.forEach(d=>{
+      h+=`<td class="num"><span class="cur" style="display:flex;width:100%"><input type="number" inputmode="decimal" value="${fuelMode?(d.driver.fuel||0):d.driver.rate}" min="0" step="0.01" style="text-align:right;width:100%" aria-label="${fuelMode?'Spritkosten gesamt':'€/km Pauschale'} ${esc(d.name)}" onchange="${fuelMode?`updFuelAmount('${d.id}',this.value)`:`updRate('${d.id}',this.value)`}"></span></td>`;
+    });
+    h+="</tr>";
+    h+=`<tr class="sumrow"><td class="sticky-col"><b>Fahrtkosten</b></td>`;
+    drivers.forEach(d=>{ let tot=0;S.segments.forEach(s=>tot+=driverSegCost(d,s.id)); h+=`<td class="num" id="sumcost-${d.id}"><b>${eur(tot)}</b></td>`; });
+    h+="</tr></tbody>";
+    t.innerHTML=h;
+  }
+  // extras
+  const el=document.getElementById("extrasList");el.innerHTML="";
+  if(drivers.length===0){ el.innerHTML='<p class="mini">Noch keine Fahrer:innen angelegt.</p>'; }
+  drivers.forEach(d=>{
+    const box=document.createElement("div");box.className="seg-block";
+    let inner=`<h3>${esc(d.name)}</h3>`;
+    (d.driver.extras||[]).forEach(e=>{
+      inner+=`<div class="pay-row" style="margin-top:14px">
+        <input type="text" value="${esc(e.name)}" placeholder="z.B. Streckenmaut" onchange="updExtra('${d.id}','${e.id}','name',this.value)">
+        <span class="cur" style="flex:0 0 120px"><input type="number" inputmode="decimal" value="${e.amount}" step="0.01" style="width:100%;text-align:right" onchange="updExtra('${d.id}','${e.id}','amount',this.value)" placeholder="Betrag" aria-label="Betrag der Auslage"></span>
+        <button class="iconbtn" title="Auslage löschen" aria-label="Auslage löschen: ${esc(e.name||'unbenannt')}" onclick="delExtra('${d.id}','${e.id}')">${icon("i-x")}</button></div>`;
+      // Etappen-Zuordnung: auf wessen Mitfahrende wird die Auslage geteilt?
+      const set=new Set(); (e.segs||[]).forEach(sid=>{ (S.participation[sid]||[]).forEach(pid=>{ if(pById(pid)) set.add(pid); }); });
+      inner+=`<label class="fld" style="margin-top:8px">Aufteilen auf Mitfahrende der Etappe(n)</label><div class="seg-pills">`;
+      S.segments.forEach(s=>{ const on=(e.segs||[]).includes(s.id); const col=segColor(s.id);
+        inner+=`<button type="button" class="seg-pill${on?' on':''}" style="--c:${col}" aria-pressed="${on}" onclick="toggleExtraSeg('${d.id}','${e.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
+      const allOn=S.segments.length>0 && (e.segs||[]).length===S.segments.length;
+      const noneOn=(e.segs||[]).length===0;
+      inner+=`<button type="button" class="seg-pill${allOn?' on':''}" aria-pressed="${allOn}" onclick="extraAllSegs('${d.id}','${e.id}')">${allOn?icon("i-check"):""}Alle</button>`;
+      inner+=`<button type="button" class="seg-pill${noneOn?' on':''}" aria-pressed="${noneOn}" onclick="extraNoneSegs('${d.id}','${e.id}')">${noneOn?icon("i-check"):""}Keine</button></div>`;
+      const amt=+e.amount||0;
+      inner+=`<p class="footnote">${set.size>0? `geteilt auf ${set.size} Mitfahrende${amt>0?` · ${eur(amt/set.size)}/Person`:''}` : '<span class="warn-txt">Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.</span>'}</p>`;
+    });
+    inner+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addExtra('${d.id}')">${icon("i-plus")}Auslage</button></div>`;
+    box.innerHTML=inner;el.appendChild(box);
+  });
+}
+function renderTeilnehmer(){
+  const t=document.getElementById("partTable");
+  let h="";
+  S.participants.forEach(p=>{
+    h+=`<div class="prow">
+      <input class="p-name" type="text" value="${esc(p.name)}" placeholder="Name" onchange="updPartName('${p.id}',this.value)">
+      <input class="p-group" type="text" value="${esc(p.group||'')}" placeholder="Verein/Familie" onchange="updPartGroup('${p.id}',this.value)">
+      <label class="drv-toggle ${p.driver?'on':''}" title="Als Fahrer:in markieren (mit eigenem Auto gefahren)"><input type="checkbox" ${p.driver?'checked':''} onchange="toggleDriver('${p.id}',this.checked)" aria-label="Fahrer:in (mit eigenem Auto): ${esc(p.name)}">${icon("i-car")}<span>Fahrer:in</span></label>
+      <button class="iconbtn" title="Person löschen" onclick="delParticipant('${p.id}')">${icon("i-trash")}</button>
+    </div>`;
+  });
+  t.innerHTML=h;
+  // participation blocks
+  const pb=document.getElementById("participationBlocks");pb.innerHTML="";
+  if(S.segments.length===0){ pb.innerHTML='<p class="mini">Hier ist nichts zu sehen? Trage Etappen im Bereich „Tour“ ein!</p>'; }
+  S.segments.forEach(s=>{
+    const sel=S.participation[s.id]||[];const col=segColor(s.id);
+    const box=document.createElement("div");box.className="seg-block";
+    box.style.borderLeft="5px solid "+col;box.style.background=tint(col,0.06);
+    let inner=`<h3 style="color:${col}"><span class="swatch" style="background:${col}"></span>${esc(s.name)} <span class="pill muted">${sel.length} Pers.</span></h3>
+      <div style="margin-bottom:10px;display:flex;gap:8px"><button class="btn ghost sm" onclick="allSeg('${s.id}',true)">Alle</button>
+      <button class="btn ghost sm" onclick="allSeg('${s.id}',false)">Keine</button></div><div class="checklist">`;
+    S.participants.forEach(p=>{
+      const on=sel.includes(p.id);
+      inner+=`<label class="${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleSeg('${s.id}','${p.id}',this.checked)">${icon("i-check")}${esc(p.name)}</label>`;
+    });
+    inner+="</div>";box.innerHTML=inner;pb.appendChild(box);
+  });
+}
+const expDetailsOpen=new Set(); // welche Ausgaben die „Personen einzeln"-Liste offen haben (bleibt über Re-Render erhalten)
+function expToggleDetails(id,open){ if(open) expDetailsOpen.add(id); else expDetailsOpen.delete(id); }
+function renderAusgaben(){
+  const c=document.getElementById("expenseList");c.innerHTML="";
+  if(S.expenses.length===0){ c.innerHTML='<div class="card"><p class="mini">Noch keine Ausgaben. Füge oben eine hinzu.</p></div>'; return; }
+  S.expenses.forEach(ex=>{
+    const total=(ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0);
+    const grp=(ex.appliesTo||[]).filter(id=>pById(id));
+    const per=grp.length>0?total/grp.length:0;
+    const linkedSeg = ex.segRef && S.segments.find(s=>s.id===ex.segRef) ? ex.segRef : "";
+    const lcol = linkedSeg ? segColor(linkedSeg) : "";
+    const card=document.createElement("div");card.className="card";
+    if(linkedSeg){ card.style.borderLeft="5px solid "+lcol; }
+    // 1) Bezeichnung
+    let h=`<div class="row" style="align-items:flex-end"><div style="flex:1"><label class="fld">Bezeichnung</label>
+      <input type="text" class="selonfocus" value="${esc(ex.name)}" placeholder="Neue Ausgabe" onchange="updExp('${ex.id}','name',this.value)"></div>
+      <div style="flex:0 0 auto"><button class="iconbtn" title="Ausgabe löschen" onclick="delExpense('${ex.id}')">${icon("i-trash")}</button></div></div>`;
+    // 2) Bezahlt von + Höhe (€), „X“ zum Entfernen, „+ Person“ für weitere Zahler (V1-Reihenfolge)
+    h+=`<label class="fld" style="margin-top:12px">Bezahlt von &amp; Höhe</label>`;
+    (ex.payments||[]).forEach(pm=>{
+      h+=`<div class="pay-row">
+        <button type="button" class="picker-btn${(pm.paidBy&&pById(pm.paidBy))?'':' placeholder'}" data-pay="${ex.id}:${pm.id}" style="flex:3 1 120px" aria-label="Bezahlt von" onclick="pickPayer('${ex.id}','${pm.id}')"><span>${(pm.paidBy&&pById(pm.paidBy))?esc(pName(pm.paidBy)):'Bezahlt von …'}</span>${icon("i-chevron")}</button>
+        <span class="cur" style="flex:2 1 84px"><input type="number" inputmode="decimal" value="${pm.amount}" step="0.01" style="width:100%;text-align:right" placeholder="Höhe" aria-label="Höhe in Euro" onchange="updPay('${ex.id}','${pm.id}','amount',this.value)"></span>
+        <button class="iconbtn" title="Zahler entfernen" onclick="delPay('${ex.id}','${pm.id}')">${icon("i-x")}</button></div>`;
+    });
+    h+=`<div style="margin-top:8px"><button class="btn ghost sm" onclick="addPay('${ex.id}')">${icon("i-plus")}Person</button></div>`;
+    // 3) Etappen-Auswahl als pillenförmige, farbcodierte Liste (wie „Wer & Wo“)
+    h+=`<label class="fld" style="margin-top:14px">Gilt für (wird gleichmäßig geteilt)</label>
+      <div class="seg-pills">`;
+    S.segments.forEach(s=>{ const on=linkedSeg===s.id; const col=segColor(s.id);
+      h+=`<button type="button" class="seg-pill${on?' on':''}" style="--c:${col}" aria-pressed="${on}" onclick="expSetSeg('${ex.id}','${s.id}')"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</button>`; });
+    h+=`<button type="button" class="seg-pill${!linkedSeg?' on':''}" aria-pressed="${!linkedSeg}" onclick="expSetSeg('${ex.id}','')">${!linkedSeg?icon("i-check"):""}Eigene Auswahl${!linkedSeg?` · ${grp.length}`:''}</button>`;
+    h+=`</div>`;
+    if(linkedSeg){
+      const mism = !sameSet((ex.appliesTo||[]).filter(id=>pById(id)), (S.participation[linkedSeg]||[]));
+      if(mism) h+=`<p class="footnote warn-txt">Personen wurden gegenüber der Etappe einzeln angepasst.</p>`;
+    }
+    // Personen einzeln (eingeklappt — Standardansicht bleibt schlank)
+    h+=`<details ${expDetailsOpen.has(ex.id)?'open':''} ontoggle="expToggleDetails('${ex.id}',this.open)" style="margin-top:10px"><summary>${icon("i-chevron")}Personen einzeln wählen (${grp.length})</summary><div class="checklist" style="margin-top:10px">`;
+    S.participants.forEach(p=>{
+      const on=(ex.appliesTo||[]).includes(p.id);
+      h+=`<label class="${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleExpPart('${ex.id}','${p.id}',this.checked)">${icon("i-check")}${esc(p.name)}</label>`;
+    });
+    h+=`</div></details>`;
+    // kompakte Zusammenfassung
+    h+=`<p class="footnote" data-exp-sum="${ex.id}">Summe <b>${eur(total)}</b> · ${grp.length} Pers. · ${eur(per)}/Person</p>`;
+    card.innerHTML=h;c.appendChild(card);
+  });
+}
+/* Personen-Auswahl als Popup (gleiche Optik wie die „Beispiel laden"-Bestätigung) */
+function pickPerson(opts){
+  opts=opts||{};
+  return new Promise(resolve=>{
+    const ov=document.getElementById('pickerOverlay');
+    const list=document.getElementById('pickerList');
+    const titleEl=document.getElementById('pickerTitle');
+    titleEl.innerHTML=icon('i-coins')+'<span></span>';
+    titleEl.querySelector('span').textContent=opts.title||'Person wählen';
+    if(S.participants.length===0){
+      list.innerHTML='<p class="mini" style="padding:10px 4px">Noch keine Personen. Lege sie im Reiter „Gruppe“ an.</p>';
+    } else {
+      list.innerHTML=S.participants.map(p=>`<button type="button" class="picker-opt${p.id===opts.selected?' on':''}" data-id="${p.id}">${avatar(p.name)}<span>${esc(p.name)}</span>${p.id===opts.selected?icon('i-check'):''}</button>`).join('');
+    }
+    const cancel=document.getElementById('pickerCancel');
+    const prevFocus=document.activeElement;
+    const inertEls=[document.getElementById('topbar'),document.querySelector('main'),document.getElementById('wizBar')].filter(Boolean);
+    inertEls.forEach(el=>{try{el.inert=true;}catch(e){} el.setAttribute('aria-hidden','true');});
+    ov.classList.add('show'); document.body.classList.add('modal-open');
+    setTimeout(()=>{try{(list.querySelector('.picker-opt.on')||list.querySelector('.picker-opt')||cancel).focus();}catch(e){}},0);
+    function done(val){ ov.classList.remove('show'); document.body.classList.remove('modal-open');
+      inertEls.forEach(el=>{try{el.inert=false;}catch(e){} el.removeAttribute('aria-hidden');}); cleanup();
+      if(prevFocus&&prevFocus.focus){try{prevFocus.focus();}catch(e){}} resolve(val); }
+    function onListClick(e){ const b=e.target.closest('.picker-opt'); if(b) done(b.dataset.id); }
+    function onCancel(){ done(null); }
+    function onBackdrop(e){ if(e.target===ov) done(null); }
+    function onKey(e){ if(e.key==='Escape'){e.preventDefault();done(null);} }
+    function cleanup(){ list.removeEventListener('click',onListClick); cancel.removeEventListener('click',onCancel);
+      ov.removeEventListener('click',onBackdrop); document.removeEventListener('keydown',onKey,true); }
+    list.addEventListener('click',onListClick); cancel.addEventListener('click',onCancel);
+    ov.addEventListener('click',onBackdrop); document.addEventListener('keydown',onKey,true);
+  });
+}
+function pickPayer(exId,pmId){ const ex=S.expenses.find(x=>x.id===exId); const pm=ex&&(ex.payments||[]).find(x=>x.id===pmId);
+  pickPerson({title:'Bezahlt von',selected:pm?pm.paidBy:''}).then(id=>{ if(id!=null) updPay(exId,pmId,'paidBy',id); }); }
+
+function renderErgebnis(){
+  const R=compute();
+  const mt=document.getElementById("mergeGroupsToggle"); if(mt) mt.checked = S.mergeGroups===true;
+  // header
+  const dh=document.getElementById("resHeader");
+  dh.innerHTML=`<h2>${esc(S.meta.title||"Tour")}</h2>
+    <div class="totals" style="margin-top:8px">
+      <div class="stat"><div class="k">Fahrtkosten gesamt</div><div class="v">${eur(R.totalDrive)}</div></div>
+      <div class="stat"><div class="k">Sonstige Ausgaben</div><div class="v">${eur(R.totalExp)}</div></div>
+      <div class="stat"><div class="k">Gesamtkosten</div><div class="v">${eur(R.totalDrive+R.totalExp)}</div></div>
+      <div class="stat"><div class="k">Teilnehmende</div><div class="v">${S.participants.length}</div></div>
+    </div>`;
+  // cost table
+  const ct=document.getElementById("costTable");
+  let h=`<thead><tr><th>Person</th><th class="num"><span class="th-full">Fahrtkosten</span><span class="th-short">Fahrt</span></th><th class="num"><span class="th-full">Sonstige</span><span class="th-short">Sonst.</span></th><th class="num"><span class="th-full">Eigener Anteil</span><span class="th-short">Anteil</span></th></tr></thead><tbody>`;
+  R.rows.slice().sort((a,b)=>b.eigenAnteil-a.eigenAnteil).forEach(r=>{
+    h+=`<tr><td>${esc(r.name)}</td><td class="num">${eur(r.fahrtAnteil)}</td><td class="num">${eur(r.sonstAnteil)}</td><td class="num"><b>${eur(r.eigenAnteil)}</b></td></tr>`;
+  });
+  const sumAnteil=R.rows.reduce((a,b)=>a+b.eigenAnteil,0);
+  h+=`<tr><td><b>Summe</b></td><td class="num"></td><td class="num"></td><td class="num"><b>${eur(sumAnteil)}</b></td></tr></tbody>`;
+  ct.innerHTML=h;
+  // balance table (grouped)
+  const bt=document.getElementById("balanceTable");
+  let bh=`<thead><tr><th><span class="th-full">Person / Haushalt</span><span class="th-short">Person</span></th><th class="num">Ausgelegt</th><th class="num"><span class="th-full">Eigener Anteil</span><span class="th-short">Anteil</span></th><th class="num">Saldo</th></tr></thead><tbody>`;
+  const maxAbs=Math.max(0,...R.grpArr.map(g=>Math.abs(g.saldo)));
+  R.grpArr.slice().sort((a,b)=>b.saldo-a.saldo).forEach(g=>{
+    const cls=g.saldo>0.005?'green':(g.saldo<-0.005?'red':'muted');
+    const txt=g.saldo>0.005?('+'+eur(g.saldo)):eur(g.saldo);
+    const ico=cls==='green'?iconF("i-up")+'<span class="sr-only">bekommt zurück </span>':(cls==='red'?iconF("i-down")+'<span class="sr-only">zahlt ein </span>':"");
+    const memb=g.isGroup?`<div class="rp-sub">${esc(g.members.join(", "))}</div>`:"";
+    const pct=maxAbs>0?Math.round(Math.abs(g.saldo)/maxAbs*100):0;
+    const barcol=cls==='green'?'var(--green)':(cls==='red'?'var(--red)':'var(--muted)');
+    const bar=pct>0?`<div class="bar"><i style="width:${pct}%;background:${barcol}"></i></div>`:"";
+    bh+=`<tr><td><div style="display:flex;align-items:center;gap:9px">${avatar(g.name)}<div style="min-width:0"><div style="font-weight:600;color:var(--ink)">${esc(g.name)}</div>${memb}${bar}</div></div></td><td class="num">${eur(g.laidOut)}</td><td class="num">${eur(g.eigenAnteil)}</td><td class="num"><span class="pill ${cls}">${ico}${txt}</span></td></tr>`;
+  });
+  bh+=`</tbody>`;bt.innerHTML=bh;
+  // settlement
+  const st=document.getElementById("settlement");
+  if(R.settlement.length===0){ st.innerHTML='<p class="mini">Alles ausgeglichen — keine Zahlungen nötig.</p>'; }
+  else{
+    st.innerHTML=R.settlement.map(t=>`<div class="settle">${avatar(t.from)}<span class="from">${esc(t.from)}</span><span class="sr-only"> zahlt an </span><span class="arrow">${icon("i-arrow-right")}</span>${avatar(t.to)}<span class="to">${esc(t.to)}</span><span class="amt">${eur(t.amount)}</span></div>`).join("");
+    const tot=R.settlement.reduce((a,b)=>a+b.amount,0);
+    st.innerHTML+=`<p class="footnote">${R.settlement.length} Überweisung(en), Summe ${eur(tot)}.</p>`;
+  }
+  // seg cost detail
+  const sct=document.getElementById("segCostTable");
+  let sh=`<thead><tr><th>Etappe</th><th class="num"><span class="th-full">Gesamtkosten</span><span class="th-short">Kosten</span></th><th class="num"><span class="th-full">Personen</span><span class="th-short">Pers.</span></th><th class="num"><span class="th-full">pro Person</span><span class="th-short">/Pers.</span></th></tr></thead><tbody>`;
+  R.segs.forEach(s=> sh+=`<tr><td>${esc(s.name)}</td><td class="num">${eur(R.segCost[s.id])}</td><td class="num">${R.segPersons[s.id]}</td><td class="num">${eur(R.segPer[s.id])}</td></tr>`);
+  sh+=`<tr><td><b>Summe</b></td><td class="num"><b>${eur(R.segTotal)}</b></td><td></td><td></td></tr></tbody>`;
+  sct.innerHTML=sh;
+}
+
+/* ---------------- Mutations ---------------- */
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+// segments
+function addSegment(){const e=document.getElementById("seg_new");if(!e.value.trim())return;
+  const id=uid();S.segments.push({id,name:e.value.trim(),color:nextSegColor()});S.participation[id]=[];
+  S.participants.forEach(p=>{if(p.driver){p.driver.km[id]=0;}});e.value="";renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function updSeg(id,v){const s=S.segments.find(x=>x.id===id);if(s){s.name=v;renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();}}
+function delSeg(id){confirmDialog("Etappe löschen?","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(!ok)return;
+  S.segments=S.segments.filter(x=>x.id!==id);delete S.participation[id];
+  S.participants.forEach(p=>{if(p.driver){delete p.driver.km[id]; (p.driver.extras||[]).forEach(e=>{if(Array.isArray(e.segs))e.segs=e.segs.filter(x=>x!==id);});}});renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();});}
+/* ---- Etappen per Drag & Drop sortieren (Touch + Maus, pointer-basiert) ---- */
+let segDrag=null;
+// Tastatur-Alternative zum Ziehen: Pfeil hoch/runter auf dem Griff verschiebt die Etappe.
+function segHandleKey(e,id){
+  if(e.key==="ArrowUp"||e.key==="ArrowDown"){ e.preventDefault(); moveSeg(id, e.key==="ArrowUp"?-1:1); }
+}
+function moveSeg(id,dir){
+  const i=S.segments.findIndex(s=>s.id===id), j=i+dir;
+  if(i<0||j<0||j>=S.segments.length) return;
+  const [s]=S.segments.splice(i,1); S.segments.splice(j,0,s);
+  renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
+  const row=document.querySelector('.seg-item[data-sid="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');
+  const h=row&&row.querySelector('.drag-handle'); if(h)h.focus();
+}
+function initSegDnD(){
+  const list=document.getElementById("segList"); if(!list) return;
+  list.querySelectorAll(".seg-item").forEach(row=>{
+    const h=row.querySelector(".drag-handle"); if(!h) return;
+    h.onpointerdown=(ev)=>{
+      if(ev.button && ev.button!==0) return;
+      ev.preventDefault();
+      segDrag={list,row};
+      row.classList.add("dragging");
+      try{ h.setPointerCapture(ev.pointerId); }catch(e){}
+      document.addEventListener("pointermove", segDragMove);
+      document.addEventListener("pointerup", segDragEnd, {once:true});
+      document.addEventListener("pointercancel", segDragEnd, {once:true});
+    };
+  });
+}
+function segDragMove(ev){
+  if(!segDrag) return;
+  const {list,row}=segDrag; const y=ev.clientY;
+  const others=[...list.querySelectorAll(".seg-item:not(.dragging)")];
+  let after=null;
+  for(const s of others){ const r=s.getBoundingClientRect(); if(y > r.top + r.height/2) after=s; }
+  if(after==null){ if(list.firstElementChild!==row) list.insertBefore(row, list.firstElementChild); }
+  else if(after.nextElementSibling!==row){ list.insertBefore(row, after.nextElementSibling); }
+}
+function segDragEnd(){
+  document.removeEventListener("pointermove", segDragMove);
+  if(!segDrag) return;
+  const {list,row}=segDrag; row.classList.remove("dragging"); segDrag=null;
+  const order=[...list.querySelectorAll(".seg-item")].map(el=>el.dataset.sid);
+  if(S.segments.some((s,i)=>s.id!==order[i])){
+    S.segments.sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
+    renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
+  }
+}
+// drivers — die Fahrer-Rolle wird über das „Auto"-Häkchen in „Gruppe" gesteuert (toggleDriver)
+function toggleDriver(id,on){const p=pById(id);if(!p)return;
+  if(on){
+    if(p.driver) return;
+    if(p.driverStash){            // Backlog: zuvor erfasste km & Auslagen wiederherstellen
+      p.driver=p.driverStash; delete p.driverStash;
+      p.driver.km=p.driver.km||{}; p.driver.extras=p.driver.extras||[];
+      S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; });
+      renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
+      toast(p.name+": Fahrer:in-Eingaben wiederhergestellt");
+    } else {
+      const km={};S.segments.forEach(s=>{km[s.id]=0;});p.driver={rate:0.30,km,fuel:0,extras:[]};
+      renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
+      toast(p.name+" ist jetzt Fahrer:in");
+    }
+  } else {
+    if(!p.driver) return;
+    const hadData=Object.values(p.driver.km||{}).some(v=>+v>0) || (p.driver.extras||[]).some(e=>(+e.amount||0)>0 || (e.name||"").trim());
+    p.driverStash=p.driver;       // Backlog statt Löschen
+    p.driver=null;
+    renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
+    toast(hadData?"Fahrer:in entfernt – Eingaben gemerkt":"Fahrer:in entfernt");
+  }
+}
+function removeDriver(id){ toggleDriver(id,false); }
+// Nur die Summenzellen dieser Fahrer:in in-place aktualisieren, damit beim Tippen von km/€
+// der Fokus/die Tab-Reihenfolge NICHT durch ein renderFahrer() zerstört wird.
+function updDriverSums(id){const d=pById(id);if(!d||!d.driver)return;
+  let km=0;S.segments.forEach(s=>km+=(d.driver.km[s.id]||0));
+  let cost=0;S.segments.forEach(s=>cost+=driverSegCost(d,s.id));
+  const a=document.getElementById("sumkm-"+id); if(a)a.innerHTML="<b>"+num(km)+"</b>";
+  const b=document.getElementById("sumcost-"+id); if(b)b.innerHTML="<b>"+eur(cost)+"</b>";}
+function updKm(id,sid,v){const p=pById(id);if(p&&p.driver){p.driver.km[sid]=Math.max(0,+v||0);updDriverSums(id);renderErgebnis();save();}}
+function updRate(id,v){const p=pById(id);if(p&&p.driver){p.driver.rate=Math.max(0,+v||0);updDriverSums(id);renderErgebnis();save();}}
+function updFuelAmount(id,v){const p=pById(id);if(p&&p.driver){p.driver.fuel=Math.max(0,+v||0);updDriverSums(id);renderErgebnis();save();}}
+function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"rate"); renderFahrer(); renderErgebnis(); save(); }
+function setMergeGroups(on){ S.mergeGroups=!!on; renderErgebnis(); save(); }
+function addExtra(id){const p=pById(id);if(p&&p.driver){p.driver.extras.push({id:uid(),name:"",amount:0,segs:[]});renderFahrer();renderErgebnis();save();}}
+function updExtra(id,eid,f,v){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
+  if(e){e[f]=f==="amount"?Math.max(0,+v||0):v;renderErgebnis();save();}}
+function delExtra(id,eid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);
+  const go=()=>{p.driver.extras=p.driver.extras.filter(x=>x.id!==eid);renderFahrer();renderErgebnis();save();};
+  const has=e&&(((e.name||"").trim())||(+e.amount||0)>0);
+  if(!has){go();return;}
+  confirmDialog("Auslage löschen?","„"+(((e.name||"").trim())||"Unbenannt")+"“"+((+e.amount>0)?" ("+eur(+e.amount)+")":"")+" wird entfernt.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(ok)go();});}
+// Auslage einer Etappe zu-/abschalten bzw. „Alle" Etappen
+function toggleExtraSeg(id,eid,sid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
+  e.segs=Array.isArray(e.segs)?e.segs.slice():[];
+  if(e.segs.includes(sid)) e.segs=e.segs.filter(x=>x!==sid); else e.segs.push(sid);
+  renderFahrer();renderErgebnis();save();}
+function extraAllSegs(id,eid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
+  e.segs=S.segments.map(s=>s.id); renderFahrer();renderErgebnis();save();}
+function extraNoneSegs(id,eid){const p=pById(id);if(!p||!p.driver)return;const e=p.driver.extras.find(x=>x.id===eid);if(!e)return;
+  e.segs=[]; renderFahrer();renderErgebnis();save();}
+// participants
+function addParticipant(){const e=document.getElementById("part_new"),g=document.getElementById("part_group");
+  if(!e.value.trim())return;S.participants.unshift({id:uid(),name:e.value.trim(),group:g.value.trim(),driver:null});
+  e.value="";g.value="";renderTeilnehmer();renderAusgaben();renderErgebnis();save();}
+function updPartName(id,v){const p=pById(id);if(p){p.name=v;renderFahrer();renderAusgaben();renderErgebnis();save();}}
+function updPartGroup(id,v){const p=pById(id);if(p){p.group=v.trim();renderErgebnis();save();}}
+function delParticipant(id){const _p=pById(id);confirmDialog("Person löschen?",(_p?"„"+_p.name+"“":"Diese Person")+" wird aus der Gruppe und allen Zuordnungen/Ausgaben entfernt.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(!ok)return;
+  S.participants=S.participants.filter(x=>x.id!==id);
+  Object.keys(S.participation).forEach(k=>S.participation[k]=S.participation[k].filter(x=>x!==id));
+  S.expenses.forEach(ex=>{ex.appliesTo=(ex.appliesTo||[]).filter(x=>x!==id);ex.payments=(ex.payments||[]).filter(pm=>pm.paidBy!==id);});
+  renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();});}
+// participation
+function toggleSeg(sid,pid,on){let arr=S.participation[sid]||[];
+  if(on){if(!arr.includes(pid))arr.push(pid);}else{arr=arr.filter(x=>x!==pid);}
+  S.participation[sid]=arr;renderTeilnehmer();renderErgebnis();save();}
+function allSeg(sid,on){S.participation[sid]=on?S.participants.map(p=>p.id):[];renderTeilnehmer();renderErgebnis();save();}
+// expenses
+function addExpense(){S.expenses.unshift({id:uid(),name:"",appliesTo:[],payments:[{id:uid(),paidBy:"",amount:0}]});
+  renderAusgaben();renderErgebnis();save();}
+function delExpense(id){const ex=S.expenses.find(x=>x.id===id);
+  const total=ex?((ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0)):0;
+  const go=()=>{S.expenses=S.expenses.filter(x=>x.id!==id);renderAusgaben();renderErgebnis();save();};
+  const has=ex&&(((ex.name||"").trim())||total>0||(ex.appliesTo||[]).length);
+  if(!has){go();return;}
+  confirmDialog("Ausgabe löschen?","„"+(((ex.name||"").trim())||"Unbenannt")+"“"+(total>0?" ("+eur(total)+")":"")+" wird entfernt.",{danger:true,okText:"Löschen",icon:"i-trash"}).then(ok=>{if(ok)go();});}
+function updExp(id,f,v){const ex=S.expenses.find(x=>x.id===id);if(ex){ex[f]=v;renderErgebnis();save();}}
+function toggleExpPart(id,pid,on){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;ex.appliesTo=ex.appliesTo||[];
+  if(on){if(!ex.appliesTo.includes(pid))ex.appliesTo.push(pid);}else{ex.appliesTo=ex.appliesTo.filter(x=>x!==pid);}
+  renderAusgaben();renderErgebnis();save();}
+function expFromSeg(id,sid){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.appliesTo=(S.participation[sid]||[]).slice();ex.segRef=sid;renderAusgaben();renderErgebnis();save();toast("Etappe „"+segName(sid)+"“ zugeordnet — Einzelne abwählbar");}}
+function unlinkExp(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.segRef="";renderAusgaben();save();}}
+function expSetSeg(id,sid){ if(sid){ expFromSeg(id,sid); } else { expDetailsOpen.add(id); unlinkExp(id); } }
+function addPay(id){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.payments=ex.payments||[];ex.payments.push({id:uid(),paidBy:"",amount:0});renderAusgaben();save();}}
+// Zahler/Betrag GEZIELT in der Karte aktualisieren statt die ganze Ausgabenliste neu zu bauen
+// (sonst wird das DOM mitten in der Tipp-Geste zerstört → Personen-Popup öffnet erst beim 2. Tippen; Fokus geht verloren).
+function updExpSummary(id){ const ex=S.expenses.find(x=>x.id===id); if(!ex) return;
+  const el=document.querySelector('[data-exp-sum="'+id+'"]'); if(!el) return;
+  const total=(ex.payments||[]).reduce((a,b)=>a+(+b.amount||0),0);
+  const grp=(ex.appliesTo||[]).filter(x=>pById(x)); const per=grp.length>0?total/grp.length:0;
+  el.innerHTML=`Summe <b>${eur(total)}</b> · ${grp.length} Pers. · ${eur(per)}/Person`; }
+function updPay(id,pid,f,v){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;const pm=(ex.payments||[]).find(x=>x.id===pid);
+  if(!pm)return; pm[f]=f==="amount"?(+v||0):v;
+  if(f==="paidBy"){ const b=document.querySelector('.picker-btn[data-pay="'+id+':'+pid+'"]');
+    if(b){ const has=pm.paidBy&&pById(pm.paidBy); b.classList.toggle("placeholder",!has);
+      const s=b.querySelector("span"); if(s) s.textContent=has?pName(pm.paidBy):"Bezahlt von …"; } }
+  else { updExpSummary(id); }
+  renderErgebnis();save();}
+function delPay(id,pid){const ex=S.expenses.find(x=>x.id===id);if(ex){ex.payments=ex.payments.filter(x=>x.id!==pid);renderAusgaben();renderErgebnis();save();}}
+
+/* ---------------- Import / Export / Reset ---------------- */
+/* Native-Brücke (macOS/Android); im Browser/PWA -> null, dann Fallback unten */
+function macBridge(){ return (window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.kajak)?window.webkit.messageHandlers.kajak:null; }
+function androidBridge(){ return (typeof window.KajakNative!=="undefined")?window.KajakNative:null; }
+function b64utf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+function exportName(ext){ return (S.meta.title||"kajak-tour").replace(/[^\w\-]+/g,"_").slice(0,40)+"."+ext; }
+
+function exportJSON(){
+  const text=JSON.stringify(S,null,2), name=exportName("json"), mime="application/json";
+  const ab=androidBridge(); if(ab){ ab.saveFile(name,mime,b64utf8(text)); return; }  // Erfolgsmeldung kommt nativ nach dem Schreiben
+  const mb=macBridge();     if(mb){ mb.postMessage({type:"saveFile",name:name,mime:mime,b64:b64utf8(text)}); toast("Exportiert"); return; }
+  const blob=new Blob([text],{type:mime});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();toast("Exportiert");
+}
+
+function exportPDF(){
+  // Ergebnis-Reiter aktivieren und alle Detail-Bereiche aufklappen, damit das PDF vollständig ist
+  const tb=document.querySelector('#tabs button[data-tab="ergebnis"]'); if(tb) tb.click();
+  document.querySelectorAll('#tab-ergebnis details').forEach(d=>d.open=true);
+  const ab=androidBridge(); if(ab){ ab.exportPDF(); return; }
+  const mb=macBridge();     if(mb){ mb.postMessage({type:"exportPDF"}); return; }
+  setTimeout(()=>window.print(),120);
+}
+function importJSON(ev){const f=ev.target.files[0]; ev.target.value=""; if(!f)return;
+  confirmDialog("Datei importieren?","Die importierte Tour ersetzt deine aktuellen Eingaben.",{danger:true,okText:"Importieren",cancelText:"Abbrechen"}).then(ok=>{
+    if(!ok)return;
+    const r=new FileReader();
+    r.onerror=()=>alertDialog("Import fehlgeschlagen","Die Datei konnte nicht gelesen werden.");
+    r.onload=()=>{
+      let data; try{ data=JSON.parse(r.result); }catch(e){ alertDialog("Import fehlgeschlagen","Die Datei ist keine gültige JSON-Datei."); return; }
+      if(!data || typeof data!=="object" || Array.isArray(data) || !("segments" in data || "participants" in data || "meta" in data)){
+        alertDialog("Import fehlgeschlagen","Das ist keine RapidSplit-Export-Datei."); return;
+      }
+      const prev=S;
+      try{ S=data; normalize(); renderAll(); save(); toast("Importiert"); }
+      catch(e){ S=prev; try{normalize();}catch(_){}; renderAll(); alertDialog("Import fehlgeschlagen","Die Datei enthält ungültige Daten. Deine bisherigen Eingaben wurden beibehalten."); }
+    };
+    r.readAsText(f);
+  });}
+function resetExample(){confirmDialog("Beispiel laden?","Die Beispiel-Tour (Una & Soča 2026) ersetzt deine aktuellen Daten.",{okText:"Laden",cancelText:"Abbrechen"}).then(ok=>{if(!ok)return;
+  S=exampleData();normalize();renderAll();
+  try{localStorage.removeItem(LS_KEY);}catch(e){}   // Beispiel ist nur temporär: erscheint NICHT beim App-Start, persistiert erst, wenn du es bearbeitest
+  toast("Beispiel geladen");});}
+function clearAll(){confirmDialog("Alles leeren?","Alle Eingaben dieser Tour werden unwiderruflich gelöscht.",{danger:true,okText:"Leeren",icon:"i-trash"}).then(ok=>{if(!ok)return;
+  S=emptyData();normalize();renderAll();toast("Geleert");});}
+function doNewTrip(){
+  S={meta:{title:"",rows:[]},segments:[],participants:[],participation:{},expenses:[]};
+  normalize();renderAll();
+  document.querySelector('#tabs button[data-tab="info"]').click();
+  const mt=document.getElementById("m_title"); if(mt&&mt.focus){try{mt.focus();}catch(e){}}
+  toast("Neue Fahrt angelegt");
+}
+function newTrip(skipConfirm){
+  if(skipConfirm){ doNewTrip(); return; }
+  confirmDialog("Neue, leere Fahrt?","Alle aktuellen Eingaben werden gelöscht.\nMit „Beispiel laden“ holst du die Vorlage zurück.",{danger:true,okText:"Neu anlegen"}).then(ok=>{ if(ok) doNewTrip(); });
+}
+
+/* ---------------- Tabs & init ---------------- */
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll("#tabs button").forEach(x=>{x.classList.remove("active");x.removeAttribute("aria-current");});
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");b.setAttribute("aria-current","page");document.getElementById("tab-"+b.dataset.tab).classList.add("active");
+  if(b.dataset.tab==="ergebnis")renderErgebnis();
+  mainScrollTop();
+});
+/* <main> ist der Scroll-Container: Helfer + Leistenhöhe an padding-top übergeben (Inhalt scrollt hinter die fixen Leisten) */
+function mainScrollTop(){ const m=document.querySelector("main"); if(m) m.scrollTop=0; }
+const TOP_GAP=16;  // stimmiger Abstand zwischen fixer Kopfleiste und erstem Inhalt (Tour-Titel/Info-Kacheln/Auswerte-Block)
+function syncTopInset(){ const tb=document.getElementById("topbar"), m=document.querySelector("main");
+  if(tb&&m){ const h=tb.offsetHeight; if(h>0) m.style.paddingTop=(h+TOP_GAP)+"px"; } }
+window.addEventListener("load",syncTopInset);
+window.addEventListener("resize",syncTopInset);
+window.addEventListener("orientationchange",()=>setTimeout(syncTopInset,150));
+try{ new ResizeObserver(syncTopInset).observe(document.getElementById("topbar")); }catch(e){}
+/* ---- Höhe der On-Screen-Tastatur als --kb-vv veröffentlichen (Wizard bleibt darüber) ---- */
+(function initKeyboardInset(){
+  const vv=window.visualViewport; if(!vv) return;
+  const upd=()=>{ const kb=Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+    document.documentElement.style.setProperty("--kb-vv", kb+"px"); };
+  vv.addEventListener("resize",upd); vv.addEventListener("scroll",upd); upd();
+})();
+document.getElementById("m_title").addEventListener("input",e=>{S.meta.title=e.target.value;updateSub();save();});
+document.getElementById("m_from").addEventListener("change",e=>{S.meta.dateFrom=e.target.value;updateSub();renderErgebnis();save();});
+document.getElementById("m_to").addEventListener("change",e=>{S.meta.dateTo=e.target.value;updateSub();renderErgebnis();save();});
+document.getElementById("m_desc").addEventListener("input",e=>{S.meta.description=e.target.value;renderErgebnis();save();});
+// enter-to-add
+["seg_new","part_new","part_group"].forEach(id=>{
+  const el=document.getElementById(id); if(!el)return;
+  el.addEventListener("keydown",e=>{if(e.key==="Enter"){ if(id==="seg_new")addSegment(); else addParticipant(); }});
+});
+// Zahlenfelder + markierte Textfelder (.selonfocus): beim Hineintippen vorausgefüllten Wert markieren → direkt lostippen
+document.addEventListener("focusin",e=>{
+  const el=e.target;
+  if(el&&el.tagName==="INPUT"&&(el.type==="number"||el.classList.contains("selonfocus"))){ setTimeout(()=>{try{el.select();}catch(_){}} ,0); }
+});
+/* ---------------- Dark Mode ---------------- */
+function currentTheme(){ return document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light"; }
+function applyTheme(t){
+  t=(t==="dark")?"dark":"light";
+  document.documentElement.setAttribute("data-theme",t);
+  const sw=document.getElementById("themeSwitch"); if(sw) sw.setAttribute("aria-checked", t==="dark"?"true":"false");
+  const mt=document.getElementById("metaTheme"); if(mt) mt.setAttribute("content", t==="dark"?"#0a1418":"#eef3f5");
+  // Logo: helle Variante als Hauptlogo, dunkle Variante nur im Dark-Mode
+  const bl=document.getElementById("brandLogo"); if(bl) bl.src = (t==="dark"?"icons/icon-dark-192.png?v=19":"icons/icon-192.png?v=19");
+  // Android: System-Leisten an die App-Kartenfarbe (Kopfzeile/Tab-Leiste) angleichen – kein schwarzer Balken
+  try{ if(window.KajakNative && KajakNative.setBarColor) KajakNative.setBarColor(t==="dark"?"#15303a":"#ffffff"); }catch(e){}
+}
+function toggleTheme(){ const t=currentTheme()==="dark"?"light":"dark"; try{localStorage.setItem("kajak_theme",t);}catch(e){} applyTheme(t); }
+applyTheme(currentTheme()); // Schalter/Meta mit der vom Head-Skript gesetzten Vorgabe synchronisieren
+try{ matchMedia("(prefers-color-scheme:dark)").addEventListener("change",e=>{ if(!localStorage.getItem("kajak_theme")) applyTheme(e.matches?"dark":"light"); }); }catch(e){}
+/* ---------------- Start-Block ein-/ausblenden (dauerhaft, geräteweit) ---------------- */
+const HIDE_START_KEY="rapidsplit_hide_start";
+function applyStartVisibility(){
+  const hidden = (function(){try{return localStorage.getItem(HIDE_START_KEY)==="1";}catch(e){return false;}})();
+  const card=document.getElementById("startCard"), row=document.getElementById("showStartRow");
+  if(card) card.style.display = hidden ? "none" : "";
+  if(row) row.style.display = hidden ? "" : "none";
+}
+function hideStart(){ try{localStorage.setItem(HIDE_START_KEY,"1");}catch(e){} applyStartVisibility(); toast("Start-Block ausgeblendet"); }
+function showStart(){ try{localStorage.removeItem(HIDE_START_KEY);}catch(e){} applyStartVisibility(); mainScrollTop(); }
+applyStartVisibility();
+/* ---------------- Wizard ---------------- */
+const WIZ_STEPS=[
+  {tab:"info",title:"1. Tour & Etappen",text:"Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …)."},
+  {tab:"teilnehmer",title:"2. Gruppe eintragen",text:"Trage alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Ein Verein/Familie fasst Salden am Ende zusammen."},
+  {tab:"teilnahme",title:"3. Wer & Wo",text:"Hake an, wer auf welcher Etappe mitgefahren ist."},
+  {tab:"fahrer",title:"4. Fahrtkosten",text:"Trage je Fahrer:in die km pro Etappe ein. Wähle oben einmal für alle Fahrer:innen, ob über €/km-Pauschale oder Spritkosten (Gesamtbetrag je Fahrer:in) abgerechnet wird. Auslagen wie Streckenmaut kommen darunter dazu."},
+  {tab:"ausgaben",title:"5. Ausgaben",text:"Erfasse gemeinsame Ausgaben (Einkäufe, Campingplatz …): Betrag, Bezahler:in und für wen die Ausgabe gilt."},
+  {tab:"ergebnis",title:"6. Auswertung",text:"Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Über „PDF“ oder „Export“ teilst du alles."},
+];
+let wizStepIdx=0, wizActive=false;
+// Android „Zurück": erst offenen Dialog schließen bzw. Wizard beenden; nur sonst App verlassen.
+window.handleAndroidBack=function(){
+  var ov=document.querySelector('.modal-overlay.show');
+  if(ov){ document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true})); return true; }
+  if(wizActive){ try{wizClose();}catch(e){} return true; }
+  return false;
+};
+function startWizard(){
+  confirmDialog("Tutorial starten?","Ein kurzer geführter Rundgang durch die App.",{icon:"i-compass",okText:"Weiter",cancelText:"Abbrechen"}).then(go=>{
+    if(!go) return;   // Abbrechen / Escape / Klick daneben → Tutorial NICHT starten
+    confirmDialog("Neue oder aktuelle Fahrt?","Mit einer NEUEN, leeren Fahrt beginnen — oder die aktuellen Daten behalten?",{icon:"i-compass",okText:"Leer starten",cancelText:"Daten behalten"}).then(fresh=>{
+      if(fresh) doNewTrip();
+      wizActive=true; wizStepIdx=0; document.body.classList.add("wiz-on");
+      document.getElementById("wizBar").classList.add("show"); wizRender();
+    });
+  });
+}
+function wizGo(d){
+  const n=wizStepIdx+d;
+  if(n<0)return;
+  if(n>=WIZ_STEPS.length){ wizClose(); toast("Wizard abgeschlossen 🎉"); return; }
+  wizStepIdx=n; wizRender();
+}
+function wizRender(){
+  const s=WIZ_STEPS[wizStepIdx];
+  document.querySelector('#tabs button[data-tab="'+s.tab+'"]').click();
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('wiz-hl'));
+  document.querySelector('#tabs button[data-tab="'+s.tab+'"]').classList.add('wiz-hl');
+  document.getElementById("wizStep").textContent="Schritt "+(wizStepIdx+1)+" / "+WIZ_STEPS.length;
+  document.getElementById("wizProg").style.width=Math.round((wizStepIdx+1)/WIZ_STEPS.length*100)+"%";
+  document.getElementById("wizTitle").textContent=s.title;
+  document.getElementById("wizText").textContent=s.text;
+  document.getElementById("wizBack").style.visibility=wizStepIdx===0?"hidden":"visible";
+  document.getElementById("wizNext").textContent=wizStepIdx===WIZ_STEPS.length-1?"Fertig ✓":"Weiter →";
+  mainScrollTop();
+}
+function wizClose(){
+  wizActive=false; document.body.classList.remove("wiz-on");
+  document.getElementById("wizBar").classList.remove("show");
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('wiz-hl'));
+}
+
+load();renderAll();
+
+/* ---------------- PWA: Service Worker ---------------- */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

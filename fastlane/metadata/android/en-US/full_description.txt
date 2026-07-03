@@ -1,0 +1,24 @@
+RapidSplit fairly splits the costs of a kayak, club or group tour per participant - accurately per leg instead of one flat share. If you rode along, you pay along. If you didn't, you don't.
+
+<b>Per-leg travel costs</b>
+
+Set up your tour as legs (outward trip, shuttle runs, return trip) and mark who rode along on each leg. Only the people on a leg share its driving costs. Settle either via a €/km flat rate or via real fuel costs, distributed by kilometre share.
+
+<b>All costs of a tour</b>
+
+* Assign driver expenses (tolls, parking, permits) to individual legs
+* Track shared expenses such as groceries or campsites with any combination of payers
+* Optionally merge club or family balances into one group balance
+
+<b>A clear result</b>
+
+The summary shows costs per person, balances and "who pays whom" with the minimum number of settlement payments. Export as PDF or as a file (backup/sharing).
+
+<b>Private by design</b>
+
+* No account, no registration
+* Works fully offline - ideal in the outdoors
+* All data stays on your device: no server, no tracking, no ads
+* Free software (GPL-3.0)
+
+Includes a step-by-step tutorial and an example tour. Light and dark mode. App language is currently German.

@@ -1,0 +1,24 @@
+RapidSplit rechnet die Kosten einer Kajak-, Vereins- oder Gruppentour fair pro Teilnehmer:in ab - etappengenau statt pauschal. Wer mitfährt, zahlt mit. Wer nicht, zahlt nicht.
+
+<b>Etappengenaue Fahrtkosten</b>
+
+Du legst die Tour als Etappen an (Hinfahrt, Shuttle-Fahrten, Rückfahrt) und markierst pro Etappe, wer mitgefahren ist. Die Fahrtkosten einer Etappe teilen nur deren Mitfahrende. Abgerechnet wird wahlweise über eine €/km-Pauschale oder über echte Spritkosten, verteilt nach Kilometer-Anteil.
+
+<b>Alle Kosten einer Tour</b>
+
+* Fahrer-Auslagen (Maut, Parkplatz, Permit) einzelnen Etappen zuordnen
+* Gemeinsame Ausgaben wie Einkäufe oder Campingplatz mit beliebigen Zahler:innen erfassen
+* Vereins- oder Familien-Salden auf Wunsch zu einem Gruppensaldo zusammenfassen
+
+<b>Klares Ergebnis</b>
+
+Die Auswertung zeigt Kosten pro Person, Salden und „wer zahlt wem" mit der minimalen Anzahl an Ausgleichszahlungen. Export als PDF oder als Datei (Sicherung/Weitergabe).
+
+<b>Privat by design</b>
+
+* Kein Konto, keine Registrierung
+* Funktioniert komplett offline, ideal fürs Gelände
+* Alle Daten bleiben lokal auf deinem Gerät - kein Server, kein Tracking, keine Werbung
+* Freie Software (GPL-3.0)
+
+Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus.

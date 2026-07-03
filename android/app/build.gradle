@@ -1,0 +1,32 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'app.rapidsplit'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "app.rapidsplit"
+        minSdk 21
+        targetSdk 34
+        versionCode 3
+        versionName "3.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+// Keine Abhängigkeiten: reiner Android-Framework-Wrapper (WebView) um die Offline-PWA in assets/.
+dependencies {
+}
