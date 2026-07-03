@@ -7,7 +7,10 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId "app.rapidsplit"
+        // Standard = app.rapidsplit (F-Droid). Play-Store-Build nutzt eine eigene
+        // Paket-ID über -PappId=com.hantig.rapidsplit (namespace bleibt app.rapidsplit,
+        // die Aktivitätsklasse also unverändert; nur die installierte App-ID ändert sich).
+        applicationId project.findProperty("appId") ?: "app.rapidsplit"
         minSdk 21
         targetSdk 35
         versionCode 6
