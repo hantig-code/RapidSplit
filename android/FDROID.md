@@ -28,9 +28,9 @@ Binaries:
   https://github.com/hantig-code/RapidSplit/releases/download/v%v/RapidSplit-%v.apk
 
 Builds:
-  - versionName: 3.0.2
-    versionCode: 5
-    commit: v3.0.2
+  - versionName: 3.0.3
+    versionCode: 6
+    commit: v3.0.3
     subdir: android/app
     gradle:
       - yes
@@ -39,11 +39,11 @@ AllowedAPKSigningKeys: 8e2ed969456f5bea3aa6fa729b999861d14c8e6aa5b05d5455a4620c6
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 3.0.2
-CurrentVersionCode: 5
+CurrentVersion: 3.0.3
+CurrentVersionCode: 6
 ```
 
-## Reproducible Builds (aktiv seit v3.0.2)
+## Reproducible Builds (aktiv seit v3.0.1)
 
 RapidSplit nutzt F-Droids Reproducible-Builds-Verfahren: Zu jedem Release wird
 die selbst signierte APK als GitHub-Release-Asset veröffentlicht
