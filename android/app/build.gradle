@@ -10,8 +10,8 @@ android {
         applicationId "app.rapidsplit"
         minSdk 21
         targetSdk 34
-        versionCode 3
-        versionName "3.0"
+        versionCode 4
+        versionName "3.0.1"
     }
 
     buildTypes {
@@ -19,6 +19,13 @@ android {
             minifyEnabled false
             shrinkResources false
         }
+    }
+
+    // Kein verschlüsselter Google-Play-Abhängigkeitsblock in der APK —
+    // Voraussetzung für F-Droids Reproducible Builds (byte-identischer Nachbau).
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 
     compileOptions {

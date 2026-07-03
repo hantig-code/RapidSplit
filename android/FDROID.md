@@ -24,20 +24,41 @@ AutoName: RapidSplit
 
 RepoType: git
 Repo: https://github.com/hantig-code/RapidSplit.git
+Binaries: https://github.com/hantig-code/RapidSplit/releases/download/v%v/RapidSplit-%v.apk
 
 Builds:
-  - versionName: '3.0'
-    versionCode: 3
-    commit: v3.0
+  - versionName: 3.0.1
+    versionCode: 4
+    commit: v3.0.1
     subdir: android/app
     gradle:
       - yes
 
+AllowedAPKSigningKeys: 8e2ed969456f5bea3aa6fa729b999861d14c8e6aa5b05d5455a4620c6550fef6
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: '3.0'
-CurrentVersionCode: 3
+CurrentVersion: 3.0.1
+CurrentVersionCode: 4
 ```
+
+## Reproducible Builds (aktiv seit v3.0.1)
+
+RapidSplit nutzt F-Droids Reproducible-Builds-Verfahren: Zu jedem Release wird
+die selbst signierte APK als GitHub-Release-Asset veröffentlicht
+(`RapidSplit-<versionName>.apk` am Tag `v<versionName>`). F-Droid baut aus dem
+Quellcode nach, vergleicht byte-genau mit dem Asset (`Binaries:` +
+`AllowedAPKSigningKeys:` oben) und veröffentlicht bei Übereinstimmung die APK
+mit der **Entwickler-Signatur** (Cert-SHA256 `8e2ed969…`, Keystore
+`release-v2.keystore`, Alias `kajakv2`).
+
+Dafür nötig (bereits umgesetzt): `dependenciesInfo { includeInApk = false }`
+in `app/build.gradle` — der verschlüsselte Play-Store-Abhängigkeitsblock würde
+den byte-genauen Nachbau sonst stören.
+
+**Release-Ablauf pro Version:** versionCode/versionName erhöhen → committen →
+Tag `vX.Y(.Z)` pushen → `./gradlew clean assembleRelease` → APK mit apksigner
+signieren → als `RapidSplit-X.Y(.Z).apk` an das GitHub-Release des Tags hängen.
 
 Beschreibung, Kurzbeschreibung und Icon zieht F-Droid automatisch aus
 [`fastlane/metadata/android/`](../fastlane/metadata/android/) dieses Repos.
