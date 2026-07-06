@@ -1,0 +1,3 @@
+Erste Veröffentlichung auf F-Droid.
+
+RapidSplit teilt die Kosten einer Kajak-, Vereins- oder Gruppentour fair: etappengenau statt pauschal. Fahrtkosten pro Etappe (Pauschale pro km oder Sprit nach Anteil), Fahrer-Auslagen je Etappe, gemeinsame Ausgaben und „wer zahlt wem" mit minimalen Überweisungen. Kostenlos, offline, ohne Konto, ohne Werbung, ohne Tracking.
