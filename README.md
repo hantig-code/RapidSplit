@@ -5,11 +5,11 @@ Teilnehmer:in** ab — etappengenau statt pauschal: Fahrtkosten je Etappe, gemei
 Ausgaben, Salden und „wer zahlt wem". Läuft komplett im Browser, **offline**
 nutzbar, alle Daten bleiben lokal auf dem Gerät (kein Konto, kein Tracking).
 
-## ▶️ App öffnen (aktuelle Version 3)
+## ▶️ App öffnen (aktuelle Version 4)
 
 **https://hantig-code.github.io/RapidSplit/v2/**
 
-> Die Adresse `…/v2/` ist die dauerhafte App-URL — Version 3 (und alle künftigen
+> Die Adresse `…/v2/` ist die dauerhafte App-URL — Version 4 (und alle künftigen
 > Updates) werden dort ausgeliefert; installierte Apps aktualisieren sich automatisch.
 
 **Als App installieren:**

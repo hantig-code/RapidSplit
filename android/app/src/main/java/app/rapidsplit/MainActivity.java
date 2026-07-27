@@ -1,20 +1,3 @@
-/*
- * RapidSplit - Tour-Kosten fair teilen, pro Etappe statt pauschal.
- * Copyright (C) 2026 Stefan Nester (hantig)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
 package app.rapidsplit;
 
 import android.app.Activity;
@@ -51,7 +34,8 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> filePathCallback;
     private static final int FILE_CHOOSER_REQUEST = 1;
     private static final int SAVE_FILE_REQUEST = 2;
-    private byte[] pendingBytes;       // Inhalt, der nach SAF-Auswahl geschrieben wird
+    private byte[] pendingBytes;
+    private android.webkit.PermissionRequest pendingPerm;   // Kamera-Anfrage bis zur OS-Freigabe       // Inhalt, der nach SAF-Auswahl geschrieben wird
     private int navTopDp = 0;          // Höhe der System-Statusleiste (dp)
     private int navBottomDp = 0;       // Höhe der System-Navigations-/Gestenleiste (dp), an die Web-App weitergereicht
     private int imeBottomDp = 0;       // Höhe der eingeblendeten Tastatur (dp)
@@ -59,6 +43,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getResources().getConfiguration().smallestScreenWidthDp < 600) {
+            setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
 
         web = new WebView(this);
         WebSettings s = web.getSettings();
@@ -68,7 +55,7 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(true);
         s.setAllowContentAccess(true);
         s.setSupportZoom(false);
-        s.setMediaPlaybackRequiresUserGesture(true);
+        s.setMediaPlaybackRequiresUserGesture(false);   // Kamera-Vorschau ohne Play-Overlay
         s.setSupportMultipleWindows(true);   // target="_blank" -> onCreateWindow
 
         // Externe Links (http/https/mailto/tel) im System (Browser/Mail) öffnen, nicht in der WebView
@@ -84,6 +71,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 pushInsets();   // Leisten-Höhen an die Web-App geben (Header/Tab-Leiste nicht abschneiden)
+                pushSystemDark();
             }
         });
 
@@ -101,6 +89,22 @@ public class MainActivity extends Activity {
                 resultMsg.sendToTarget();
                 return true;
             }
+            @Override
+            public void onPermissionRequest(final android.webkit.PermissionRequest request) {
+                runOnUiThread(new Runnable() { @Override public void run() {
+                    boolean cam = false;
+                    for (String r : request.getResources()) if (android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(r)) cam = true;
+                    if (!cam) { request.deny(); return; }
+                    if (Build.VERSION.SDK_INT >= 23 && checkSelfPermission(android.Manifest.permission.CAMERA)
+                            != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                        pendingPerm = request;   // offen halten – wird nach dem OS-Dialog beantwortet
+                        requestPermissions(new String[]{android.Manifest.permission.CAMERA}, 77);
+                    } else {
+                        request.grant(request.getResources());
+                    }
+                }});
+            }
+
             @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
                                              FileChooserParams params) {
@@ -156,7 +160,7 @@ public class MainActivity extends Activity {
 
         // System-Leisten zunächst an das (vermutete) Theme anpassen; die Web-App verfeinert das
         int night = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        applyBars(night == Configuration.UI_MODE_NIGHT_YES ? "#15303a" : "#ffffff");
+        applyBars(night == Configuration.UI_MODE_NIGHT_YES ? "#0e1513" : "#f5faf8");
 
         if (savedInstanceState == null) {
             web.loadUrl("file:///android_asset/index.html");
@@ -190,6 +194,16 @@ public class MainActivity extends Activity {
         v.post(new Runnable() { @Override public void run() { v.destroy(); } });
     }
 
+    /** System-Hell/Dunkel an die Web-App melden (WebView liefert prefers-color-scheme nicht zuverlässig). */
+    private void pushSystemDark() {
+        if (web == null) return;
+        int night = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        final boolean dark = night == Configuration.UI_MODE_NIGHT_YES;
+        runOnUiThread(new Runnable() { @Override public void run() {
+            try { web.evaluateJavascript("window.setSystemDark&&setSystemDark(" + dark + ")", null); } catch (Exception e) { }
+        }});
+    }
+
     /** Status-/Gestenleisten-Höhen als CSS-Variablen --sys-top / --sys-bottom an die Web-App geben. */
     private void pushInsets() {
         if (web == null) return;
@@ -200,7 +214,8 @@ public class MainActivity extends Activity {
                     web.evaluateJavascript(
                         "var r=document.documentElement;r.style.setProperty('--sys-top','" + navTopDp + "px');"
                         + "r.style.setProperty('--sys-bottom','" + navBottomDp + "px');"
-                        + "r.style.setProperty('--kb-native','" + kb + "px')", null);
+                        + "r.style.setProperty('--kb-native','" + kb + "px');"
+                        + "window.updPadExtra&&updPadExtra()", null);
                 } catch (Exception e) { /* ignore */ }
             }
         });
@@ -263,6 +278,34 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void shareFile(final String name, final String mime, final String b64) {
+            final byte[] bytes;
+            try { bytes = Base64.decode(b64, Base64.DEFAULT); }
+            catch (Exception e) { return; }
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    try {
+                        java.io.File dir = new java.io.File(getCacheDir(), "share");
+                        if (!dir.exists()) dir.mkdirs();
+                        String safe = (name == null ? "export.bin" : name).replaceAll("[^A-Za-z0-9._-]", "_");
+                        java.io.File f = new java.io.File(dir, safe);
+                        java.io.FileOutputStream fos = new java.io.FileOutputStream(f);
+                        fos.write(bytes); fos.flush(); fos.close();
+                        Uri uri = Uri.parse("content://" + getPackageName() + ".share/" + Uri.encode(safe));
+                        Intent send = new Intent(Intent.ACTION_SEND);
+                        send.setType(mime == null ? "application/octet-stream" : mime);
+                        send.putExtra(Intent.EXTRA_STREAM, uri);
+                        send.setClipData(android.content.ClipData.newRawUri(null, uri));
+                        send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(Intent.createChooser(send, "Auswertung teilen"));
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "Teilen fehlgeschlagen", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void exportPDF() {
             runOnUiThread(new Runnable() {
                 @Override public void run() {
@@ -308,6 +351,19 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 77 && pendingPerm != null) {
+            final android.webkit.PermissionRequest req = pendingPerm; pendingPerm = null;
+            final boolean ok = grantResults.length > 0
+                    && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED;
+            runOnUiThread(new Runnable() { @Override public void run() {
+                try { if (ok) req.grant(req.getResources()); else req.deny(); } catch (Exception e) { }
+            }});
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         web.saveState(outState);
@@ -324,7 +380,8 @@ public class MainActivity extends Activity {
         super.onConfigurationChanged(newConfig);
         // uiMode steht in configChanges -> kein Activity-Neustart beim Hell/Dunkel-Wechsel (WebView-Zustand bleibt).
         int night = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        applyBars(night == Configuration.UI_MODE_NIGHT_YES ? "#15303a" : "#ffffff");
+        applyBars(night == Configuration.UI_MODE_NIGHT_YES ? "#0e1513" : "#f5faf8");
+        pushSystemDark();
     }
 
     @Override

@@ -1,0 +1,6 @@
+RapidSplit 4.0 – major update:
+* Complete Material 3 redesign (light & dark)
+* Manage multiple tours, new home screen
+* Share tours & edit together: end-to-end encrypted server copy, join via QR code or 6-digit code
+* Foreign currencies with daily rates
+* Redesigned PDF export, swipe gestures, accordion views and more

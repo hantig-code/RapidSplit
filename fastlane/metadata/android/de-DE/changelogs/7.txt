@@ -1,0 +1,6 @@
+RapidSplit 4.0 – großes Update:
+* Komplettes Redesign nach Material 3 (hell & dunkel)
+* Mehrere Touren parallel verwalten, Startseite mit Tour-Übersicht
+* Touren teilen & gemeinsam bearbeiten: Ende-zu-Ende-verschlüsselte Server-Kopie, Beitritt per QR-Code oder 6-stelligem Code
+* Fremdwährungen mit Tageskursen
+* PDF-Export im neuen Design, Wischgesten, Akkordeon-Ansichten u.v.m.
