@@ -1,24 +1,26 @@
-RapidSplit fairly splits the costs of a kayak, club or group tour per participant - accurately per leg instead of one flat share. If you rode along, you pay along. If you didn't, you don't.
+Those who ride along pay along. Those who don't, don't. RapidSplit settles kayak, club and group trips fairly: leg by leg instead of flat rates.
 
-<b>Per-leg travel costs</b>
+🛶 PER-LEG TRAVEL COSTS
+Set up your tour as legs (e.g. outward trip, shuttle, return) and mark who rode along on each leg. Only those people share that leg's costs. Settle via a per-km rate or by fuel costs split by kilometre share.
 
-Set up your tour as legs (outward trip, shuttle runs, return trip) and mark who rode along on each leg. Only the people on a leg share its driving costs. Settle either via a €/km flat rate or via real fuel costs, distributed by kilometre share.
+💶 EVERY COST OF THE TOUR
+• Assign driver expenses (tolls, parking, permits) to individual legs
+• Shared expenses like groceries or campsites, with multiple payers if needed
+• Foreign currencies with stored daily rates
+• Optionally combine club or family balances into one group
+• Manage several tours in parallel
 
-<b>All costs of a tour</b>
+✅ A CLEAR RESULT
+Costs per person, balances and "who pays whom" with the minimum number of transfers. Export as PDF or CSV for records and sharing.
 
-* Assign driver expenses (tolls, parking, permits) to individual legs
-* Track shared expenses such as groceries or campsites with any combination of payers
-* Optionally merge club or family balances into one group balance
+🤝 SETTLE TOGETHER (OPTIONAL)
+Share a tour via QR code or a 6-digit code and edit it together. Only for this purpose an end-to-end encrypted copy is uploaded to the RapidSplit server – the server only ever sees encrypted data, the copy can be deleted at any time, and the server code is published in the repository.
 
-<b>A clear result</b>
+🔒 PRIVATE BY DESIGN
+• No account, no registration
+• Works fully offline – ideal in the outdoors
+• Your data stays on your device – nothing goes online unless you explicitly share it
+• No tracking, no ads
+• Free and open source (GPL-3.0)
 
-The summary shows costs per person, balances and "who pays whom" with the minimum number of settlement payments. Export as PDF or as a file (backup/sharing).
-
-<b>Private by design</b>
-
-* No account, no registration
-* Works fully offline - ideal in the outdoors
-* All data stays on your device: no server, no tracking, no ads
-* Free software (GPL-3.0)
-
-Includes a step-by-step tutorial and an example tour. Light and dark mode. App language is currently German.
+Includes a step-by-step tutorial and a sample tour to try out. Light and dark mode in Material 3 design.

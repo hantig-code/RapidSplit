@@ -1,24 +1,26 @@
-RapidSplit rechnet die Kosten einer Kajak-, Vereins- oder Gruppentour fair pro Teilnehmer:in ab - etappengenau statt pauschal. Wer mitfährt, zahlt mit. Wer nicht, zahlt nicht.
+Wer mitfährt, zahlt mit. Wer nicht, zahlt nicht. RapidSplit rechnet Kajak-, Vereins- und Gruppen-Ausfahrten fair ab: etappengenau statt pauschal.
 
-<b>Etappengenaue Fahrtkosten</b>
+🛶 ETAPPENGENAUE FAHRTKOSTEN
+Lege deine Tour als Etappen an (bspw. Hinfahrt, Shuttle, Rückfahrt) und markiere je Etappe, wer mitgefahren ist. Nur diese Personen teilen die Kosten der Etappe. Abgerechnet wird per €/km-Pauschale oder über die Spritkosten nach Kilometer-Anteil.
 
-Du legst die Tour als Etappen an (Hinfahrt, Shuttle-Fahrten, Rückfahrt) und markierst pro Etappe, wer mitgefahren ist. Die Fahrtkosten einer Etappe teilen nur deren Mitfahrende. Abgerechnet wird wahlweise über eine €/km-Pauschale oder über echte Spritkosten, verteilt nach Kilometer-Anteil.
+💶 ALLE KOSTEN DER TOUR
+• Fahrer-Auslagen (Maut, Parkplatz, Permit) einzelnen Etappen zuordnen
+• Gemeinsame Ausgaben wie Einkauf oder Campingplatz, auch mit mehreren Zahler:innen
+• Fremdwährungen mit hinterlegten Tageskursen
+• Vereins- oder Familien-Salden auf Wunsch als Gruppe zusammenfassen
+• Mehrere Touren parallel verwalten
 
-<b>Alle Kosten einer Tour</b>
+✅ KLARES ERGEBNIS
+Kosten pro Person, Salden und „wer zahlt wem“ mit der minimalen Zahl an Überweisungen. Export als PDF oder CSV zum Sichern und Weitergeben.
 
-* Fahrer-Auslagen (Maut, Parkplatz, Permit) einzelnen Etappen zuordnen
-* Gemeinsame Ausgaben wie Einkäufe oder Campingplatz mit beliebigen Zahler:innen erfassen
-* Vereins- oder Familien-Salden auf Wunsch zu einem Gruppensaldo zusammenfassen
+🤝 GEMEINSAM ABRECHNEN (OPTIONAL)
+Teile eine Tour per QR-Code oder 6-stelligem Code und bearbeitet sie gemeinsam. Nur dafür wird eine Ende-zu-Ende-verschlüsselte Kopie auf den RapidSplit-Server geladen – der Server sieht ausschließlich verschlüsselte Daten, die Kopie lässt sich jederzeit wieder löschen, und der Server-Code ist im Repository offengelegt.
 
-<b>Klares Ergebnis</b>
+🔒 PRIVAT BY DESIGN
+• Kein Konto, keine Registrierung
+• Funktioniert komplett offline, ideal im Gelände
+• Deine Daten bleiben auf deinem Gerät – ins Netz geht nur, was du ausdrücklich teilst
+• Kein Tracking, keine Werbung
+• Kostenlos und Open Source (GPL-3.0)
 
-Die Auswertung zeigt Kosten pro Person, Salden und „wer zahlt wem" mit der minimalen Anzahl an Ausgleichszahlungen. Export als PDF oder als Datei (Sicherung/Weitergabe).
-
-<b>Privat by design</b>
-
-* Kein Konto, keine Registrierung
-* Funktioniert komplett offline, ideal fürs Gelände
-* Alle Daten bleiben lokal auf deinem Gerät - kein Server, kein Tracking, keine Werbung
-* Freie Software (GPL-3.0)
-
-Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus.
+Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus im Material-3-Design.
