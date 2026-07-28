@@ -13,13 +13,13 @@ Set up your tour as legs (e.g. outward trip, shuttle, return) and mark who rode 
 ✅ A CLEAR RESULT
 Costs per person, balances and "who pays whom" with the minimum number of transfers. Export as PDF or CSV for records and sharing.
 
-🤝 SETTLE TOGETHER (OPTIONAL)
-Share a tour via QR code or a 6-digit code and edit it together. Only for this purpose an end-to-end encrypted copy is uploaded to the RapidSplit server – the server only ever sees encrypted data, the copy can be deleted at any time, and the server code is published in the repository.
+🤝 SETTLE TOGETHER
+Share your tour via QR code or a 6-digit code and edit it together. For this, an end-to-end encrypted copy is uploaded to the RapidSplit server. You can delete your shared tours from the server at any time. No one except the people you invite has access to the tour data.
 
 🔒 PRIVATE BY DESIGN
 • No account, no registration
 • Works fully offline – ideal in the outdoors
-• Your data stays on your device – nothing goes online unless you explicitly share it
+• Your data stays on your device by default – only what you explicitly share goes to the RapidSplit server
 • No tracking, no ads
 • Free and open source (GPL-3.0)
 

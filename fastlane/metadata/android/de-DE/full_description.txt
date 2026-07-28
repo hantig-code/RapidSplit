@@ -13,13 +13,13 @@ Lege deine Tour als Etappen an (bspw. Hinfahrt, Shuttle, Rückfahrt) und markier
 ✅ KLARES ERGEBNIS
 Kosten pro Person, Salden und „wer zahlt wem“ mit der minimalen Zahl an Überweisungen. Export als PDF oder CSV zum Sichern und Weitergeben.
 
-🤝 GEMEINSAM ABRECHNEN (OPTIONAL)
-Teile eine Tour per QR-Code oder 6-stelligem Code und bearbeitet sie gemeinsam. Nur dafür wird eine Ende-zu-Ende-verschlüsselte Kopie auf den RapidSplit-Server geladen – der Server sieht ausschließlich verschlüsselte Daten, die Kopie lässt sich jederzeit wieder löschen, und der Server-Code ist im Repository offengelegt.
+🤝 GEMEINSAM ABRECHNEN
+Teile deine Tour per QR-Code oder 6-stelligem Code und bearbeitet sie gemeinsam. Dafür wird eine Ende-zu-Ende-verschlüsselte Kopie auf den RapidSplit-Server geladen. Du kannst deine geteilten Touren jederzeit wieder vom Server löschen. Niemand außer den von dir eingeladenen Personen hat Zugriff auf die Tour-Daten.
 
 🔒 PRIVAT BY DESIGN
 • Kein Konto, keine Registrierung
 • Funktioniert komplett offline, ideal im Gelände
-• Deine Daten bleiben auf deinem Gerät – ins Netz geht nur, was du ausdrücklich teilst
+• Deine Daten bleiben standardmäßig auf deinem Gerät – auf den RapidSplit-Server geht nur, was du ausdrücklich teilst
 • Kein Tracking, keine Werbung
 • Kostenlos und Open Source (GPL-3.0)
 
