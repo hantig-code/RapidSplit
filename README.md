@@ -7,9 +7,9 @@ nutzbar, alle Daten bleiben lokal auf dem Gerät (kein Konto, kein Tracking).
 
 ## ▶️ App öffnen (aktuelle Version 4)
 
-**https://hantig-code.github.io/RapidSplit/v2/**
+**https://hantig-code.github.io/RapidSplit/app/**
 
-> Die Adresse `…/v2/` ist die dauerhafte App-URL — Version 4 (und alle künftigen
+> Die Adresse `…/app/` ist die dauerhafte, versionslose App-URL — Version 4 (und alle künftigen
 > Updates) werden dort ausgeliefert; installierte Apps aktualisieren sich automatisch.
 
 **Als App installieren:**
@@ -38,7 +38,8 @@ Danach startet RapidSplit im eigenen Fenster und funktioniert vollständig offli
 
 | Ordner | Inhalt |
 |--------|--------|
-| [`v2/`](v2/) | **Die aktuelle App (Version 3)** — live unter [/RapidSplit/v2/](https://hantig-code.github.io/RapidSplit/v2/) |
+| [`app/`](app/) | **Die aktuelle App (Version 4)** — live unter [/RapidSplit/app/](https://hantig-code.github.io/RapidSplit/app/) |
+| [`v2/`](v2/) | Weiterleitung: die frühere App-Adresse leitet zur neuen `app/`-URL um (installierte Apps wechseln automatisch, Daten bleiben erhalten) |
 | [`android/`](android/) | **Quellcode der nativen Android-App** (WebView-Wrapper um die Offline-PWA, Gradle-Projekt, Paket `app.rapidsplit`) |
 | [`fastlane/`](fastlane/) | App-Store-Metadaten (Beschreibungen, Icon) für F-Droid & Co. |
 | [`v1/`](v1/) | 📦 Archiv: die ursprüngliche Version 1 („Kajak-Tour Kostenrechner"), weiterhin lauffähig unter [/RapidSplit/v1/](https://hantig-code.github.io/RapidSplit/v1/) |
