@@ -3792,8 +3792,8 @@ function expGroup(ex){
 const CUR_SYMS={EUR:"€",CHF:"CHF",GBP:"£",USD:"$",SEK:"kr",NOK:"kr",DKK:"kr",PLN:"zł",CZK:"Kč",HUF:"Ft",BAM:"KM",RSD:"din",TRY:"₺",ISK:"kr",ALL:"L",GEL:"₾",CAD:"$",MXN:"$",CRC:"₡",COP:"$",PEN:"S/",BRL:"R$",CLP:"$"};
 const CUR_NAMES={EUR:"Euro",CHF:"Schweizer Franken",GBP:"Britisches Pfund",USD:"US-Dollar",SEK:"Schwedische Krone",NOK:"Norwegische Krone",DKK:"Dänische Krone",PLN:"Polnischer Złoty",CZK:"Tschechische Krone",HUF:"Ungarischer Forint",BAM:"Konvertible Mark",RSD:"Serbischer Dinar",TRY:"Türkische Lira",ISK:"Isländische Krone",ALL:"Albanischer Lek",GEL:"Georgischer Lari",CAD:"Kanadischer Dollar",MXN:"Mexikanischer Peso",CRC:"Costa-Rica-Colón",COP:"Kolumbianischer Peso",PEN:"Peruanischer Sol",BRL:"Brasilianischer Real",CLP:"Chilenischer Peso"};
 // Referenzkurse (1 EUR = x Währung) – bei jeder neuen App-Version aktualisieren!
-const FX_DATE="23.07.2026";
-const EUR_RATES={EUR:1,CHF:0.928712,GBP:0.85309,USD:1.141079,SEK:11.066751,NOK:10.951025,DKK:7.463821,PLN:4.329553,CZK:24.16914,HUF:363.649353,BAM:1.95583,RSD:117.386393,TRY:53.905108,ISK:157.9,ALL:98.4,GEL:3.09,CAD:1.559,MXN:21.28,CRC:585.2,COP:4655.0,PEN:4.05,BRL:6.14,CLP:1082.0};
+const FX_DATE="29.07.2026";
+const EUR_RATES={EUR:1,CHF:0.932417,GBP:0.856422,USD:1.138108,SEK:11.045681,NOK:11.022706,DKK:7.463708,PLN:4.325436,CZK:24.179013,HUF:360.409427,BAM:1.95583,RSD:117.420667,TRY:53.930978,ISK:142.542004,ALL:93.680808,GEL:2.982863,CAD:1.605118,MXN:19.860787,CRC:517.18252,COP:3644.812434,PEN:3.872691,BRL:5.821014,CLP:1068.472065};
 function defaultRate(base,foreign){ const b=EUR_RATES[base],f=EUR_RATES[foreign]; if(!b||!f) return 1; return Math.round((f/b)*10000)/10000; }
 const CUR_LIST=Object.keys(CUR_SYMS);
 function baseCur(){ return (S&&S.meta&&CUR_LIST.includes(S.meta.currency))?S.meta.currency:"EUR"; }
