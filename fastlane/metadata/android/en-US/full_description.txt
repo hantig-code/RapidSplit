@@ -1,26 +1,16 @@
 Those who ride along pay along. Those who don't, don't. RapidSplit settles kayak, club and group trips fairly: leg by leg instead of flat rates.
 
-🛶 PER-LEG TRAVEL COSTS
+<b>🛶 PER-LEG TRAVEL COSTS</b>
 Set up your tour as legs (e.g. outward trip, shuttle, return) and mark who rode along on each leg. Only those people share that leg's costs. Settle via a per-km rate or by fuel costs split by kilometre share.
 
-💶 EVERY COST OF THE TOUR
-• Assign driver expenses (tolls, parking, permits) to individual legs
-• Shared expenses like groceries or campsites, with multiple payers if needed
-• Foreign currencies with stored daily rates
-• Optionally combine club or family balances into one group
-• Manage several tours in parallel
-
-✅ A CLEAR RESULT
+<b>💶 EVERY COST OF THE TOUR</b>
+<ul><li>Assign driver expenses (tolls, parking, permits) to individual legs</li><li>Shared expenses like groceries or campsites, with multiple payers if needed</li><li>Foreign currencies with stored daily rates</li><li>Optionally combine club or family balances into one group</li><li>Manage several tours in parallel</li></ul>
+<b>✅ A CLEAR RESULT</b>
 Costs per person, balances and "who pays whom" with the minimum number of transfers. Export as PDF or CSV for records and sharing.
 
-🤝 SETTLE TOGETHER
+<b>🤝 SETTLE TOGETHER</b>
 Share your tour via QR code or a 6-digit code and edit it together. For this, an end-to-end encrypted copy is uploaded to the RapidSplit server. You can delete your shared tours from the server at any time. No one except the people you invite has access to the tour data.
 
-🔒 PRIVATE BY DESIGN
-• No account, no registration
-• Works fully offline – ideal in the outdoors
-• Your data stays on your device by default – only what you explicitly share goes to the RapidSplit server
-• No tracking, no ads
-• Free and open source (GPL-3.0)
-
+<b>🔒 PRIVATE BY DESIGN</b>
+<ul><li>No account, no registration</li><li>Works fully offline – ideal in the outdoors</li><li>Your data stays on your device by default – only what you explicitly share goes to the RapidSplit server</li><li>No tracking, no ads</li><li>Free and open source (GPL-3.0)</li></ul>
 Includes a step-by-step tutorial and a sample tour to try out. Light and dark mode in Material 3 design.

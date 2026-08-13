@@ -1,26 +1,16 @@
 Wer mitfährt, zahlt mit. Wer nicht, zahlt nicht. RapidSplit rechnet Kajak-, Vereins- und Gruppen-Ausfahrten fair ab: etappengenau statt pauschal.
 
-🛶 ETAPPENGENAUE FAHRTKOSTEN
+<b>🛶 ETAPPENGENAUE FAHRTKOSTEN</b>
 Lege deine Tour als Etappen an (bspw. Hinfahrt, Shuttle, Rückfahrt) und markiere je Etappe, wer mitgefahren ist. Nur diese Personen teilen die Kosten der Etappe. Abgerechnet wird per €/km-Pauschale oder über die Spritkosten nach Kilometer-Anteil.
 
-💶 ALLE KOSTEN DER TOUR
-• Fahrer-Auslagen (Maut, Parkplatz, Permit) einzelnen Etappen zuordnen
-• Gemeinsame Ausgaben wie Einkauf oder Campingplatz, auch mit mehreren Zahler:innen
-• Fremdwährungen mit hinterlegten Tageskursen
-• Vereins- oder Familien-Salden auf Wunsch als Gruppe zusammenfassen
-• Mehrere Touren parallel verwalten
-
-✅ KLARES ERGEBNIS
+<b>💶 ALLE KOSTEN DER TOUR</b>
+<ul><li>Fahrer-Auslagen (Maut, Parkplatz, Permit) einzelnen Etappen zuordnen</li><li>Gemeinsame Ausgaben wie Einkauf oder Campingplatz, auch mit mehreren Zahler:innen</li><li>Fremdwährungen mit hinterlegten Tageskursen</li><li>Vereins- oder Familien-Salden auf Wunsch als Gruppe zusammenfassen</li><li>Mehrere Touren parallel verwalten</li></ul>
+<b>✅ KLARES ERGEBNIS</b>
 Kosten pro Person, Salden und „wer zahlt wem“ mit der minimalen Zahl an Überweisungen. Export als PDF oder CSV zum Sichern und Weitergeben.
 
-🤝 GEMEINSAM ABRECHNEN
+<b>🤝 GEMEINSAM ABRECHNEN</b>
 Teile deine Tour per QR-Code oder 6-stelligem Code und bearbeitet sie gemeinsam. Dafür wird eine Ende-zu-Ende-verschlüsselte Kopie auf den RapidSplit-Server geladen. Du kannst deine geteilten Touren jederzeit wieder vom Server löschen. Niemand außer den von dir eingeladenen Personen hat Zugriff auf die Tour-Daten.
 
-🔒 PRIVAT BY DESIGN
-• Kein Konto, keine Registrierung
-• Funktioniert komplett offline, ideal im Gelände
-• Deine Daten bleiben standardmäßig auf deinem Gerät – auf den RapidSplit-Server geht nur, was du ausdrücklich teilst
-• Kein Tracking, keine Werbung
-• Kostenlos und Open Source (GPL-3.0)
-
+<b>🔒 PRIVAT BY DESIGN</b>
+<ul><li>Kein Konto, keine Registrierung</li><li>Funktioniert komplett offline, ideal im Gelände</li><li>Deine Daten bleiben standardmäßig auf deinem Gerät – auf den RapidSplit-Server geht nur, was du ausdrücklich teilst</li><li>Kein Tracking, keine Werbung</li><li>Kostenlos und Open Source (GPL-3.0)</li></ul>
 Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus im Material-3-Design.
