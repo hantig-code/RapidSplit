@@ -13,4 +13,6 @@ Teile deine Tour per QR-Code oder 6-stelligem Code und bearbeitet sie gemeinsam.
 
 <b>🔒 PRIVAT BY DESIGN</b>
 <ul><li>Kein Konto, keine Registrierung</li><li>Funktioniert komplett offline, ideal im Gelände</li><li>Deine Daten bleiben standardmäßig auf deinem Gerät – auf den RapidSplit-Server geht nur, was du ausdrücklich teilst</li><li>Kein Tracking, keine Werbung</li><li>Kostenlos und Open Source (GPL-3.0)</li></ul>
-Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus im Material-3-Design.
+Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus.
+<b>🌍 DEUTSCH ODER ENGLISCH</b>
+Die Oberfläche gibt es in beiden Sprachen – beim ersten Start wählst du Sprache, Farbmodus und Standardwährung, später lässt sich alles im Menü umstellen.

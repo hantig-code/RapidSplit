@@ -1,0 +1,8 @@
+RapidSplit 4.2:
+* RapidSplit now speaks English – the whole interface, the sample trip, and the PDF and CSV exports
+* On first launch the app asks for language, theme and default currency
+* Language can be switched at any time from the menu
+* Number and date formats follow the selected language
+* Sharing dialog now states how long a code stays valid (short code 24 hours, QR code until you stop sharing)
+* Smaller wording and icon fixes
+* Exchange rates brought up to date

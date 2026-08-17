@@ -1,1 +1,1 @@
-Split tour costs fairly: per leg, not flat. Offline, no account needed.
+Split trip costs fairly: per leg, not flat. Offline, no account needed.

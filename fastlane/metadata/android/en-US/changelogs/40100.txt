@@ -1,0 +1,4 @@
+RapidSplit 4.1:
+* Exchange rates now refresh automatically once a day (only for tours using foreign currencies, can be switched off in the currency section)
+* Updated rates for all 23 currencies
+* Minor fixes around currency conversion

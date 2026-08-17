@@ -878,7 +878,7 @@
     <div class="card accent" id="startCard">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <h2 style="margin:0">Start</h2>
-        <button class="hide-link" onclick="hideStart()" title="Start-Block dauerhaft ausblenden"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>Ausblenden</button>
+        <button class="hide-link" onclick="hideStart()" title="Start-Block dauerhaft ausblenden"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
       </div>
       <p class="hint" style="margin-top:6px">Neu hier? Starte das Tutorial oder lade die Beispiel-Tour.</p>
       <div class="toolbar" style="margin-bottom:0">
@@ -3377,7 +3377,107 @@ var qrcode = function() {
 </script>
 <script>
 /* ---------------- State ---------------- */
-const LS_KEY = "kajak_kostenrechner_m3draft_r1";  // r3: garantiert leerer Start (alter gespeicherter Stand inkl. Beispiel verworfen)
+const LS_KEY = "kajak_kostenrechner_m3draft_r1";
+
+/* ---------------- RAPIDSPLIT_I18N: Zweisprachigkeit ---------------- */
+/* Muster gettext: der deutsche Text IST der Schlüssel. Bei LANG="de" wird er
+   unverändert zurückgegeben – die deutsche Fassung kann sich nicht ändern.
+   Fehlt eine Übersetzung, fällt die Stelle auf Deutsch zurück statt leer zu bleiben. */
+const LANG_KEY="rapidsplit_lang", CUR_KEY="rapidsplit_default_cur";
+const EN={"(Verein/Familie als Einheit)": "(club/family as one unit)","(wird geladen …)": "(loading …)",") – bitte sync.php aktualisieren": ") – please update sync.php",") – werden nach 30 Tagen geleert": ") – cleared after 30 days","/Person": "/person","1. Tour & Etappen": "1. Trip & legs","2. Gruppe eintragen": "2. Enter group","3. Wer & Wo": "3. Who & Where","5. Ausgaben": "5. Expenses","6-stelliger Tour-Code": "6-character trip code","6. Auswertung": "6. Summary",": Fahrer:in-Eingaben wiederhergestellt": ": driver entries restored","Abbrechen": "Cancel","Abrechnungsart für alle Fahrer:innen": "Cost method for all drivers","Abschnitte der Reise (Hinfahrt, Shuttle, Rückfahrt …) – jede wird unter ihren Mitfahrenden geteilt.": "Legs of the trip (outbound, shuttle, return …) – each one is split among the people on the leg.","Alle Eingaben dieser Tour werden unwiderruflich gelöscht.": "All entries in this trip will be permanently deleted.","Alle einklappen": "Collapse all","Alle endgültig löschen": "Delete all permanently","Alle löschen": "Delete all","Alle Server-Kopien löschen": "Delete all server copies","Alle Server-Kopien löschen?": "Delete all server copies?","Alle Touren": "All trips","Alles ausgeglichen – keine Zahlungen nötig.": "All settled – no payments needed.","Alles ausgeglichen — keine Zahlungen nötig.": "All settled — no payments needed.","Als Fahrer:in markieren (mit eigenem Auto gefahren)": "Mark as driver (drove their own car)","Als neue Tour importiert": "Imported as new trip","Als PDF teilen": "Share as PDF","Anlass, gefahrene Flüsse, Schwierigkeit, Wasserstand, …": "Occasion, rivers paddled, difficulty, water level, …","Anteil": "Share","Auf den Server hochgeladen": "Uploaded to server","Ausgabe löschen?": "Delete expense?","Ausgaben": "Expenses","Auswertung": "Summary","Auswertung als PDF teilen": "Share summary as PDF","Auswählen": "Select","Basiswährung der Tour wählen": "Choose trip base currency","Bei Aus: jede Person zahlt/erhält einzeln, auch innerhalb einer Familie/eines Vereins": "When off: each person pays/receives individually, even within a family/club","Beispiel laden": "Load sample","Beispiel-Tour angelegt": "Sample trip created","Beispiel-Tour laden": "Load sample trip","Beispiel-Tour zurückgesetzt": "Sample trip reset","Beitreten-Menü schließen": "Close join menu","bekommt zurück": "gets back","Beschreibung der Tour": "Trip description","Bezahlt von": "Paid by","Bezahlt von …": "Paid by …","Bezeichnung der Ausgabe": "Expense name","Bezeichnung;Betrag;Personen;pro Person": "Name;Amount;People;Per person","Bitte 6 Zeichen eingeben": "Please enter 6 characters","Code unbekannt oder abgelaufen": "Code unknown or expired","Das ist kein RapidSplit-Code": "That's not a RapidSplit code","Das ist keine RapidSplit-Export-Datei.": "That's not a RapidSplit export file.","Das PDF konnte nicht erstellt werden:": "The PDF could not be created:","Deine Touren": "Your trips","Design wählen": "Choose theme","Die Datei enthält ungültige Daten. Deine bisherigen Touren wurden beibehalten.": "The file contains invalid data. Your existing trips have been kept.","Die Datei ist keine gültige JSON-Datei.": "The file is not a valid JSON file.","Die Datei konnte nicht gelesen werden.": "The file could not be read.","Die Server-Kopie dieser Tour existiert nicht mehr – vermutlich wurde das Teilen beendet oder die Kopie vom Ersteller bzw. der Erstellerin gelöscht. Du kannst lokal weiterarbeiten; die Teilen-Verknüpfung wurde entfernt. Bei Bedarf kannst du die Tour einfach erneut teilen.": "The server copy of this trip no longer exists – sharing was probably stopped or the copy was deleted by its creator. You can keep working locally; the sharing link has been removed. If you need to, you can simply share the trip again.","Die verschlüsselte Server-Kopie wird gelöscht. Bestehende Codes und QR-Codes funktionieren danach nicht mehr. Deine Tour bleibt auf diesem Gerät erhalten.": "The encrypted server copy will be deleted. Existing codes and QR codes will stop working afterwards. Your trip stays on this device.","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.": "This leg will be removed – also from \"Who & Where\" and Expenses.","Diese Person": "This person","Dieser Code führt zu keiner Tour (falsch oder abgelaufen)": "This code doesn't lead to a trip (wrong or expired)","Drucken öffnet die Systemvorschau (dort auch „Als PDF speichern“ möglich). CSV liefert alle Tabellen für Excel &amp; Co.": "Printing opens the system preview (where you can also \"Save as PDF\"). CSV provides all tables for Excel &amp; co.","Dänische Krone": "Danish krone","Eigener Anteil": "Own share","Ein kurzer geführter Rundgang durch die App.": "A short guided tour of the app.","Einkauf Gruppe": "Group groceries","Einkäufe, Camp, Maut &amp; Co. – jede Ausgabe gilt für Etappen-Mitfahrende oder feste Personen. Tankbeträge erfasst du als Typ „Sprit“ mit Fahrzeug-Zuordnung.": "Groceries, camp, tolls &amp; co. – each expense applies to everyone on the leg or to specific people. You record fuel purchases as type \"Fuel\" with a vehicle assigned.","Endgültig gelöscht": "Permanently deleted","Endgültig löschen": "Delete permanently","Endgültig löschen?": "Delete permanently?","Erfasse alle Ausgaben: Betrag und Bezahler:in – gültig für Etappen-Mitfahrende oder feste Personen. Tankbeträge legst du als Typ „Sprit“ mit Fahrzeug an.": "Record all expenses: amount and payer – valid for everyone on the leg or for specific people. You create fuel purchases as type \"Fuel\" with a vehicle.","Erstellt mit RapidSplit · rapidsplit.app": "Created with RapidSplit · rapidsplit.app","Es gelten die Kurse zum Reisebeginn.": "The rates at the start of the trip apply.","Es gelten die Tageskurse.": "The daily rates apply.","Etappe": "Leg","Etappe löschen": "Delete leg","Etappe löschen?": "Delete leg?","Etappe verschieben – Pfeiltasten hoch/runter": "Move leg – arrow keys up/down","Etappe;Kosten;Personen;pro Person": "Leg;Cost;People;Per person","Etappen": "Legs","Fahrer:in entfernt": "Driver removed","Fahrer:in entfernt – Eingaben gemerkt": "Driver removed – entries remembered","Fahrt": "Driving","Fahrtkosten je Etappe": "Driving costs per leg","Fahrtkosten je Etappe (reine km-Kosten)": "Driving costs per leg (km costs only)","Fahrzeug von …": "Vehicle of …","Fahrzeug wählen": "Choose vehicle","Fahrzeug wählen …": "Choose vehicle …","Fehler gefunden, Wunsch oder Idee? Schreib mir per E-Mail oder leg ein Issue auf GitHub an.": "Found a bug, got a wish or an idea? Email me or open an issue on GitHub.","Fremdwährung entfernen": "Remove foreign currency","Fremdwährung hinzufügen": "Add foreign currency","Für": "For","Für wen gilt die Ausgabe?": "Who does the expense apply to?","Gefahrene Kilometer je Fahrer:in. Abrechnung entweder mit €/km-Pauschale, oder über Spritkosten.": "km driven per driver. Settle either with a per-km rate or via fuel costs.","Gefällt dir RapidSplit? Unterstütze die Entwicklung:": "Like RapidSplit? Support its development:","gelöscht am": "deleted on","gelöschte Tour(en) werden endgültig entfernt und können nicht wiederhergestellt werden.": "deleted trip(s) will be removed permanently and cannot be restored.","Gelöschte Touren (": "Deleted trips (","Gesamt-km": "Total km","Gib den 6-stelligen Tour-Code ein.": "Enter the 6-character trip code.","Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …).": "Give the trip a title and dates and add the legs (outbound, shuttle, return …).","Gruppe": "Group","Hake an, wer auf welcher Etappe mitgefahren ist.": "Tick who came along on which leg.","Hier ist nichts zu sehen? Trage Etappen im Bereich „Tour“ ein!": "Nothing to see here? Add legs in the \"Trip\" section!","Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Mit „Als PDF teilen“ verschickst du die Auswertung direkt.": "Here you see the cost per person, the balance and who pays whom how much. With \"Share as PDF\" you send the summary out directly.","Hinweis ausblenden": "Hide tip","Hinweise wieder eingeblendet": "Tips shown again","Hinzufügen": "Add","Höhe": "Amount","IBAN oder PayPal-Adresse (optional)": "IBAN or PayPal address (optional)","Im Reiter „Wer & Wo“, Bereich „Gruppe“: Trage alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Ein Verein/Familie fasst Salden am Ende zusammen.": "In the \"Who & Where\" tab, \"Group\" section: enter all people. Tick the \"driver\" checkbox for everyone who drove their own car. A club/family combines balances at the end.","In „Gelöschte Touren“ verschoben": "Moved to \"Deleted trips\"","Isländische Krone": "Icelandic krona","ist jetzt Fahrer:in": "is now a driver","Kamera nicht verfügbar oder Zugriff verweigert": "Camera not available or access denied","Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.": "No leg/people selected – not charged to anyone.","Keine Fahrer:innen vorhanden – lege sie unter „Wer & Wo“ → „Gruppe“ an": "No drivers yet – add them under \"Who & Where\" → \"Group\"","Keine Server-Kopien vorhanden": "No server copies","Kilometer je Fahrer:in": "km per driver","Kilometer und Fahrtkosten je Fahrer:in. Maut, Parkplatz &amp; Permit gehören in den Reiter „Ausgaben“.": "km and driving costs per driver. Tolls, parking &amp; permits belong in the \"Expenses\" tab.","km gesamt": "Total km","Kosten": "Cost","Kosten pro Teilnehmer:in": "Cost per person","Kosten pro Teilnehmer:in fair berechnen & ausgleichen": "Calculate & settle cost per person fairly","Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen": "Calculate &amp; settle cost per person fairly","Kurz-Code nicht verfügbar – bitte sync.php auf dem Server aktualisieren.": "Short code not available – please update sync.php on the server.","liegen keine historischen Kurse vor – hier gilt der Stand der App-Version.": "no historical rates are available – the app version's rates apply here.","Lädt die Kurse zum Reisedatum der Tour (sonst Tageskurse). Es werden keine Tourdaten übertragen.": "Loads the rates for the trip's travel date (otherwise daily rates). No trip data is transferred.","Löschen": "Delete","Markiere Fahrer:innen mit eigenem Auto. Verein/Familie fasst Salden optional zusammen.": "Mark drivers with their own car. Club/family optionally combines balances.","Maut Österreich": "Austrian toll","Mehr von mir findest du auf": "Find more from me at","Menü": "Menu","Mit einer NEUEN, leeren Fahrt beginnen — oder die aktuellen Daten behalten?": "Start a NEW, empty trip — or keep the current data?","Name;Fahrtkosten;Sonstige;Eigener Anteil": "Name;Driving costs;Other;Own share","Name;Verein/Familie;Ausgelegt;Eigener Anteil;Saldo;Bankverbindung": "Name;Club/family;Paid out;Own share;Balance;Bank details","Neu hier? Starte das Tutorial oder lade die Beispiel-Tour.": "New here? Start the tutorial or load the sample trip.","Neue Ausgabe": "New expense","Neue Ausgabe anlegen": "Create new expense","Neue Etappe": "New leg","Neue oder aktuelle Fahrt?": "New or current trip?","Neue Tour": "New trip","Neue Tour angelegt": "New trip created","Neue Tour anlegen": "Create new trip","Nicht verfügbar": "Not available","Niemand ausgewählt – wird niemandem berechnet.": "Nobody selected – not charged to anyone.","Noch keine Ausgaben. Füge oben eine hinzu.": "No expenses yet. Add one above.","Noch keine Etappen angelegt – im Reiter „Tour“ → „Etappen“.": "No legs yet – in the \"Trip\" tab → \"Legs\".","Noch keine Fahrer:innen angelegt – setze im Reiter „Wer & Wo“ → „Gruppe“ das „Fahrer:in“-Häkchen.": "No drivers yet – in the \"Who & Where\" tab → \"Group\", tick the \"driver\" checkbox.","Noch keine Fahrer:innen angelegt.": "No drivers yet.","Noch keine Personen. Lege sie im Reiter „Gruppe“ an.": "No people yet. Add them in the \"Group\" tab.","Noch keine Tour vorhanden. Lege mit „+ Neue Tour“ los – oder schau dir die Beispiel-Tour an.": "No trips yet. Get started with \"+ New trip\" – or take a look at the sample trip.","Person / Haushalt": "Person / household","Person hinzufügen": "Add person","Person löschen": "Delete person","Person löschen?": "Delete person?","Person wählen": "Choose person","Personen": "People","Personen ·": "People ·","pro Person": "per person","QR-Scan wird auf diesem Gerät nicht unterstützt – nutze die Codeeingabe.": "QR scan is not supported on this device – enter the code instead.","RapidSplit-Tour": "RapidSplit trip","Reisezeitraum wählen": "Pick travel dates","Richte die Kamera auf den QR-Code – die Tour wird automatisch hinzugefügt.": "Point the camera at the QR code – the trip is added automatically.","Saldo": "Balance","Saldo & Ausgleich": "Balance & settle-up","Saldo &amp; Ausgleich": "Balance &amp; settle-up","Saldo je Person": "Balance per person","Schließen": "Close","Server nicht erreichbar": "Server not reachable","Server nicht erreichbar (": "Server not reachable (","Server nicht erreichbar oder Code falsch (": "Server not reachable or code wrong (","Server-Löschung fehlgeschlagen (": "Server deletion failed (","Speichern fehlgeschlagen – Speicher evtl. voll. Sichere die Tour über den Export.": "Saving failed – storage may be full. Back up the trip using the export.","Summe": "Total","Summe (reine km-Kosten)": "Total (km costs only)","Sync-Fehler (": "Sync error (","Tankbeträge erfasst du unter „Ausgaben“ als Typ „Sprit“ – dort auch, wer sie bezahlt hat.": "You record fuel purchases under \"Expenses\" with type \"Fuel\" – including who paid them.","Teilen": "Share","Teilen beenden": "Stop sharing","Teilen beenden &amp; Server-Kopie löschen": "Stop sharing &amp; delete server copy","Teilen beenden?": "Stop sharing?","Teilen beendet – Server-Kopie gelöscht": "Sharing stopped – server copy deleted","Teilen fehlgeschlagen": "Sharing failed","Teilen hier nicht verfügbar – PDF wurde stattdessen gespeichert": "Sharing not available here – PDF saved instead","Tippen, um den Tournamen zu ändern": "Tap to change the trip name","Titel der Tour": "Trip title","Tour": "Trip","Tour beitreten": "Join trip","Tour endgültig löschen": "Delete trip permanently","Tour leeren?": "Clear trip?","Tour löschen": "Delete trip","Tour löschen?": "Delete trip?","Tour nicht auf dem Server gefunden": "Trip not found on server","Tour teilen": "Share trip","Tour wiederhergestellt": "Trip restored","Tour wiederherstellen": "Restore trip","Tour-Eckdaten": "Trip basics","Touren importiert": "Trips imported","Trage je Fahrer:in die km pro Etappe ein. Wähle oben einmal für alle Fahrer:innen, ob über €/km-Pauschale oder Spritkosten (einzelne Tankbeträge) abgerechnet wird.": "Enter the km per leg for each driver. At the top, choose once for all drivers whether costs are settled by a per-km rate or by fuel costs (individual fuel purchases).","Türkische Lira": "Turkish lira","Unbenannte Tour": "Untitled trip","Ungültiger Code – bitte prüfen": "Invalid code – please check","Verein/Familie als Einheit abrechnen": "Settle club/family as one unit","Verschlüsselung wird von dieser Umgebung nicht unterstützt.": "Encryption is not supported in this environment.","Vom Server aktualisieren": "Refresh from server","Vom Server aktualisiert": "Refreshed from server","Weiter mit": "Continue with","Wer &amp; Wo": "Who &amp; Where","Wer und Wo": "Who and Where","Wer war auf welcher Etappe dabei? Die Kosten jeder Etappe teilen sich die markierten Personen.": "Who was on which leg? The cost of each leg is split among the people you mark.","Wer war wo dabei?": "Who was where?","Wer zahlt an wen?": "Who pays whom?","Wer&amp;Wo": "Who","Willkommen bei RapidSplit!": "Welcome to RapidSplit!","wird aus der Gruppe und allen Zuordnungen/Ausgaben entfernt.": "will be removed from the group and from all assignments/expenses.","Wizard beenden": "Exit wizard","Wähle eine Tour oder lege eine neue an.": "Pick a trip or create a new one.","Währung &amp; Wechselkurse": "Currency &amp; exchange rates","Währung der Abrechnung": "Settlement currency","Währung der Zahlung": "Payment currency","Währung:": "Currency:","zahlt an": "pays","zahlt ein": "pays in","Zeitraum wählen": "Pick dates","Ziehen oder Pfeiltasten ↑/↓": "Drag or arrow keys ↑/↓","Zur Tourübersicht": "Back to all trips","Übernehmen": "Apply","Überweisung(en)": "transfer(s)","↔ Die Tabelle lässt sich seitlich wischen – so siehst du alle Fahrer:innen.": "↔ You can swipe the table sideways to see all drivers.","⚠️ Bitte prüfen – ungewöhnlich hohe km:": "⚠️ Please check – unusually high km:","4. Fahrtkosten": "4. Driving costs","€/km-Pauschale": "€/km rate","/km-Pauschale": "/km rate","Ausgelegt": "Paid out","Ausklappen": "Expand","Auslage": "Amount paid","Auto": "Car","Automatisch": "Automatic","Automatisch (Systemvorgabe)": "Automatic (system default)","Bankverbindung": "Bank details","Bankverbindung/PayPal hinterlegen": "Add bank details/PayPal","Bereiche": "Sections","Albanischer Lek": "Albanian lek","Brasilianischer Real": "Brazilian real","Britisches Pfund": "British pound","Chilenischer Peso": "Chilean peso","Costa-Rica-Colón": "Costa Rican colón","Georgischer Lari": "Georgian lari","Kanadischer Dollar": "Canadian dollar","Kolumbianischer Peso": "Colombian peso","Konvertible Mark": "Convertible mark","Mexikanischer Peso": "Mexican peso","Norwegische Krone": "Norwegian krone","Peruanischer Sol": "Peruvian sol","Polnischer Złoty": "Polish złoty","Schwedische Krone": "Swedish krona","Schweizer Franken": "Swiss franc","Serbischer Dinar": "Serbian dinar","Tschechische Krone": "Czech koruna","US-Dollar": "US dollar","Ungarischer Forint": "Hungarian forint","Di": "Tu","Mi": "We","Do": "Th","So": "Su","CSV exportiert": "CSV exported","Code kopieren": "Copy code","Codeeingabe": "Enter code","Daten behalten": "Keep data","Design:": "Theme:","Drucken": "Print","Dunkel": "Dark","E-Mail": "Email","Einklappen": "Collapse","Enddatum antippen": "Tap end date","Etappenfarbe": "Leg color","Exportieren": "Export","Exportiert": "Exported","Fahrer:innen": "Drivers","Fahrtkosten": "Driving costs","Fahrzeug:": "Vehicle:","Feedback & Kontakt": "Feedback & contact","Feedback &amp; Kontakt": "Feedback &amp; contact","Fertig ✓": "Done ✓","Geleert": "Cleared","Gesamtkosten": "Total cost","Hell": "Light","Hinweise einblenden": "Show hints","Import fehlgeschlagen": "Import failed","Ja": "Yes","Kamera startet …": "Starting camera …","Karten": "Cards","Kilometer": "Kilometers","Konto:": "Account:","Kopiert": "Copied","Kurse geladen: Stand": "Rates loaded: as of","Leer starten": "Start empty","Leeren": "Clear","PDF fehlgeschlagen": "PDF failed","PDF gespeichert": "PDF saved","Papierkorb geleert": "Trash emptied","Papierkorb leeren?": "Empty trash?","QR-Code": "QR code","QR-Code scannen": "Scan QR code","Reisezeitraum": "Travel dates","Schritt": "Step","Seite": "Page","Sonstige": "Other","Spritkosten": "Fuel costs","Start-Block dauerhaft ausblenden": "Hide start block permanently","Startdatum antippen": "Tap start date","Tabelle": "Table","Tanken": "Fuel-up","Teilnehmende": "Participants","Titel": "Title","Tutorial starten": "Start tutorial","Tutorial starten?": "Start tutorial?","Unbenannt": "Untitled","Upload fehlgeschlagen (": "Upload failed (","Verein/Familie": "Club/family","Verein/Familie (optional)": "Club/family (optional)","Weiter": "Next","Wiederherstellen": "Restore","Wizard abgeschlossen 🎉": "Wizard complete 🎉","Zahler entfernen": "Remove payer","z.B. Anreise": "e.g. Outbound","Shutteln BiH": "Shuttle BiH","Shutteln SLO": "Shuttle SLO","Tanken Emily": "Fuel-up Emily","Tanken Olaf": "Fuel-up Olaf","Tanken Rush": "Fuel-up Rush","Tanken Steve": "Fuel-up Steve","← Zurück": "← Back","Zurück": "Back","Deine Tour liegt bisher nur auf diesem Gerät. Zum Teilen wird sie verschlüsselt auf unseren Server geladen. Du kannst die Kopie jederzeit wieder löschen.": "So far your trip is only on this device. To share it, an encrypted copy is uploaded to our server. You can delete the copy at any time.","Mit diesem Code kannst du deine Tour teilen. Sie ist dafür verschlüsselt auf unserem Server gespeichert.": "Use this code to share your trip. It is stored on our server in encrypted form.","Der 6-stellige Code gilt 24 Stunden. QR-Code und langer Code bleiben gültig, bis du das Teilen beendest.": "The 6-digit code is valid for 24 hours. The QR code and the long code stay valid until you stop sharing.","Der Code bleibt gültig, bis du das Teilen beendest.": "The code stays valid until you stop sharing.","Server-Kopie löschen?": "Delete server copy?","Eine geteilte Tour wird vom Server entfernt; ihre Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten.": "One shared trip will be removed from the server; its codes and QR codes stop working. Everything stays on this device.","Server-Kopie gelöscht": "Server copy deleted","Alle": "All","Keine": "None","Drucken öffnet die Systemvorschau (dort auch „Als PDF speichern“ möglich). CSV liefert alle Tabellen für Excel & Co.": "Printing opens the system preview (where you can also \"Save as PDF\"). CSV provides all tables for Excel & co.","Einkäufe, Camp, Maut & Co. – jede Ausgabe gilt für Etappen-Mitfahrende oder feste Personen. Tankbeträge erfasst du als Typ „Sprit“ mit Fahrzeug-Zuordnung.": "Groceries, camp, tolls & co. – each expense applies to everyone on the leg or to specific people. You record fuel purchases as type \"Fuel\" with a vehicle assigned.","Kilometer und Fahrtkosten je Fahrer:in. Maut, Parkplatz & Permit gehören in den Reiter „Ausgaben“.": "km and driving costs per driver. Tolls, parking & permits belong in the \"Expenses\" tab.","Teilen beenden & Server-Kopie löschen": "Stop sharing & delete server copy","Wer & Wo": "Who & Where","Wer&Wo": "Who","Währung & Wechselkurse": "Currency & exchange rates","#Etappe": "leg","#Etappen": "legs","#Personen": "people","#Person": "person","#Auto": "car","#Autos": "cars","Währung;": "Currency;","Von;An;Betrag;Bankverbindung": "From;To;Amount;Bank details","RapidSplit-Export;": "RapidSplit export;","Zeitraum;": "Dates;","Alle ausklappen": "Expand all","Fremdwährungen": "Foreign currencies","Fremdwährung": "Foreign currency","Fahrer:in": "Driver","#Überweisung": "transfer","#Überweisungen": "transfers","#, Summe": ", total","#Gesamt": "Total","# geteilte Touren werden vom Server entfernt; alle Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten.": " shared trips will be removed from the server; all codes and QR codes stop working. Everything stays on this device.","# Server-Kopien gelöscht": " server copies deleted","km-genau verteilt": "split by exact km","#/Person": "/person","#Summe": "Total","Familie Jackson": "Jackson family","Hinfahrt Sa 23.05. (München -> Bihać/BiH), Weiterreise Mi 27.05. (Bihać -> Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München.": "Outbound Sat 23 May (Munich -> Bihać/BiH), on to Kamp Liza/Soča, SLO on Wed 27 May, return 30/31 May to Munich."};
+let LANG=(function(){ try{ const v=localStorage.getItem(LANG_KEY); return (v==="en")?"en":"de"; }catch(e){ return "de"; } })();
+function t(x){ if(LANG!=="en"||x==null) return x; const v=EN[String(x).trim()]; return (v===undefined)?x:v; }
+function langLabel(l){ return l==="en"?"English":"Deutsch"; }
+function setLang(l){
+  l=(l==="en")?"en":"de";
+  try{ localStorage.setItem(LANG_KEY,l); }catch(e){}
+  /* Neu laden statt rückübersetzen: der Zustand liegt im localStorage. */
+  try{ location.reload(); }catch(e){ LANG=l; }
+}
+function defaultCur(){ try{ const c=localStorage.getItem(CUR_KEY); return (c&&CUR_LIST.includes(c))?c:"EUR"; }catch(e){ return "EUR"; } }
+/* Zahl + Einheit: "5 Etappen" / "5 legs". Die Einheit hat einen eigenen
+   Wörterbuch-Schlüssel mit Raute, damit sie nicht mit Tabellenköpfen kollidiert. */
+/* wie t(), erhält aber führende und abschließende Leerzeichen. Für Export-Strings,
+   die im Code verkettet werden (" Überweisung(en)", "Seite "). */
+function tx(x){
+  if(LANG!=="en"||x==null) return x;
+  const s0=String(x), k=s0.trim(); if(!k) return x;
+  const v=EN[k]; if(v===undefined) return x;
+  return s0.replace(k,v);
+}
+/* Schlüssel mit Rautenpräfix: auf Deutsch wird die Raute abgestreift,
+   auf Englisch die Übersetzung geliefert. Verhindert Kollisionen mit
+   gleichlautenden Tabellenköpfen. */
+function tm(x){ if(LANG!=="en") return x; const v=EN["#"+x]; return (v===undefined)?x:v; }
+/* Zahlen- und Datumsformat folgen der Sprache. */
+function loc(){ return LANG==="en"?"en-GB":"de-DE"; }
+const _MON_EN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function zn(n,ein,mehr){
+  const w=(n===1)?ein:mehr;
+  if(LANG!=="en") return n+" "+w;
+  const e=EN["#"+w];
+  return n+" "+(e===undefined?w:e);
+}
+
+const I18N_ATTRS=["placeholder","title","aria-label","alt"];
+let _i18nObs=null;
+function _trOne(n){
+  if(!n) return;
+  if(n.nodeType===3){
+    const v=n.nodeValue; if(!v) return;
+    const k=v.trim(); if(!k) return;
+    const e=EN[k]; if(e===undefined||e===k) return;
+    n.nodeValue=v.replace(k,e);
+  } else if(n.nodeType===1 && n.getAttribute){
+    for(let i=0;i<I18N_ATTRS.length;i++){
+      const a=I18N_ATTRS[i], v=n.getAttribute(a); if(!v) continue;
+      const e=EN[v.trim()]; if(e!==undefined&&e!==v.trim()) n.setAttribute(a,e);
+    }
+  }
+}
+function translateDom(root){
+  if(LANG!=="en"||!root) return;
+  const obs=_i18nObs; if(obs) obs.disconnect();
+  try{
+    _trOne(root);
+    if(root.nodeType===1){
+      const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,null);
+      let n; while((n=w.nextNode())) _trOne(n);
+    }
+  }catch(e){}
+  if(obs) _i18nStart();
+}
+function _i18nStart(){
+  if(LANG!=="en"||!document.body) return;
+  if(!_i18nObs){
+    _i18nObs=new MutationObserver(function(ms){
+      if(LANG!=="en") return;
+      _i18nObs.disconnect();
+      try{
+        for(let i=0;i<ms.length;i++){
+          const m=ms[i];
+          if(m.type==="childList"){ for(let j=0;j<m.addedNodes.length;j++) translateDomInner(m.addedNodes[j]); }
+          else _trOne(m.target);
+        }
+      }catch(e){}
+      _i18nStart();
+    });
+  }
+  _i18nObs.observe(document.body,{childList:true,subtree:true,characterData:true,
+    attributes:true,attributeFilter:I18N_ATTRS});
+}
+/* wie translateDom, aber ohne Observer-Gefummel (wir sind schon abgeklemmt) */
+function translateDomInner(root){
+  if(!root) return;
+  _trOne(root);
+  if(root.nodeType===1){
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,null);
+    let n; while((n=w.nextNode())) _trOne(n);
+  }
+}
+try{ document.documentElement.lang=LANG; }catch(e){}
+/* ---------------- Ende RAPIDSPLIT_I18N ---------------- */
+  // r3: garantiert leerer Start (alter gespeicherter Stand inkl. Beispiel verworfen)
 let S = null;
 let uid = () => Math.random().toString(36).slice(2,9);
 
@@ -3386,9 +3486,9 @@ function exampleData(){
   // Beispiel-Reihenfolge: Hinfahrt zuerst … Rückfahrt zuletzt
   const segments = [
     {id:"s1",name:"MUC -> BiH"},
-    {id:"s2",name:"Shutteln BiH"},
+    {id:"s2",name:t("Shutteln BiH")},
     {id:"s3",name:"BiH -> SLO"},
-    {id:"s4",name:"Shutteln SLO"},
+    {id:"s4",name:t("Shutteln SLO")},
     {id:"s5",name:"SLO -> MUC"},
   ];
   // participants (master). drivers carry car data.
@@ -3397,9 +3497,9 @@ function exampleData(){
   const pa = P("Olaf O.","",{rate:0.35,km:{s1:702,s2:219,s3:534,s4:121,s5:412}});
   const pb = P("Steve F.","",{rate:0.40,km:{s1:686,s2:254,s3:521,s4:152,s5:398}});
   const pc = P("Rush S.","",{rate:0.30,km:{s1:668,s2:287,s3:509,s4:96,s5:391}});
-  const pd = P("Emily J.","Familie Jackson",{rate:0.30,km:{s1:0,s2:90,s3:0,s4:76,s5:0}});
+  const pd = P("Emily J.",t("Familie Jackson"),{rate:0.30,km:{s1:0,s2:90,s3:0,s4:76,s5:0}});
   const pe=P("Nouria N."), pf=P("Tyler B."), pg=P("Rafa O."), ph=P("Adriene L."),
-        pi=P("Adrian M."), pj=P("Aniol S."), pk=P("Dane J.","Familie Jackson"),
+        pi=P("Adrian M."), pj=P("Aniol S."), pk=P("Dane J.",t("Familie Jackson")),
         pl=P("Sam S."), pm=P("Ben M.");
   const participants=[pb,pe,pf,pg,ph,pi,pj,pa,pd,pk,pl,pc,pm];
   const byName={};participants.forEach(p=>byName[p.name]=p.id);
@@ -3413,28 +3513,28 @@ function exampleData(){
   };
   const einkaufAppliesTo = participation.s2.filter(id=>id!==byName["Aniol S."]);
   const expenses=[
-    {id:uid(),name:"Einkauf Gruppe",mode:"people",segs:[],cat:"sonst",appliesTo:einkaufAppliesTo.slice(),
+    {id:uid(),name:t("Einkauf Gruppe"),mode:"people",segs:[],cat:"sonst",appliesTo:einkaufAppliesTo.slice(),
      payments:[{id:uid(),paidBy:byName["Steve F."],amount:42},{id:uid(),paidBy:byName["Olaf O."],amount:26}]},
-    {id:uid(),name:"Camp Liza",mode:"segs",segs:["s4"],cat:"sonst",appliesTo:[],
+    {id:uid(),name:t("Camp Liza"),mode:"segs",segs:["s4"],cat:"sonst",appliesTo:[],
      payments:[{id:uid(),paidBy:byName["Steve F."],amount:316}]},
-    {id:uid(),name:"Maut Österreich",mode:"segs",segs:["s1","s5"],cat:"sonst",appliesTo:[],
+    {id:uid(),name:t("Maut Österreich"),mode:"segs",segs:["s1","s5"],cat:"sonst",appliesTo:[],
      payments:[{id:uid(),paidBy:byName["Olaf O."],amount:40}]},
-    {id:uid(),name:"Permit Soča",mode:"segs",segs:["s4"],cat:"sonst",appliesTo:[],
+    {id:uid(),name:t("Permit Soča"),mode:"segs",segs:["s4"],cat:"sonst",appliesTo:[],
      payments:[{id:uid(),paidBy:byName["Steve F."],amount:30}]},
   ];
   expenses.push(
-    {id:uid(),name:"Tanken Steve",mode:"fuel",driverId:pb.id,cat:"sonst",segs:[],appliesTo:[],
+    {id:uid(),name:t("Tanken Steve"),mode:"fuel",driverId:pb.id,cat:"sonst",segs:[],appliesTo:[],
      payments:[{id:uid(),paidBy:pb.id,amount:210.5},{id:uid(),paidBy:byName["Ben M."],amount:80}]},
-    {id:uid(),name:"Tanken Olaf",mode:"fuel",driverId:pa.id,cat:"sonst",segs:[],appliesTo:[],
+    {id:uid(),name:t("Tanken Olaf"),mode:"fuel",driverId:pa.id,cat:"sonst",segs:[],appliesTo:[],
      payments:[{id:uid(),paidBy:pa.id,amount:196}]},
-    {id:uid(),name:"Tanken Rush",mode:"fuel",driverId:pc.id,cat:"sonst",segs:[],appliesTo:[],
+    {id:uid(),name:t("Tanken Rush"),mode:"fuel",driverId:pc.id,cat:"sonst",segs:[],appliesTo:[],
      payments:[{id:uid(),paidBy:pc.id,amount:175.4},{id:uid(),paidBy:pc.id,amount:92}]},
-    {id:uid(),name:"Tanken Emily",mode:"fuel",driverId:pd.id,cat:"sonst",segs:[],appliesTo:[],
+    {id:uid(),name:t("Tanken Emily"),mode:"fuel",driverId:pd.id,cat:"sonst",segs:[],appliesTo:[],
      payments:[{id:uid(),paidBy:pd.id,amount:38.5}]});
   return {
     meta:{title:"Una (BiH) & Soča (SLO) 2026",
       dateFrom:"2026-05-23", dateTo:"2026-05-31",
-      description:"Hinfahrt Sa 23.05. (München -> Bihać/BiH), Weiterreise Mi 27.05. (Bihać -> Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München."},
+      description:t("Hinfahrt Sa 23.05. (München -> Bihać/BiH), Weiterreise Mi 27.05. (Bihać -> Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München.")},
     segments, participants, participation, expenses
   };
 }
@@ -3484,6 +3584,7 @@ function openTour(id){
   document.body.classList.remove("home");
   _accOpen="eck";
   renderAll();
+  try{ maybeRefreshFx(); }catch(e){}
   document.body.dataset.navdir="fwd";
   const b=document.querySelector('#tabs button[data-tab="info"]'); if(b){ _navSuppress=true; b.click(); _navSuppress=false; } else mainScrollTop();
   setHdrTitle("Tour");
@@ -3516,7 +3617,9 @@ function showHome(){
   renderHome(); mainScrollTop();
 }
 function newTour(openIt){
-  const id=uid(); DB.tours.push({id,data:emptyData()});
+  const id=uid(); const _nd=emptyData();
+  try{ if(_nd&&_nd.meta) _nd.meta.currency=defaultCur(); }catch(e){}
+  DB.tours.push({id,data:_nd});
   const doOpen=()=>{ openTour(id); const mt=document.getElementById("m_title"); if(mt){ try{mt.focus();}catch(e){} } };
   if(openIt){ doOpen(); toast("Neue Tour angelegt"); return; }
   // Container-Transform: FAB-Pille zoomt auf Bildschirmgröße und gibt die Bearbeitungsmaske frei
@@ -3563,7 +3666,7 @@ function renderTrash(){
   h+='<div style="display:flex;justify-content:center;margin:10px 0 14px"><button type="button" class="btn ghost sm" style="color:var(--red)" onclick="purgeAllTours()">'+icon("i-trash")+'Alle endgültig löschen</button></div>';
   tr.forEach(t=>{
     const nm=esc(((t.data.meta&&t.data.meta.title)||"").trim()||"Unbenannte Tour");
-    const d=+t.deletedAt>0?new Date(+t.deletedAt).toLocaleDateString("de-DE"):"";
+    const d=+t.deletedAt>0?new Date(+t.deletedAt).toLocaleDateString(loc()):"";
     h+='<div class="card tour-card trash-card"><div class="t-main"><div class="t-name">'+nm+'</div><div class="t-sub">gelöscht am '+d+'</div></div>'
       +'<button class="hide-link" type="button" onclick="restoreTour(\''+t.id+'\')" title="Wiederherstellen" aria-label="Tour wiederherstellen" style="color:var(--brand);font-size:18px;padding:6px 10px">↻</button>'
       +'<button class="t-del" type="button" title="Endgültig löschen" aria-label="Tour endgültig löschen" onclick="purgeTour(\''+t.id+'\')">'+icon("i-trash")+'</button></div>';
@@ -3606,7 +3709,7 @@ function renderHome(){
   const heroId=(DB.last&&items.some(t=>t.id===DB.last))?DB.last:items[0].id;
   const hero=items.find(t=>t.id===heroId), rest=items.filter(t=>t.id!==heroId).sort((a,b)=>(b.mtime||0)-(a.mtime||0));
   const hs=tourSummary(hero);
-  const hsub=[hs.range, hs.parts?(hs.parts+" Personen"):""].filter(Boolean).join(" · ");
+  const hsub=[hs.range, hs.parts?zn(hs.parts,"Person","Personen"):""].filter(Boolean).join(" · ");
   let h='<div class="card tour-card hero" role="button" tabindex="0" data-tid="'+hero.id+'" onclick="openTour(\''+hero.id+'\')" onkeydown="if(event.key===\'Enter\'){openTour(\''+hero.id+'\')}">'
     +tourStripe(hero)
     +'<div class="t-main"><div class="hero-lbl">Weiter mit</div><div class="t-name">'+esc(hs.title)+'</div>'
@@ -3620,7 +3723,7 @@ function renderHome(){
   if(rest.length) h+='<div class="mini" style="margin:14px 4px 8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)">Alle Touren</div>';
   h+=rest.map(t=>{
     const sm=tourSummary(t);
-    const sub=[sm.range, sm.parts?(sm.parts+" "+(sm.parts===1?"Person":"Personen")):"", sm.total?("Gesamt "+sm.total):""].filter(Boolean).join(" · ");
+    const sub=[sm.range, sm.parts?zn(sm.parts,"Person","Personen"):"", sm.total?(tm("Gesamt")+" "+sm.total):""].filter(Boolean).join(" · ");
     return '<div class="card tour-card" role="button" tabindex="0" data-tid="'+t.id+'" onclick="openTour(\''+t.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openTour(\''+t.id+'\')}">'
       +tourStripe(t)
       +'<div class="t-main"><div class="t-name">'+esc(sm.title)+'</div>'
@@ -3768,8 +3871,8 @@ function save(){ try{
   catch(e){ if(!_saveWarned){ _saveWarned=true; try{toast("Speichern fehlgeschlagen – Speicher evtl. voll. Sichere die Tour über den Export.");}catch(_){}} } }
 
 /* ---------------- Helpers ---------------- */
-const eur = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" "+curSym();
-const num = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{maximumFractionDigits:2});
+const eur = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString(loc(),{minimumFractionDigits:2,maximumFractionDigits:2})+" "+curSym();
+const num = n => (Math.round((n+Number.EPSILON)*100)/100).toLocaleString(loc(),{maximumFractionDigits:2});
 const pById = id => S.participants.find(p=>p.id===id);
 const pName = id => (pById(id)||{}).name || "—";
 const pNameFull = id => { const p=pById(id); return p ? p.name+(p.group?" ("+p.group+")":"") : "—"; };
@@ -3792,9 +3895,73 @@ function expGroup(ex){
 const CUR_SYMS={EUR:"€",CHF:"CHF",GBP:"£",USD:"$",SEK:"kr",NOK:"kr",DKK:"kr",PLN:"zł",CZK:"Kč",HUF:"Ft",BAM:"KM",RSD:"din",TRY:"₺",ISK:"kr",ALL:"L",GEL:"₾",CAD:"$",MXN:"$",CRC:"₡",COP:"$",PEN:"S/",BRL:"R$",CLP:"$"};
 const CUR_NAMES={EUR:"Euro",CHF:"Schweizer Franken",GBP:"Britisches Pfund",USD:"US-Dollar",SEK:"Schwedische Krone",NOK:"Norwegische Krone",DKK:"Dänische Krone",PLN:"Polnischer Złoty",CZK:"Tschechische Krone",HUF:"Ungarischer Forint",BAM:"Konvertible Mark",RSD:"Serbischer Dinar",TRY:"Türkische Lira",ISK:"Isländische Krone",ALL:"Albanischer Lek",GEL:"Georgischer Lari",CAD:"Kanadischer Dollar",MXN:"Mexikanischer Peso",CRC:"Costa-Rica-Colón",COP:"Kolumbianischer Peso",PEN:"Peruanischer Sol",BRL:"Brasilianischer Real",CLP:"Chilenischer Peso"};
 // Referenzkurse (1 EUR = x Währung) – bei jeder neuen App-Version aktualisieren!
-const FX_DATE="29.07.2026";
-const EUR_RATES={EUR:1,CHF:0.932417,GBP:0.856422,USD:1.138108,SEK:11.045681,NOK:11.022706,DKK:7.463708,PLN:4.325436,CZK:24.179013,HUF:360.409427,BAM:1.95583,RSD:117.420667,TRY:53.930978,ISK:142.542004,ALL:93.680808,GEL:2.982863,CAD:1.605118,MXN:19.860787,CRC:517.18252,COP:3644.812434,PEN:3.872691,BRL:5.821014,CLP:1068.472065};
+const FX_DATE="17.08.2026";
+const EUR_RATES={EUR:1,CHF:0.940445,GBP:0.854582,USD:1.157181,SEK:11.016289,NOK:10.929367,DKK:7.476632,PLN:4.307735,CZK:24.206945,HUF:362.957681,BAM:1.95583,RSD:117.30459,TRY:55.401291,ISK:142.189943,ALL:92.809295,GEL:3.018305,CAD:1.605485,MXN:19.696324,CRC:519.113288,COP:3613.473326,PEN:3.897993,BRL:5.99854,CLP:1056.722211};
 function defaultRate(base,foreign){ const b=EUR_RATES[base],f=EUR_RATES[foreign]; if(!b||!f) return 1; return Math.round((f/b)*10000)/10000; }
+/* ---------------- Wechselkurse automatisch laden ----------------
+   Standardmäßig AUS. Erst wenn die Nutzer:in den Schalter im Währungsblock
+   einschaltet, wird abgerufen – dann sofort einmal und danach höchstens
+   einmal je Stichtag. Stichtag ist das Reisedatum der Tour (EZB-Kurs von
+   damals); liegt es in der Zukunft oder fehlt es, gelten Tageskurse.
+   Übertragen wird ausschließlich der Abrufzeitpunkt – keine Tourdaten. */
+const FX_URL_TODAY="https://open.er-api.com/v6/latest/EUR";        // Tageskurse, alle Währungen
+const FX_URL_DAY="https://api.frankfurter.dev/v1/";                // EZB-Kurse zu einem Stichtag
+const FX_EZB=["EUR","CHF","GBP","USD","SEK","NOK","DKK","PLN","CZK","HUF","TRY","ISK","CAD","MXN","BRL"];
+const FX_FIXED={BAM:1.95583};                                      // fest an den Euro gekoppelt (Currency Board)
+const FX_CACHE_KEY="rapidsplit_fx_cache", FX_AUTO_KEY="rapidsplit_fx_auto";
+function fxAuto(){ try{ return localStorage.getItem(FX_AUTO_KEY)==="1"; }catch(e){ return false; } }
+function fxCacheAll(){ try{ const o=JSON.parse(localStorage.getItem(FX_CACHE_KEY)||"null"); return (o&&typeof o==="object")?o:{}; }catch(e){ return {}; } }
+function fxToday(){ return new Date().toISOString().slice(0,10); }
+/* Stichtag der aktiven Tour: Reisebeginn, sofern er in der Vergangenheit liegt */
+function fxDay(){ try{ const f=(S&&S.meta&&S.meta.dateFrom)||""; const t=fxToday();
+  return (/^\d{4}-\d{2}-\d{2}$/.test(f)&&f<t)?f:t; }catch(e){ return fxToday(); } }
+function fxEntry(){ return fxCacheAll()[fxDay()]||null; }
+function fxStamp(){ const e=fxEntry(); return e&&e.date?e.date:FX_DATE; }
+function fxApply(){ const e=fxEntry(); if(!e||!e.rates) return false;
+  CUR_LIST.forEach(k=>{ const v=+e.rates[k]; if(isFinite(v)&&v>0) EUR_RATES[k]=v; }); return true; }
+function fxMissing(){ /* genutzte Fremdwährungen ohne EZB-Notierung (nur bei Stichtag in der Vergangenheit) */
+  try{ if(fxDay()===fxToday()) return [];
+    return ((S&&S.meta&&S.meta.fx)||[]).map(f=>f.code).filter(c=>FX_EZB.indexOf(c)<0&&!(c in FX_FIXED)); }catch(e){ return []; } }
+function setFxAuto(on){ try{ localStorage.setItem(FX_AUTO_KEY,on?"1":"0"); }catch(e){}
+  if(on){ refreshFx(true).then(ok=>{ renderCurrency(); if(ok){ renderAll(); toast("Kurse geladen: Stand "+fxStamp()); } }); }
+  else renderCurrency(); }
+async function refreshFx(force){
+  if(!force && !fxAuto()) return false;
+  const day=fxDay(), cache=fxCacheAll();
+  if(!force && cache[day]) return false;                    // Stichtag schon geholt
+  if(force && cache[day] && day!==fxToday()){ fxApply(); return true; }   // Vergangenheit ändert sich nicht
+  try{
+    const rates={}; let date="";
+    if(day===fxToday()){
+      const r=await fetch(FX_URL_TODAY,{cache:"no-store"});
+      if(!r.ok) return false;
+      const d=await r.json();
+      if(!d || d.result!=="success" || !d.rates) return false;
+      let n=0; CUR_LIST.forEach(k=>{ const v=(k==="EUR")?1:+d.rates[k]; if(isFinite(v)&&v>0){ rates[k]=v; n++; } });
+      if(n<CUR_LIST.length) return false;                   // unvollständig → alte Kurse behalten
+      const dt=new Date(); date=String(dt.getDate()).padStart(2,"0")+"."+String(dt.getMonth()+1).padStart(2,"0")+"."+dt.getFullYear();
+    } else {
+      const r=await fetch(FX_URL_DAY+day+"?base=EUR",{cache:"no-store"});
+      if(!r.ok) return false;
+      const d=await r.json();
+      if(!d || !d.rates || !d.date) return false;
+      rates.EUR=1; Object.keys(FX_FIXED).forEach(k=>{ rates[k]=FX_FIXED[k]; });
+      let n=0; FX_EZB.forEach(k=>{ if(k==="EUR") return; const v=+d.rates[k]; if(isFinite(v)&&v>0){ rates[k]=v; n++; } });
+      if(n<FX_EZB.length-1) return false;                   // Quelle unvollständig
+      const p=String(d.date).split("-");                    // tatsächlicher Handelstag (Wochenende → Freitag)
+      if(p.length!==3) return false;
+      date=p[2]+"."+p[1]+"."+p[0];
+    }
+    const c2=fxCacheAll(); c2[day]={date:date,rates:rates};
+    const keys=Object.keys(c2); if(keys.length>12) delete c2[keys[0]];   // Cache klein halten
+    try{ localStorage.setItem(FX_CACHE_KEY,JSON.stringify(c2)); }catch(e){}
+    fxApply();
+    return true;
+  }catch(e){ return false; }                                // offline/Störung: still, alte Kurse bleiben
+}
+function fxInUse(){ try{ return ((S&&S.meta&&S.meta.fx)||[]).length>0; }catch(e){ return false; } }
+function maybeRefreshFx(){ fxApply(); if(!fxAuto()||!fxInUse()) return;
+  refreshFx().then(ok=>{ if(ok){ try{ renderAll(); }catch(e){} } }); }
 const CUR_LIST=Object.keys(CUR_SYMS);
 function baseCur(){ return (S&&S.meta&&CUR_LIST.includes(S.meta.currency))?S.meta.currency:"EUR"; }
 function curSym(c){ return CUR_SYMS[c||baseCur()]||c||"€"; }
@@ -4014,16 +4181,18 @@ function applyAcc(){
 function updAccSums(){
   const set=(k,txt)=>{ const e=document.getElementById("accSum-"+k); if(e) e.textContent=txt; };
   set("eck", dateRangeText()||"");
-  set("seg", S.segments.length?(S.segments.length===1?"1 Etappe":S.segments.length+" Etappen"):"–");
+  set("seg", S.segments.length?zn(S.segments.length,"Etappe","Etappen"):"–");
   const nD=S.participants.filter(p=>p.driver).length;
-  set("grp", S.participants.length?(S.participants.length+" Personen"+(nD?" · "+nD+" Auto"+(nD===1?"":"s"):"")):"–");
-  set("ww", S.segments.length?(S.segments.length===1?"1 Etappe":S.segments.length+" Etappen"):"–");
+  set("grp", S.participants.length?(zn(S.participants.length,"Person","Personen")+(nD?" · "+zn(nD,"Auto","Autos"):"")):"–");
+  set("ww", S.segments.length?zn(S.segments.length,"Etappe","Etappen"):"–");
   const nfx=(S.meta.fx||[]).length;
   set("fx", baseCur()+(nfx?" +"+nfx:""));
 }
 function renderAll(){ renderInfo();renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();
   updateSub(); applyAcc(); save(); }
-function fmtDate(d){ if(!d)return ""; const p=d.split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d; }
+function fmtDate(d){ if(!d)return ""; const p=d.split("-"); if(p.length!==3) return d;
+  if(LANG==="en"){ const m=_MON_EN[(+p[1])-1]||p[1]; return (+p[2])+" "+m+" "+p[0]; }
+  return `${p[2]}.${p[1]}.${p[0]}`; }
 function dateRangeText(){
   const f=fmtDate(S.meta.dateFrom), t=fmtDate(S.meta.dateTo);
   if(f&&t) return f+" – "+t; return f||t||"";
@@ -4060,14 +4229,22 @@ function renderCurrency(){
       <div class="pay-row" style="margin-top:2px"><span class="mini" style="flex:0 0 auto">1 ${baseCur()} =</span>
       <input type="number" inputmode="decimal" value="${f.rate}" step="0.0001" min="0" style="flex:1 1 90px;text-align:right" aria-label="Kurs ${f.code}" onchange="updFxRate('${f.code}',this.value)">
       <span class="mini" style="flex:0 0 auto;font-weight:700">${f.code}</span>
-      <button class="iconbtn" title="Fremdwährung entfernen" onclick="delFx('${f.code}')">${icon("i-x")}</button></div>`;
+      <button class="iconbtn" title="Fremdwährung entfernen" onclick="delFx('${f.code}')">${icon("i-trash")}</button></div>`;
   });
   const avail=CUR_LIST.filter(c=>c!==baseCur() && !(S.meta.fx||[]).some(f=>f.code===c));
   if(avail.length){
     h+=`<div style="margin-top:10px"><button class="btn ghost sm" onclick="pickAddFx()">${icon("i-plus")}Fremdwährung</button></div>`;
   }
+  const hasFxNow=((S.meta.fx||[]).length>0);
+  const miss=hasFxNow?fxMissing():[];
   fb.innerHTML=`<label class="fld">Fremdwährungen</label>
-    <p class="hint" style="margin:2px 0 4px">Wechselkurse Stand: ${FX_DATE} – händisch anpassbar. Abgerechnet wird in ${baseCur()}.</p>`+h;
+    <p class="hint" style="margin:2px 0 4px">Wechselkurse Stand: ${fxStamp()} – händisch anpassbar. Abgerechnet wird in ${baseCur()}.</p>`+h
+    +(hasFxNow?`<label class="opt-toggle" style="margin-top:12px" title="Lädt die Kurse zum Reisedatum der Tour (sonst Tageskurse). Es werden keine Tourdaten übertragen.">
+        <input type="checkbox" role="switch" ${fxAuto()?"checked":""} onchange="setFxAuto(this.checked)">
+        <span class="opt-track"><span class="opt-knob"></span></span>
+        <span class="opt-lbl">Kurse automatisch laden</span>
+      </label>
+      <p class="mini" style="margin:4px 0 0">${fxDay()===fxToday()?"Es gelten die Tageskurse.":"Es gelten die Kurse zum Reisebeginn."}${miss.length?" Für "+miss.join(", ")+" liegen keine historischen Kurse vor – hier gilt der Stand der App-Version.":""}</p>`:"");
 }
 /* Auswahl-Dialog im App-Stil (gleiche Optik wie die Personenauswahl) */
 function pickFromList(opts){
@@ -4112,7 +4289,7 @@ function pickDateRange(){
   function render(){
     const y=cur.getFullYear(), mo=cur.getMonth();
     const first=new Date(y,mo,1), off=(first.getDay()+6)%7, days=new Date(y,mo+1,0).getDate();
-    let h='<div class="cal-head"><button type="button" class="iconbtn" onclick="window._calNav(-1)">‹</button><b>'+first.toLocaleDateString("de-DE",{month:"long",year:"numeric"})+'</b><button type="button" class="iconbtn" onclick="window._calNav(1)">›</button></div>';
+    let h='<div class="cal-head"><button type="button" class="iconbtn" onclick="window._calNav(-1)">‹</button><b>'+first.toLocaleDateString(loc(),{month:"long",year:"numeric"})+'</b><button type="button" class="iconbtn" onclick="window._calNav(1)">›</button></div>';
     h+='<div class="cal-grid">'+["Mo","Di","Mi","Do","Fr","Sa","So"].map(w=>'<span class="cal-w">'+w+'</span>').join('');
     for(let i=0;i<off;i++) h+='<span></span>';
     for(let d=1;d<=days;d++){
@@ -4175,9 +4352,10 @@ function setCurrency(code){ if(!CUR_LIST.includes(code)) return;
 }
 function addFx(code){ if(!CUR_LIST.includes(code)||code===baseCur()) return;
   S.meta.fx=S.meta.fx||[]; if(S.meta.fx.some(f=>f.code===code)) return;
+  refreshFx().then(ok=>{ if(ok){ const f2=(S.meta.fx||[]).find(x=>x.code===code); if(f2) f2.rate=defaultRate(baseCur(),code); renderAll(); save(); } });
   const r=defaultRate(baseCur(),code);
   S.meta.fx.push({code:code,rate:r}); renderAll(); save();
-  toast("1 "+baseCur()+" = "+r+" "+code+" (Stand "+FX_DATE+", anpassbar)"); }
+  toast("1 "+baseCur()+" = "+r+" "+code+" (Stand "+fxStamp()+", anpassbar)"); }
 function updFxRate(code,v){ const f=(S.meta.fx||[]).find(x=>x.code===code); if(!f) return;
   const r=+String(v).replace(",","."); if(isFinite(r)&&r>0){ f.rate=r; renderAusgaben(); renderFahrer(); renderErgebnis(); save(); } else { renderCurrency(); } }
 function delFx(code){ S.meta.fx=(S.meta.fx||[]).filter(f=>f.code!==code);
@@ -4316,7 +4494,7 @@ function renderTeilnehmer(){
     box.style.borderLeft="5px solid "+col;box.style.background=tint(col,_dk()?0.16:0.06);
     const pEmpty=S.participants.length===0;
     const allOn=!pEmpty&&sel.length===S.participants.length, noneOn=sel.length===0;
-    let inner=`<button type="button" class="exp-head acc-head" aria-expanded="${open}" onclick="woToggle('${s.id}')">${icon("i-chevron")}<span class="exp-title" style="color:${_segInk(col)};display:inline-flex;align-items:center;gap:8px;min-width:0"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</span><span class="exp-amt" style="font-weight:500;color:var(--muted)">${sel.length} Personen</span></button>
+    let inner=`<button type="button" class="exp-head acc-head" aria-expanded="${open}" onclick="woToggle('${s.id}')">${icon("i-chevron")}<span class="exp-title" style="color:${_segInk(col)};display:inline-flex;align-items:center;gap:8px;min-width:0"><span class="swatch" style="background:${col}"></span>${esc(s.name)}</span><span class="exp-amt" style="font-weight:500;color:var(--muted)">${zn(sel.length,"Person","Personen")}</span></button>
       <div class="acc-body"${open?'':' inert'}><div class="acc-inner">
       <div style="display:flex;justify-content:flex-start;gap:2px;margin:2px 0 8px"><button type="button" class="hide-link" ${(allOn||pEmpty)?"disabled ":""}data-allseg="${s.id}:1" onclick="allSeg('${s.id}',true)">Alle</button>
       <button type="button" class="hide-link" ${noneOn?"disabled ":""}data-allseg="${s.id}:0" onclick="allSeg('${s.id}',false)">Keine</button></div><div class="checklist">`;
@@ -4335,7 +4513,7 @@ function renderAusgaben(){
     const allC=S.expenses.every(e=>_expCollapsed.has(e.id));
     const bar=document.createElement("div");
     bar.style.cssText="display:flex;justify-content:flex-end;margin:-4px 2px 8px";
-    bar.innerHTML=`<button type="button" class="hide-link" id="expCollapseAllBtn" onclick="collapseAllExp(${allC?"false":"true"})">${allC?"Alle ausklappen":"Alle einklappen"}</button>`;
+    bar.innerHTML=`<button type="button" class="hide-link" id="expCollapseAllBtn" onclick="collapseAllExp(${allC?"false":"true"})">${allC?t("Alle ausklappen"):t("Alle einklappen")}</button>`;
     c.appendChild(bar);
   }
   S.expenses.forEach(ex=>{
@@ -4350,7 +4528,7 @@ function renderAusgaben(){
     // Kopfzeile: Ein-/Ausklappen + Titel + Summe
     let h=`<button type="button" class="exp-head" data-exp-head="${ex.id}" aria-expanded="${!collapsed}" title="${collapsed?'Ausklappen':'Einklappen'}" onclick="toggleExpCollapse('${ex.id}')">${icon("i-chevron")}<span class="exp-title" data-exp-title="${ex.id}">${esc((ex.name||"").trim()||"Unbenannte Ausgabe")}</span><span class="exp-amt" data-exp-amt="${ex.id}">${eur(total)}</span></button>`;
     const warnC0 = grp.length===0 ? `<span class="warn-txt">${segMode?'Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.':'Niemand ausgewählt – wird niemandem berechnet.'}</span><br>` : "";
-    h+=`<p class="footnote exp-colsum" style="margin:0">${warnC0}${grp.length} Personen · ${ex.mode==="fuel"?"km-genau verteilt":eur(per)+"/Person"}</p>`;
+    h+=`<p class="footnote exp-colsum" style="margin:0">${warnC0}${zn(grp.length,"Person","Personen")} · ${ex.mode==="fuel"?t("km-genau verteilt"):eur(per)+tm("/Person")}</p>`;
     h+=`<div class="acc-body"${collapsed?' inert':''}><div class="acc-inner">`;
     const fuelModeEx=ex.mode==="fuel";
     h+=`<div class="seg-toggle" style="margin:2px 0 12px" role="radiogroup" aria-label="Für wen gilt die Ausgabe?">
@@ -4397,7 +4575,7 @@ function renderAusgaben(){
       h+=`</div>`;
     }
     const warn = grp.length===0 ? `<span class="warn-txt">${segMode?'Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.':'Niemand ausgewählt – wird niemandem berechnet.'}</span><br>` : "";
-    h+=`<p class="footnote" data-exp-sum="${ex.id}">${warn}Summe <b>${eur(total)}</b> · ${grp.length} Personen · ${ex.mode==="fuel"?"km-genau verteilt":eur(per)+"/Person"}</p>`;
+    h+=`<p class="footnote" data-exp-sum="${ex.id}">${warn}${tm("Summe")} <b>${eur(total)}</b> · ${zn(grp.length,"Person","Personen")} · ${ex.mode==="fuel"?t("km-genau verteilt"):eur(per)+tm("/Person")}</p>`;
     h+=`<div style="display:flex;justify-content:flex-end;margin-top:4px"><button type="button" class="hide-link danger-link" onclick="delExpense('${ex.id}')">${icon("i-trash")}Löschen</button></div>`;
     h+=`</div></div>`;
     card.innerHTML=h;c.appendChild(card);
@@ -4556,7 +4734,7 @@ function renderErgebnis(){
         +((rp&&rp.pay)?`<div class="settle-payinfo">${icon("i-coins")}${esc(t.to)}: ${esc(rp.pay)}</div>`:"");
     }).join("");
     const tot=R.settlement.reduce((a,b)=>a+b.amount,0);
-    st.innerHTML+=`<p class="footnote">${R.settlement.length} Überweisung(en), Summe ${eur(tot)}.</p>`;
+    st.innerHTML+=`<p class="footnote">${zn(R.settlement.length,"Überweisung","Überweisungen")}${tm(", Summe")} ${eur(tot)}.</p>`;
   }
   // seg cost detail
   const sct=document.getElementById("segCostTable");
@@ -4699,7 +4877,7 @@ function toggleSeg(sid,pid,on,el){let arr=S.participation[sid]||[];
       if(on){ lb.classList.remove("chip-on"); void lb.offsetWidth; lb.classList.add("chip-on"); setTimeout(()=>lb.classList.remove("chip-on"),320); } }
     const blk=el.closest(".seg-block");
     if(blk){
-      const pill=blk.querySelector(".pill"); if(pill) pill.textContent=arr.length+" Personen";
+      const pill=blk.querySelector(".pill"); if(pill) pill.textContent=zn(arr.length,"Person","Personen");
       const ab=blk.querySelector('[data-allseg$=":1"]'), nb=blk.querySelector('[data-allseg$=":0"]');
       if(ab) ab.disabled=(S.participants.length>0&&arr.length===S.participants.length)||S.participants.length===0;
       if(nb) nb.disabled=arr.length===0;
@@ -4772,7 +4950,7 @@ function updExpSummary(id){ const ex=S.expenses.find(x=>x.id===id); if(!ex) retu
   const amt=document.querySelector('[data-exp-amt="'+id+'"]'); if(amt) amt.textContent=eur(total);
   const el=document.querySelector('[data-exp-sum="'+id+'"]'); if(!el) return;
   const grp=expGroup(ex); const per=grp.length>0?total/grp.length:0;
-  el.innerHTML=`Summe <b>${eur(total)}</b> · ${grp.length} Personen · ${ex.mode==="fuel"?"km-genau verteilt":eur(per)+"/Person"}`; }
+  el.innerHTML=`${tm("Summe")} <b>${eur(total)}</b> · ${zn(grp.length,"Person","Personen")} · ${ex.mode==="fuel"?t("km-genau verteilt"):eur(per)+tm("/Person")}`; }
 function updPay(id,pid,f,v){const ex=S.expenses.find(x=>x.id===id);if(!ex)return;const pm=(ex.payments||[]).find(x=>x.id===pid);
   if(!pm)return;
   if(f==="cur"){ if(v===baseCur()) delete pm.cur; else pm.cur=v; renderAusgaben(); renderErgebnis(); save(); return; }
@@ -4837,7 +5015,7 @@ function buildPDF(){
   function need(h){ if(y-h<MG+18){ newPage(); } }
   function section(titel){ need(46); y-=12; t(MG,y,titel,{bold:true,size:12,rgb:C_BRAND}); y-=7; hr(y,true); y-=16; }
   // Kopf
-  t(MG,y-8,S.meta.title||"RapidSplit-Tour",{bold:true,size:17,rgb:C_BRAND}); y-=26;
+  t(MG,y-8,S.meta.title||tx("RapidSplit-Tour"),{bold:true,size:17,rgb:C_BRAND}); y-=26;
   const sub=dateRangeText();
   if(sub){ t(MG,y,sub,{gray:true,size:10}); y-=14; }
   y-=6;
@@ -4847,8 +5025,8 @@ function buildPDF(){
   y-=8;
   const drvN=S.participants.filter(p=>p.driver).length;
   let kmTot=0; S.participants.forEach(p=>{ if(p.driver) S.segments.forEach(sg=>{ kmTot+=(+p.driver.km[sg.id]||0); }); });
-  const tiles=[["Gesamtkosten",eur(R.totalDrive+R.totalExp)],["Teilnehmende",String(S.participants.length)],
-               ["Fahrer:innen",String(drvN)],["Kilometer",num(kmTot)+" km"]];
+  const tiles=[[tx("Gesamtkosten"),eur(R.totalDrive+R.totalExp)],[tx("Teilnehmende"),String(S.participants.length)],
+               [tx("Fahrer:innen"),String(drvN)],[tx("Kilometer"),num(kmTot)+" km"]];
   for(let row=0;row<2;row++){
     for(let col2=0;col2<2;col2++){
       const tx=MG+6+col2*(tw+gap), ty=y-th;
@@ -4860,8 +5038,8 @@ function buildPDF(){
   }
   y-=10;
   // Wer zahlt an wen
-  section("Wer zahlt an wen?"+(S.mergeGroups?"  (Verein/Familie als Einheit)":""));
-  if(R.settlement.length===0){ t(MG,y,"Alles ausgeglichen – keine Zahlungen nötig.",{size:10}); y-=15; }
+  section(tx("Wer zahlt an wen?")+(S.mergeGroups?tx("  (Verein/Familie als Einheit)"):""));
+  if(R.settlement.length===0){ t(MG,y,tx("Alles ausgeglichen – keine Zahlungen nötig."),{size:10}); y-=15; }
   const AVC=["0.05 0.46 0.56","0.01 0.41 0.63","0.49 0.23 0.93","0.08 0.50 0.24","0.75 0.09 0.36","0.63 0.38 0.03"];
   R.settlement.forEach((x,xi)=>{ need(26);
     rect(MG-4,y-8,W-2*MG+8,24,"0.955 0.966 0.962");
@@ -4872,25 +5050,25 @@ function buildPDF(){
     t(MG+wFrom+32,y,x.to,{bold:true,size:10,rgb:C_GREEN});
     tr(W-MG-4,y,eur(x.amount),{bold:true,size:10}); y-=22;
     const rp=S.participants.find(p=>p.name===x.to);
-    if(rp&&rp.pay){ need(12); t(MG+14,y,"Konto: "+rp.pay,{gray:true,size:8}); y-=12; } });
-  need(14); t(MG,y,R.settlement.length+" Überweisung(en)",{gray:true,size:9}); y-=6;
+    if(rp&&rp.pay){ need(12); t(MG+14,y,tx("Konto: ")+rp.pay,{gray:true,size:8}); y-=12; } });
+  need(14); t(MG,y,R.settlement.length+tx(" Überweisung(en)"),{gray:true,size:9}); y-=6;
   // Salden
-  section("Saldo & Ausgleich"+(S.mergeGroups?" (Verein/Familie als Einheit)":""));
-  need(15); t(MG,y,"Name",{gray:true,size:9}); tr(MG+310,y,"Ausgelegt",{gray:true,size:9}); tr(MG+395,y,"Eigener Anteil",{gray:true,size:9}); tr(W-MG,y,"Saldo",{gray:true,size:9}); y-=5; hr(y,true); y-=12;
+  section(tx("Saldo & Ausgleich")+(S.mergeGroups?tx(" (Verein/Familie als Einheit)"):""));
+  need(15); t(MG,y,tx("Name"),{gray:true,size:9}); tr(MG+310,y,tx("Ausgelegt"),{gray:true,size:9}); tr(MG+395,y,tx("Eigener Anteil"),{gray:true,size:9}); tr(W-MG,y,tx("Saldo"),{gray:true,size:9}); y-=5; hr(y,true); y-=12;
   R.grpArr.slice().sort((a,b)=>b.saldo-a.saldo).forEach(g=>{ need(16);
     t(MG,y,String(g.name||"—").slice(0,42),{size:10}); tr(MG+310,y,eur(g.laidOut),{size:10}); tr(MG+395,y,eur(g.eigenAnteil),{size:10});
     tr(W-MG,y,(g.saldo>0.005?"+":"")+eur(g.saldo),{bold:true,size:10,rgb:(g.saldo>0.005?C_GREEN:(g.saldo<-0.005?C_RED:C_INK))}); y-=5; hr(y); y-=11; });
   // Kosten je Person
-  section("Kosten pro Teilnehmer:in");
-  need(15); t(MG,y,"Name",{gray:true,size:9}); tr(MG+310,y,"Fahrtkosten",{gray:true,size:9}); tr(MG+395,y,"Sonstige",{gray:true,size:9}); tr(W-MG,y,"Eigener Anteil",{gray:true,size:9}); y-=5; hr(y,true); y-=12;
+  section(tx("Kosten pro Teilnehmer:in"));
+  need(15); t(MG,y,tx("Name"),{gray:true,size:9}); tr(MG+310,y,tx("Fahrtkosten"),{gray:true,size:9}); tr(MG+395,y,tx("Sonstige"),{gray:true,size:9}); tr(W-MG,y,tx("Eigener Anteil"),{gray:true,size:9}); y-=5; hr(y,true); y-=12;
   R.rows.slice().sort((a,b)=>b.eigenAnteil-a.eigenAnteil).forEach(r=>{ need(16);
     t(MG,y,String(r.name||"—").slice(0,42),{size:10}); tr(MG+310,y,eur(r.fahrtAnteil),{size:10}); tr(MG+395,y,eur(r.sonstAnteil),{size:10}); tr(W-MG,y,eur(r.eigenAnteil),{bold:true,size:10}); y-=5; hr(y); y-=11; });
   // Etappen
-  section("Fahrtkosten je Etappe");
-  need(15); t(MG,y,"Etappe",{gray:true,size:9}); tr(MG+340,y,"Kosten",{gray:true,size:9}); tr(MG+415,y,"Personen",{gray:true,size:9}); tr(W-MG,y,"pro Person",{gray:true,size:9}); y-=5; hr(y,true); y-=12;
+  section(tx("Fahrtkosten je Etappe"));
+  need(15); t(MG,y,tx("Etappe"),{gray:true,size:9}); tr(MG+340,y,tx("Kosten"),{gray:true,size:9}); tr(MG+415,y,tx("Personen"),{gray:true,size:9}); tr(W-MG,y,tx("pro Person"),{gray:true,size:9}); y-=5; hr(y,true); y-=12;
   R.segs.forEach(sg=>{ need(16);
     t(MG,y,String(sg.name||"—").slice(0,46),{size:10}); tr(MG+340,y,eur(R.segCost[sg.id]),{size:10}); tr(MG+415,y,String(R.segPersons[sg.id]),{size:10}); tr(W-MG,y,eur(R.segPer[sg.id]),{size:10}); y-=5; hr(y); y-=11; });
-  need(15); t(MG,y,"Summe (reine km-Kosten)",{bold:true,size:10}); tr(MG+340,y,eur(R.segTotal),{bold:true,size:10}); y-=14;
+  need(15); t(MG,y,tx("Summe (reine km-Kosten)"),{bold:true,size:10}); tr(MG+340,y,eur(R.segTotal),{bold:true,size:10}); y-=14;
   newPage();
   // --- PDF-Bytes zusammensetzen (unkomprimiert, WinAnsi → 1 Zeichen = 1 Byte)
   const nP=pages.length, contentIds=[], pageIds=[]; let next=5;
@@ -4902,7 +5080,7 @@ function buildPDF(){
   objs[4]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
   pages.forEach((pc,ix)=>{
     const foot="BT /F1 8 Tf 0.42 0.47 0.45 rg 1 0 0 1 "+MG+" 28 Tm ("+pdfEsc("Erstellt mit RapidSplit · rapidsplit.app")+") Tj ET\n"
-      +"BT /F1 8 Tf 0.42 0.47 0.45 rg 1 0 0 1 "+(W-MG-pdfW("Seite "+(ix+1)+" / "+nP,8)).toFixed(2)+" 28 Tm ("+pdfEsc("Seite "+(ix+1)+" / "+nP)+") Tj ET\n";
+      +"BT /F1 8 Tf 0.42 0.47 0.45 rg 1 0 0 1 "+(W-MG-pdfW(tx("Seite ")+(ix+1)+" / "+nP,8)).toFixed(2)+" 28 Tm ("+pdfEsc(tx("Seite ")+(ix+1)+" / "+nP)+") Tj ET\n";
     const stream=pc+foot;
     objs[contentIds[ix]]="<< /Length "+stream.length+" >>\nstream\n"+stream+"endstream";
     objs[pageIds[ix]]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+W+" "+H+"] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents "+contentIds[ix]+" 0 R >>";
@@ -4948,36 +5126,36 @@ function sharePDF(){
 function csvEsc(v){ v=String(v==null?"":v); return /[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
 function buildCSV(){
   const R=compute();
-  const n2=n=>(Math.round((n+Number.EPSILON)*100)/100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const n2=n=>(Math.round((n+Number.EPSILON)*100)/100).toLocaleString(loc(),{minimumFractionDigits:2,maximumFractionDigits:2});
   const out=[];
-  out.push("RapidSplit-Export;"+csvEsc(S.meta.title||"Unbenannte Tour"));
-  out.push("Zeitraum;"+csvEsc(dateRangeText()||"—"));
-  out.push("Währung;"+baseCur());
+  out.push(tx("RapidSplit-Export;")+csvEsc(S.meta.title||tx("Unbenannte Tour")));
+  out.push(tx("Zeitraum;")+csvEsc(dateRangeText()||"—"));
+  out.push(tx("Währung;")+baseCur());
   out.push("");
-  out.push("Wer zahlt an wen?"+(S.mergeGroups?" (Verein/Familie als Einheit)":""));
-  out.push("Von;An;Betrag;Bankverbindung");
+  out.push(tx("Wer zahlt an wen?")+(S.mergeGroups?tx(" (Verein/Familie als Einheit)"):""));
+  out.push(tx("Von;An;Betrag;Bankverbindung"));
   R.settlement.forEach(t=>{ const rp=S.participants.find(p=>p.name===t.to);
     out.push(csvEsc(t.from)+";"+csvEsc(t.to)+";"+n2(t.amount)+";"+csvEsc((rp&&rp.pay)||"")); });
   out.push("");
-  out.push("Saldo je Person");
-  out.push("Name;Verein/Familie;Ausgelegt;Eigener Anteil;Saldo;Bankverbindung");
+  out.push(tx("Saldo je Person"));
+  out.push(tx("Name;Verein/Familie;Ausgelegt;Eigener Anteil;Saldo;Bankverbindung"));
   R.rows.slice().sort((a,b)=>b.gesamtSaldo-a.gesamtSaldo).forEach(r=>{ const p=pById(r.id);
     out.push(csvEsc(r.name)+";"+csvEsc(r.group)+";"+n2(r.laidOutDrive+r.sonstAusgelegt)+";"+n2(r.eigenAnteil)+";"+n2(r.gesamtSaldo)+";"+csvEsc((p&&p.pay)||"")); });
   out.push("");
-  out.push("Kosten pro Teilnehmer:in");
-  out.push("Name;Fahrtkosten;Sonstige;Eigener Anteil");
+  out.push(tx("Kosten pro Teilnehmer:in"));
+  out.push(tx("Name;Fahrtkosten;Sonstige;Eigener Anteil"));
   R.rows.slice().sort((a,b)=>b.eigenAnteil-a.eigenAnteil).forEach(r=>{
     out.push(csvEsc(r.name)+";"+n2(r.fahrtAnteil)+";"+n2(r.sonstAnteil)+";"+n2(r.eigenAnteil)); });
   out.push("");
-  out.push("Fahrtkosten je Etappe (reine km-Kosten)");
-  out.push("Etappe;Kosten;Personen;pro Person");
+  out.push(tx("Fahrtkosten je Etappe (reine km-Kosten)"));
+  out.push(tx("Etappe;Kosten;Personen;pro Person"));
   R.segs.forEach(sg=>{
     out.push(csvEsc(sg.name)+";"+n2(R.segCost[sg.id]||0)+";"+(R.segPersons[sg.id]||0)+";"+n2(R.segPer[sg.id]||0)); });
   out.push("");
-  out.push("Ausgaben");
-  out.push("Bezeichnung;Betrag;Personen;pro Person");
+  out.push(tx("Ausgaben"));
+  out.push(tx("Bezeichnung;Betrag;Personen;pro Person"));
   R.expRows.forEach(x=>{
-    out.push(csvEsc(x.name||"Unbenannt")+";"+n2(x.total)+";"+x.persons+";"+n2(x.per)); });
+    out.push(csvEsc(x.name||tx("Unbenannt"))+";"+n2(x.total)+";"+x.persons+";"+n2(x.per)); });
   return "\ufeff"+out.join("\r\n")+"\r\n";
 }
 function exportCSV(){
@@ -5265,7 +5443,8 @@ function openShareQR(full,short,tourData){
     +(short?('<b style="font-size:27px;letter-spacing:.2em;font-variant-numeric:tabular-nums">'+esc(short)+'</b>')
            :('<span class="mini" style="word-break:break-all;max-width:230px">'+esc(full)+'</span>'))
     +'<button type="button" class="iconbtn" id="shareCopy" title="Code kopieren" aria-label="Code kopieren" style="position:absolute;left:50%;margin-left:86px">'+icon("i-copy")+'</button></div>'
-    +'<p class="hint" style="text-align:center;margin:12px 0 0">Mit diesem Code kannst du deine Tour teilen. Sie wird dafür verschlüsselt auf unserem Server gespeichert.</p>'
+    +'<p class="hint" style="text-align:center;margin:8px 0 0">Mit diesem Code kannst du deine Tour teilen. Sie ist dafür verschlüsselt auf unserem Server gespeichert.</p>'
+    +'<p class="mini" style="text-align:center;margin:4px 0 0">'+(short?"Der 6-stellige Code gilt 24 Stunden. QR-Code und langer Code bleiben gültig, bis du das Teilen beendest.":"Der Code bleibt gültig, bis du das Teilen beendest.")+'</p>'
     +(short?'':'<p class="mini" style="text-align:center;color:var(--warn)">Kurz-Code nicht verfügbar – bitte sync.php auf dem Server aktualisieren.</p>')
     +'<div style="display:flex;justify-content:center;margin-top:14px"><button type="button" class="btn ghost sm" id="shareStop" style="color:var(--red)">Teilen beenden &amp; Server-Kopie löschen</button></div>';
   const stopB=list.querySelector("#shareStop");
@@ -5301,21 +5480,25 @@ function shareTourFlow(tour){
   };
   if(!window.crypto||!crypto.subtle){ alertDialog("Nicht verfügbar","Verschlüsselung wird von dieser Umgebung nicht unterstützt."); return; }
   if(!hadSync){
-    confirmDialog("Tour teilen","Deine Tour liegt bisher nur auf diesem Gerät. Zum Teilen wird sie verschlüsselt auf unserem Server geladen. Du kannst sie jederzeit wieder löschen.",{okText:"Teilen",cancelText:"Abbrechen",icon:"i-share"}).then(ok=>{ if(ok) doShare(); });
+    confirmDialog("Tour teilen","Deine Tour liegt bisher nur auf diesem Gerät. Zum Teilen wird sie verschlüsselt auf unseren Server geladen. Du kannst die Kopie jederzeit wieder löschen.",{okText:"Teilen",cancelText:"Abbrechen",icon:"i-share"}).then(ok=>{ if(ok) doShare(); });
   } else doShare();
 }
 function shareTourDialog(){ shareTourFlow(null); }
 function deleteAllServerCopies(){
   const shared=DB.tours.filter(t=>t.data&&t.data.meta&&t.data.meta.sync);
   if(!shared.length){ toast("Keine Server-Kopien vorhanden"); return; }
-  confirmDialog("Alle Server-Kopien löschen?",shared.length+" geteilte Tour(en) werden vom Server entfernt; alle Codes/QR-Codes werden ungültig. Lokal bleibt alles erhalten.",{danger:true,okText:"Alle löschen",icon:"i-trash"}).then(async ok=>{
+  const one=shared.length===1;
+  confirmDialog(one?"Server-Kopie löschen?":"Alle Server-Kopien löschen?",
+    one?"Eine geteilte Tour wird vom Server entfernt; ihre Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten."
+       :shared.length+tm(" geteilte Touren werden vom Server entfernt; alle Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten."),
+    {danger:true,okText:one?"Löschen":"Alle löschen",icon:"i-trash"}).then(async ok=>{
     if(!ok) return;
     let n=0;
     for(const t of shared){
       try{ await fetch(SYNC_URL+"?del=1&id="+encodeURIComponent(t.data.meta.sync.id),{method:"POST",body:"x"}); }catch(e){}
       delete t.data.meta.sync; n++;
     }
-    save(); try{ renderHome(); }catch(e){} toast(n+" Server-Kopie(n) gelöscht");
+    save(); try{ renderHome(); }catch(e){} toast(n===1?"Server-Kopie gelöscht":n+tm(" Server-Kopien gelöscht"));
   });
 }
 function stopSharingDialog(d){
@@ -5452,7 +5635,8 @@ function renderMenu(){
   const m=document.getElementById("appMenu"); if(!m) return;
   const inTour=!document.body.classList.contains("home");
   const sw='<span class="theme-switch mini" id="themeSwitch" aria-hidden="true"><span class="knob"><svg class="ic k-sun" focusable="false"><use href="#i-sun"></use></svg><svg class="ic k-moon" focusable="false"><use href="#i-moon"></use></svg></span></span>';
-  let h='<button class="menu-item" role="menuitem" id="menuThemeItem" aria-checked="'+(currentTheme()==="dark")+'" onclick="cycleTheme(this)">'+icon("i-moon")+'<span class="mi-lbl">Design: '+themeModeLabel(themeMode())+'</span></button>';
+  let h='<button class="menu-item" role="menuitem" id="menuThemeItem" aria-checked="'+(currentTheme()==="dark")+'" onclick="cycleTheme(this)">'+icon("i-moon")+'<span class="mi-lbl">'+t("Design:")+' '+t(themeModeLabel(themeMode()))+'</span></button>';
+    h+='<button class="menu-item" role="menuitem" onclick="closeMenu();langDialog()">'+icon("i-globe")+'<span class="mi-lbl">'+(LANG==="en"?"Language: ":"Sprache: ")+langLabel(LANG)+'</span></button>';
   if(inTour){
     h+='<div class="menu-sep"></div>';
     h+='<button class="menu-item" role="menuitem" onclick="closeMenu();startWizard()">'+icon("i-compass")+'<span class="mi-lbl">Tutorial starten</span></button>';
@@ -5595,6 +5779,7 @@ function wizClose(){
 loadDB();
 DB.active=null; showHome();   // Nach App-Neustart immer auf der Startseite beginnen
 document.body.classList.add("boot-fab"); setTimeout(()=>{ document.body.classList.remove("boot-fab"); },800);
+setTimeout(()=>{ try{ maybeRefreshFx(); }catch(e){} },1500);   // Tageskurse (nur bei Fremdwährungs-Nutzung)
 (function(){
   const list=document.getElementById("tourList"); if(!list) return;
   let card=null,sx=0,sy=0,dx=0,drag=false,pid=null,bgEl=null;
@@ -5659,36 +5844,121 @@ function themeModeLabel(m){ return m==="light"?"Hell":(m==="dark"?"Dunkel":"Auto
 function cycleTheme(btn){
   const next=themeMode()==="light"?"dark":(themeMode()==="dark"?"auto":"light");
   setThemeMode(next);
-  if(btn){ const l=btn.querySelector(".mi-lbl"); if(l) l.textContent="Design: "+themeModeLabel(next); }
+  if(btn){ const l=btn.querySelector(".mi-lbl"); if(l) l.textContent=t("Design:")+" "+t(themeModeLabel(next)); }
 }
 setTimeout(function(){
   try{
     if(window.self!==window.top) return;   // eingebettet (Theme-Editor): Erststart-Dialog unterdrücken
-    if(localStorage.getItem("rapidsplit_theme_asked")||localStorage.getItem("kajak_theme")) return;
-    const ov=document.getElementById('pickerOverlay'), list=document.getElementById('pickerList'), titleEl=document.getElementById('pickerTitle');
-    let sel="auto";
-    titleEl.innerHTML=icon('i-moon')+'<span>Design wählen</span>';
-    function rnd(){
-      list.innerHTML=[["auto","Automatisch (Systemvorgabe)"],["light","Hell"],["dark","Dunkel"]].map(function(o){
-        return '<button type="button" class="picker-opt'+(o[0]===sel?' on':'')+'" data-id="'+o[0]+'"><span>'+o[1]+'</span>'+(o[0]===sel?icon('i-check'):'')+'</button>';
-      }).join("")+'<div style="display:flex;justify-content:flex-end;margin-top:10px"><button type="button" class="btn ghost sm flat" id="themeOk">Übernehmen</button></div>';
-      list.querySelector("#themeOk").onclick=function(){
-        try{ localStorage.setItem("rapidsplit_theme_asked","1"); }catch(e){}
-        setThemeMode(sel);
-        _ovClose(ov); document.body.classList.remove('modal-open');
-        list.removeEventListener('click',onC);
-      };
-    }
-    function onC(e){ const b=e.target.closest('.picker-opt'); if(b){ sel=b.dataset.id; rnd(); } }
-    list.addEventListener('click',onC);
-    document.getElementById('pickerCancel').style.display="none";
-    ov.classList.remove('closing'); clearTimeout(ov._closT); ov.classList.add('show'); document.body.classList.add('modal-open');
-    rnd();
-    const iv=setInterval(function(){ if(!ov.classList.contains('show')){ document.getElementById('pickerCancel').style.display=""; clearInterval(iv); } },500);
+    if(localStorage.getItem("rapidsplit_onboarded")||localStorage.getItem("rapidsplit_theme_asked")||localStorage.getItem("kajak_theme")) return;
+    onboarding();
   }catch(e){}
 },400);
 
-/* ---------------- PWA: Service Worker ---------------- */
+/* Erststart: Sprache -> Farbmodus -> Standardwährung.
+   Die Sprache steht zuerst, damit die beiden folgenden Schritte schon in der
+   gewählten Sprache erscheinen. */
+function onboarding(){
+  const ov=document.getElementById('pickerOverlay'), list=document.getElementById('pickerList'),
+        titleEl=document.getElementById('pickerTitle'), cancel=document.getElementById('pickerCancel');
+  if(!ov||!list||!titleEl) return;
+  let schritt=0, wahl={lang:LANG, theme:"auto", cur:defaultCur()};
+  const L=function(de,en){ return wahl.lang==="en"?en:de; };
+  cancel.style.display="none";
+
+  const SCHRITTE=[
+    { icon:"i-globe", titel:function(){ return "Sprache / Language"; },
+      opts:function(){ return [["de","Deutsch"],["en","English"]]; },
+      wert:function(){ return wahl.lang; },
+      setzt:function(v){ wahl.lang=v; } },
+    { icon:"i-moon", titel:function(){ return L("Design wählen","Choose theme"); },
+      opts:function(){ return [["auto",L("Automatisch (Systemvorgabe)","Automatic (system default)")],
+                               ["light",L("Hell","Light")],["dark",L("Dunkel","Dark")]]; },
+      wert:function(){ return wahl.theme; },
+      setzt:function(v){ wahl.theme=v; } },
+    { icon:"i-coins", titel:function(){ return L("Standardwährung","Default currency"); },
+      opts:function(){ return CUR_LIST.map(function(c){ return [c, c+" · "+(wahl.lang==="en"?(EN[CUR_NAMES[c]]||CUR_NAMES[c]):CUR_NAMES[c])]; }); },
+      wert:function(){ return wahl.cur; },
+      setzt:function(v){ wahl.cur=v; } }
+  ];
+
+  function rnd(){
+    const S0=SCHRITTE[schritt];
+    titleEl.innerHTML=icon(S0.icon)+'<span>'+esc(S0.titel())+'</span>';
+    const letzter=(schritt===SCHRITTE.length-1);
+    list.innerHTML=S0.opts().map(function(o){
+      return '<button type="button" class="picker-opt'+(o[0]===S0.wert()?' on':'')+'" data-id="'+esc(o[0])+'"><span>'+esc(o[1])+'</span>'+(o[0]===S0.wert()?icon('i-check'):'')+'</button>';
+    }).join("")
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px">'
+      +'<span class="mini">'+esc(L("Schritt","Step"))+' '+(schritt+1)+'/'+SCHRITTE.length+'</span>'
+      +'<span style="display:flex;gap:8px">'
+      +(schritt>0?'<button type="button" class="btn ghost sm flat" id="obBack">'+esc(L("Zurück","Back"))+'</button>':'')
+      +'<button type="button" class="btn ghost sm flat" id="obNext">'+esc(letzter?L("Fertig","Done"):L("Weiter","Next"))+'</button>'
+      +'</span></div>';
+    const b=list.querySelector("#obBack"); if(b) b.onclick=function(){ schritt--; rnd(); };
+    list.querySelector("#obNext").onclick=function(){
+      if(schritt<SCHRITTE.length-1){ schritt++; rnd(); return; }
+      fertig();
+    };
+  }
+  function fertig(){
+    try{
+      localStorage.setItem("rapidsplit_onboarded","1");
+      localStorage.setItem("rapidsplit_theme_asked","1");
+      localStorage.setItem(CUR_KEY,wahl.cur);
+    }catch(e){}
+    setThemeMode(wahl.theme);
+    _ovClose(ov); document.body.classList.remove('modal-open');
+    list.removeEventListener('click',onC);
+    cancel.style.display="";
+    if(wahl.lang!==LANG) setLang(wahl.lang);          // lädt neu
+    else { try{ if(typeof renderHome==="function") renderHome(); }catch(e){} }
+  }
+  function onC(e){ const b=e.target.closest('.picker-opt'); if(b){ SCHRITTE[schritt].setzt(b.dataset.id); rnd(); } }
+  list.addEventListener('click',onC);
+  ov.classList.remove('closing'); clearTimeout(ov._closT); ov.classList.add('show');
+  document.body.classList.add('modal-open');
+  rnd();
+  const iv=setInterval(function(){ if(!ov.classList.contains('show')){ cancel.style.display=""; clearInterval(iv); } },500);
+}
+
+/* Sprache nachträglich wechseln (Wellenmenü) */
+function langDialog(){
+  const ov=document.getElementById('pickerOverlay'), list=document.getElementById('pickerList'),
+        titleEl=document.getElementById('pickerTitle'), cancel=document.getElementById('pickerCancel');
+  if(!ov||!list||!titleEl) return;
+  let sel=LANG;
+  titleEl.innerHTML=icon('i-globe')+'<span>'+(LANG==="en"?"Language":"Sprache")+'</span>';
+  function done(){
+    _ovClose(ov); document.body.classList.remove('modal-open');
+    list.removeEventListener('click',onC);
+    document.removeEventListener('keydown',onKey,true);
+    ov.onclick=null; if(cancel) cancel.onclick=null;
+  }
+  function onKey(e){ if(e.key==="Escape"){ e.preventDefault(); done(); } }
+  function rnd(){
+    list.innerHTML=[["de","Deutsch"],["en","English"]].map(function(o){
+      return '<button type="button" class="picker-opt'+(o[0]===sel?' on':'')+'" data-id="'+o[0]+'"><span>'+o[1]+'</span>'+(o[0]===sel?icon('i-check'):'')+'</button>';
+    }).join("")
+      +'<div style="display:flex;justify-content:flex-end;margin-top:10px"><button type="button" class="btn ghost sm flat" id="langOk">'+(LANG==="en"?"Apply":"Übernehmen")+'</button></div>';
+    list.querySelector("#langOk").onclick=function(){
+      const w=sel; done();
+      if(w!==LANG) setLang(w);
+    };
+  }
+  function onC(e){ const b=e.target.closest('.picker-opt'); if(b){ sel=b.dataset.id; rnd(); } }
+  list.addEventListener('click',onC);
+  document.addEventListener('keydown',onKey,true);
+  if(cancel) cancel.onclick=done;
+  ov.onclick=function(e){ if(e.target===ov) done(); };
+  ov.classList.remove('closing'); clearTimeout(ov._closT); ov.classList.add('show');
+  document.body.classList.add('modal-open');
+  rnd();
+}
+
+/* Zweisprachigkeit: Startdurchlauf über den fertigen Baum, danach übernimmt der Beobachter */
+  try{ if(LANG==="en"){ translateDomInner(document.body); _i18nStart(); } }catch(e){}
+
+  /* ---------------- PWA: Service Worker ---------------- */
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
     navigator.serviceWorker.register("sw.js").catch(()=>{});

@@ -1,0 +1,4 @@
+RapidSplit 4.1:
+* Wechselkurse aktualisieren sich automatisch einmal täglich (nur bei Touren mit Fremdwährungen, im Währungsblock abschaltbar)
+* Kurse für alle 23 Währungen auf aktuellen Stand gebracht
+* Kleinere Korrekturen im Zusammenspiel der Währungsumrechnung
