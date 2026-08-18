@@ -1,0 +1,8 @@
+RapidSplit 4.2.2:
+* Benachrichtigung + rotes Wolken-X, wenn die Server-Kopie einer geteilten Tour gelöscht wurde
+* Geteilte Touren aktualisieren sich jetzt beim Öffnen automatisch
+* Standardwährung im Menü des Startbildschirms änderbar
+* Einrichtung: Knöpfe fest am Dialogrand, Standardwährung ganz oben
+* Teilen-Dialog erklärt den Beitritt per QR-Code
+* Wisch-Löschen nur noch auf zugeklappten Ausgaben-Kacheln
+* Restliche Übersetzungen vervollständigt, Kurse aktualisiert

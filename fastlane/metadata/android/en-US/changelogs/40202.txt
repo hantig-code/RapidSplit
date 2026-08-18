@@ -1,0 +1,8 @@
+RapidSplit 4.2.2:
+* Notification + red cloud X when the server copy of a shared trip was deleted
+* Shared trips now refresh automatically on opening
+* Default currency can be changed from the home screen menu
+* Setup: buttons pinned to the dialog edge, default currency on top
+* Sharing dialog explains how to join via QR code
+* Swipe-to-delete only on collapsed expense tiles
+* Completed remaining translations, updated exchange rates

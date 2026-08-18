@@ -558,7 +558,8 @@
   .acc-inner{overflow:hidden;min-height:0}
   .seg-block .acc-head{padding:0 0 2px}
   .seg-block.acc-closed .acc-head{padding-bottom:0}
-  .picker-opt.sep{border-bottom:1px solid var(--line);border-radius:0;margin-bottom:8px;padding-bottom:12px}
+  .picker-opt.sep{position:relative;margin-bottom:17px}
+  .picker-opt.sep::after{content:"";position:absolute;left:4px;right:4px;bottom:-9px;height:1px;background:var(--line);pointer-events:none}
   .acc-card.closed .acc-head{padding-bottom:2px}
   .acc-head .acc-sum{font-weight:500;color:var(--muted);font-size:13px;max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .acc-card:not(.closed) .acc-sum{display:none}
@@ -806,6 +807,7 @@
     <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.9M15.4 6.6L8.6 10.5"/></symbol>
     <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M9.5 14.5l2 2 3.5-3.5"/></symbol>
+    <symbol id="i-cloud-x" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="M10.4 12.9l3.6 3.6M14 12.9l-3.6 3.6"/></symbol>
     <symbol id="i-waves" viewBox="0 0 24 24"><path d="M3 7c2-2.2 4-2.2 6 0s4 2.2 6 0 4-2.2 6 0"/><path d="M3 12c2-2.2 4-2.2 6 0s4 2.2 6 0 4-2.2 6 0"/><path d="M3 17c2-2.2 4-2.2 6 0s4 2.2 6 0 4-2.2 6 0"/></symbol>
     <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
   </defs>
@@ -958,7 +960,7 @@
       <button type="button" class="exp-head acc-head" aria-expanded="false" aria-controls="accBody-grp" onclick="accToggle('grp')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg><span class="exp-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-people3"></use></svg>Gruppe</span><span class="exp-amt acc-sum" id="accSum-grp"></span></button>
       <div class="acc-body" id="accBody-grp"><div class="acc-inner">
       <p class="hint">Markiere Fahrer:innen mit eigenem Auto. Verein/Familie fasst Salden optional zusammen.</p>
-      <div class="add-zone">
+      <div class="add-zone" id="addPersonZone" hidden>
         <div class="add-row" style="margin:0">
           <div><label class="fld">Person hinzufügen</label><input type="text" id="part_new" placeholder="Name"></div>
           <div><label class="fld">Verein/Familie (optional)</label><input type="text" id="part_group" placeholder="Verein/Familie"></div>
@@ -3388,7 +3390,7 @@ const LS_KEY = "kajak_kostenrechner_m3draft_r1";
    Deutsch zurück. NEUE SPRACHE: dict-<code>.json + SPRACHEN-Eintrag in
    apply-i18n.py – Laufzeit, Menü und Erststart ziehen automatisch nach. */
 const LANG_KEY="rapidsplit_lang", CUR_KEY="rapidsplit_default_cur";
-const I18N={"en":{"# Server-Kopien gelöscht":" server copies deleted","# geteilte Touren werden vom Server entfernt; alle Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten.":" shared trips will be removed from the server; all codes and QR codes stop working. Everything stays on this device.","# wandert in „Gelöschte Touren“ und wird nach 30 Tagen endgültig entfernt.":" moves to “Deleted trips” and is permanently removed after 30 days.","# wird entfernt.":" will be removed.","# – werden nach 30 Tagen geleert":" – emptied after 30 days","#, Summe":", total","#/Person":"/person","#Auto":"car","#Autos":"cars","#Etappe":"leg","#Etappen":"legs","#Gesamt":"Total","#Person":"person","#Personen":"people","#Summe":"Total","#gelöscht am ":"deleted on ","#Überweisung":"transfer","#Überweisungen":"transfers","(Verein/Familie als Einheit)":"(club/family as one unit)","(wird geladen …)":"(loading …)",") – bitte sync.php aktualisieren":") – please update sync.php",") – werden nach 30 Tagen geleert":") – cleared after 30 days","/Person":"/person","/km-Pauschale":"/km rate","1. Tour & Etappen":"1. Trip & legs","2. Gruppe eintragen":"2. Enter group","3. Wer & Wo":"3. Who & Where","4. Fahrtkosten":"4. Driving costs","5. Ausgaben":"5. Expenses","6-stelliger Tour-Code":"6-character trip code","6. Auswertung":"6. Summary",": Fahrer:in-Eingaben wiederhergestellt":": driver entries restored","Abbrechen":"Cancel","Abrechnungsart für alle Fahrer:innen":"Cost method for all drivers","Abschnitte der Reise (Hinfahrt, Shuttle, Rückfahrt …) – jede wird unter ihren Mitfahrenden geteilt.":"Legs of the trip (outbound, shuttle, return …) – each one is split among the people on the leg.","Albanischer Lek":"Albanian lek","Alle":"All","Alle Eingaben dieser Tour werden unwiderruflich gelöscht.":"All entries in this trip will be permanently deleted.","Alle Server-Kopien löschen":"Delete all server copies","Alle Server-Kopien löschen?":"Delete all server copies?","Alle Touren":"All trips","Alle ausklappen":"Expand all","Alle einklappen":"Collapse all","Alle endgültig löschen":"Delete all permanently","Alle löschen":"Delete all","Alles ausgeglichen – keine Zahlungen nötig.":"All settled – no payments needed.","Alles ausgeglichen — keine Zahlungen nötig.":"All settled — no payments needed.","Als Fahrer:in markieren (mit eigenem Auto gefahren)":"Mark as driver (drove their own car)","Als PDF teilen":"Share as PDF","Als neue Tour importiert":"Imported as new trip","Anlass, gefahrene Flüsse, Schwierigkeit, Wasserstand, …":"Occasion, rivers paddled, difficulty, water level, …","Anteil":"Share","Auf den Server hochgeladen":"Uploaded to server","Ausgabe":"Expense","Ausgabe löschen?":"Delete expense?","Ausgaben":"Expenses","Ausgelegt":"Paid out","Ausklappen":"Expand","Auslage":"Amount paid","Auswertung":"Summary","Auswertung als PDF teilen":"Share summary as PDF","Auswählen":"Select","Auto":"Car","Automatisch":"Automatic","Automatisch (Systemvorgabe)":"Automatic (system default)","Bankverbindung":"Bank details","Bankverbindung/PayPal hinterlegen":"Add bank details/PayPal","Basiswährung der Tour wählen":"Choose trip base currency","Bei Aus: jede Person zahlt/erhält einzeln, auch innerhalb einer Familie/eines Vereins":"When off: each person pays/receives individually, even within a family/club","Beispiel laden":"Load sample","Beispiel-Tour angelegt":"Sample trip created","Beispiel-Tour laden":"Load sample trip","Beispiel-Tour zurückgesetzt":"Sample trip reset","Beitreten-Menü schließen":"Close join menu","Bereiche":"Sections","Beschreibung der Tour":"Trip description","Bezahlt von":"Paid by","Bezahlt von …":"Paid by …","Bezeichnung der Ausgabe":"Expense name","Bezeichnung;Betrag;Personen;pro Person":"Name;Amount;People;Per person","Bitte 6 Zeichen eingeben":"Please enter 6 characters","Brasilianischer Real":"Brazilian real","Britisches Pfund":"British pound","CSV exportiert":"CSV exported","Camp Liza":"Camp Liza","Chilenischer Peso":"Chilean peso","Code kopieren":"Copy code","Code unbekannt oder abgelaufen":"Code unknown or expired","Code und QR-Code sind 24 Stunden gültig. Danach einfach erneut teilen.":"Code and QR code are valid for 24 hours. Just share again afterwards.","Codeeingabe":"Enter code","Costa-Rica-Colón":"Costa Rican colón","Das PDF konnte nicht erstellt werden:":"The PDF could not be created:","Das ist kein RapidSplit-Code":"That's not a RapidSplit code","Das ist keine RapidSplit-Export-Datei.":"That's not a RapidSplit export file.","Daten behalten":"Keep data","Deine Tour liegt bisher nur auf diesem Gerät. Zum Teilen wird sie verschlüsselt auf unseren Server geladen. Du kannst die Kopie jederzeit wieder löschen.":"So far your trip is only on this device. To share it, an encrypted copy is uploaded to our server. You can delete the copy at any time.","Deine Touren":"Your trips","Der Code bleibt gültig, bis du das Teilen beendest.":"The code stays valid until you stop sharing.","Design wählen":"Choose theme","Design:":"Theme:","Di":"Tu","Die Datei enthält ungültige Daten. Deine bisherigen Touren wurden beibehalten.":"The file contains invalid data. Your existing trips have been kept.","Die Datei ist keine gültige JSON-Datei.":"The file is not a valid JSON file.","Die Datei konnte nicht gelesen werden.":"The file could not be read.","Die Server-Kopie dieser Tour existiert nicht mehr – vermutlich wurde das Teilen beendet oder die Kopie vom Ersteller bzw. der Erstellerin gelöscht. Du kannst lokal weiterarbeiten; die Teilen-Verknüpfung wurde entfernt. Bei Bedarf kannst du die Tour einfach erneut teilen.":"The server copy of this trip no longer exists – sharing was probably stopped or the copy was deleted by its creator. You can keep working locally; the sharing link has been removed. If you need to, you can simply share the trip again.","Die verschlüsselte Server-Kopie wird gelöscht. Bestehende Codes und QR-Codes funktionieren danach nicht mehr. Deine Tour bleibt auf diesem Gerät erhalten.":"The encrypted server copy will be deleted. Existing codes and QR codes will stop working afterwards. Your trip stays on this device.","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.":"This leg will be removed – also from \"Who & Where\" and Expenses.","Diese Person":"This person","Dieser Code führt zu keiner Tour (falsch oder abgelaufen)":"This code doesn't lead to a trip (wrong or expired)","Do":"Th","Drucken":"Print","Drucken öffnet die Systemvorschau (dort auch „Als PDF speichern“ möglich). CSV liefert alle Tabellen für Excel &amp; Co.":"Printing opens the system preview (where you can also \"Save as PDF\"). CSV provides all tables for Excel &amp; co.","Dunkel":"Dark","Dänische Krone":"Danish krone","E-Mail":"Email","Eigener Anteil":"Own share","Ein kurzer geführter Rundgang durch die App.":"A short guided tour of the app.","Eine geteilte Tour wird vom Server entfernt; ihre Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten.":"One shared trip will be removed from the server; its codes and QR codes stop working. Everything stays on this device.","Einkauf Gruppe":"Group groceries","Einklappen":"Collapse","Einkäufe, Camp, Maut &amp; Co. – jede Ausgabe gilt für Etappen-Mitfahrende oder feste Personen. Tankbeträge erfasst du als Typ „Sprit“ mit Fahrzeug-Zuordnung.":"Groceries, camp, tolls &amp; co. – each expense applies to everyone on the leg or to specific people. You record fuel purchases as type \"Fuel\" with a vehicle assigned.","Enddatum antippen":"Tap end date","Endgültig gelöscht":"Permanently deleted","Endgültig löschen":"Delete permanently","Endgültig löschen?":"Delete permanently?","Erfasse alle Ausgaben: Betrag und Bezahler:in – gültig für Etappen-Mitfahrende oder feste Personen. Tankbeträge legst du als Typ „Sprit“ mit Fahrzeug an.":"Record all expenses: amount and payer – valid for everyone on the leg or for specific people. You create fuel purchases as type \"Fuel\" with a vehicle.","Erstellt mit RapidSplit · rapidsplit.app":"Created with RapidSplit · rapidsplit.app","Es gelten die Kurse zum Reisebeginn.":"The rates at the start of the trip apply.","Es gelten die Tageskurse.":"The daily rates apply.","Etappe":"Leg","Etappe löschen":"Delete leg","Etappe löschen?":"Delete leg?","Etappe verschieben – Pfeiltasten hoch/runter":"Move leg – arrow keys up/down","Etappe;Kosten;Personen;pro Person":"Leg;Cost;People;Per person","Etappen":"Legs","Etappenfarbe":"Leg color","Euro":"Euro","Export CSV":"Export CSV","Exportieren":"Export","Exportiert":"Exported","Fahrer:in":"Driver","Fahrer:in entfernt":"Driver removed","Fahrer:in entfernt – Eingaben gemerkt":"Driver removed – entries remembered","Fahrer:innen":"Drivers","Fahrt":"Driving","Fahrtkosten":"Driving costs","Fahrtkosten je Etappe":"Driving costs per leg","Fahrtkosten je Etappe (reine km-Kosten)":"Driving costs per leg (km costs only)","Fahrzeug von …":"Vehicle of …","Fahrzeug wählen":"Choose vehicle","Fahrzeug wählen …":"Choose vehicle …","Fahrzeug:":"Vehicle:","Familie Jackson":"Jackson family","Feedback & Kontakt":"Feedback & contact","Feedback &amp; Kontakt":"Feedback &amp; contact","Fehler gefunden, Wunsch oder Idee? Schreib mir per E-Mail oder leg ein Issue auf GitHub an.":"Found a bug, got a wish or an idea? Email me or open an issue on GitHub.","Fertig ✓":"Done ✓","Fr":"Fr","Fremdwährung":"Foreign currency","Fremdwährung entfernen":"Remove foreign currency","Fremdwährung hinzufügen":"Add foreign currency","Fremdwährungen":"Foreign currencies","Für":"For","Für wen gilt die Ausgabe?":"Who does the expense apply to?","Gefahrene Kilometer je Fahrer:in. Abrechnung entweder mit €/km-Pauschale, oder über Spritkosten.":"km driven per driver. Settle either with a per-km rate or via fuel costs.","Gefällt dir RapidSplit? Unterstütze die Entwicklung:":"Like RapidSplit? Support its development:","Geleert":"Cleared","Gelöschte Touren":"Deleted trips","Gelöschte Touren (":"Deleted trips (","Georgischer Lari":"Georgian lari","Gesamt-km":"Total km","Gesamtkosten":"Total cost","Gib den 6-stelligen Tour-Code ein.":"Enter the 6-character trip code.","Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …).":"Give the trip a title and dates and add the legs (outbound, shuttle, return …).","Gruppe":"Group","Hake an, wer auf welcher Etappe mitgefahren ist.":"Tick who came along on which leg.","Hell":"Light","Hier ist nichts zu sehen? Trage Etappen im Bereich „Tour“ ein!":"Nothing to see here? Add legs in the \"Trip\" section!","Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Mit „Als PDF teilen“ verschickst du die Auswertung direkt.":"Here you see the cost per person, the balance and who pays whom how much. With \"Share as PDF\" you send the summary out directly.","Hinfahrt Sa 23.05. (München -> Bihać/BiH), Weiterreise Mi 27.05. (Bihać -> Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München.":"Outbound Sat 23 May (Munich -> Bihać/BiH), on to Kamp Liza/Soča, SLO on Wed 27 May, return 30/31 May to Munich.","Hinweis ausblenden":"Hide tip","Hinweise einblenden":"Show hints","Hinweise wieder eingeblendet":"Tips shown again","Hinzufügen":"Add","Höhe":"Amount","IBAN oder PayPal-Adresse (optional)":"IBAN or PayPal address (optional)","Im Reiter „Wer & Wo“, Bereich „Gruppe“: Trage alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Ein Verein/Familie fasst Salden am Ende zusammen.":"In the \"Who & Where\" tab, \"Group\" section: enter all people. Tick the \"driver\" checkbox for everyone who drove their own car. A club/family combines balances at the end.","Import fehlgeschlagen":"Import failed","In „Gelöschte Touren“ verschoben":"Moved to \"Deleted trips\"","Isländische Krone":"Icelandic krona","Ja":"Yes","Kamera nicht verfügbar oder Zugriff verweigert":"Camera not available or access denied","Kamera startet …":"Starting camera …","Kanadischer Dollar":"Canadian dollar","Karten":"Cards","Keine":"None","Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.":"No leg/people selected – not charged to anyone.","Keine Fahrer:innen vorhanden – lege sie unter „Wer & Wo“ → „Gruppe“ an":"No drivers yet – add them under \"Who & Where\" → \"Group\"","Keine Server-Kopien vorhanden":"No server copies","Kilometer":"Kilometers","Kilometer je Fahrer:in":"km per driver","Kilometer und Fahrtkosten je Fahrer:in. Maut, Parkplatz &amp; Permit gehören in den Reiter „Ausgaben“.":"km and driving costs per driver. Tolls, parking &amp; permits belong in the \"Expenses\" tab.","Kolumbianischer Peso":"Colombian peso","Konto:":"Account:","Konvertible Mark":"Convertible mark","Kopiert":"Copied","Kosten":"Cost","Kosten pro Teilnehmer:in":"Cost per person","Kosten pro Teilnehmer:in fair berechnen & ausgleichen":"Calculate & settle cost per person fairly","Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen":"Calculate &amp; settle cost per person fairly","Kurse geladen: Stand":"Rates loaded: as of","Kurz-Code nicht verfügbar – bitte sync.php auf dem Server aktualisieren.":"Short code not available – please update sync.php on the server.","Leer starten":"Start empty","Leeren":"Clear","Lädt die Kurse zum Reisedatum der Tour (sonst Tageskurse). Es werden keine Tourdaten übertragen.":"Loads the rates for the trip's travel date (otherwise daily rates). No trip data is transferred.","Löschen":"Delete","Markiere Fahrer:innen mit eigenem Auto. Verein/Familie fasst Salden optional zusammen.":"Mark drivers with their own car. Club/family optionally combines balances.","Maut Österreich":"Austrian toll","Mehr von mir findest du auf":"Find more from me at","Menü":"Menu","Mexikanischer Peso":"Mexican peso","Mi":"We","Mit diesem Code kannst du deine Tour teilen. Sie ist dafür verschlüsselt auf unserem Server gespeichert.":"Use this code to share your trip. It is stored on our server in encrypted form.","Mit einer NEUEN, leeren Fahrt beginnen — oder die aktuellen Daten behalten?":"Start a NEW, empty trip — or keep the current data?","Mo":"Mo","Name":"Name","Name;Fahrtkosten;Sonstige;Eigener Anteil":"Name;Driving costs;Other;Own share","Name;Verein/Familie;Ausgelegt;Eigener Anteil;Saldo;Bankverbindung":"Name;Club/family;Paid out;Own share;Balance;Bank details","Neu hier? Starte das Tutorial oder lade die Beispiel-Tour.":"New here? Start the tutorial or load the sample trip.","Neue Ausgabe":"New expense","Neue Ausgabe anlegen":"Create new expense","Neue Etappe":"New leg","Neue Tour":"New trip","Neue Tour angelegt":"New trip created","Neue Tour anlegen":"Create new trip","Neue oder aktuelle Fahrt?":"New or current trip?","Nicht verfügbar":"Not available","Niemand ausgewählt – wird niemandem berechnet.":"Nobody selected – not charged to anyone.","Noch keine Ausgaben. Füge oben eine hinzu.":"No expenses yet. Add one above.","Noch keine Etappen angelegt – im Reiter „Tour“ → „Etappen“.":"No legs yet – in the \"Trip\" tab → \"Legs\".","Noch keine Fahrer:innen angelegt – setze im Reiter „Wer & Wo“ → „Gruppe“ das „Fahrer:in“-Häkchen.":"No drivers yet – in the \"Who & Where\" tab → \"Group\", tick the \"driver\" checkbox.","Noch keine Fahrer:innen angelegt.":"No drivers yet.","Noch keine Personen. Lege sie im Reiter „Gruppe“ an.":"No people yet. Add them in the \"Group\" tab.","Noch keine Tour vorhanden. Lege mit „+ Neue Tour“ los – oder schau dir die Beispiel-Tour an.":"No trips yet. Get started with \"+ New trip\" – or take a look at the sample trip.","Norwegische Krone":"Norwegian krone","PDF fehlgeschlagen":"PDF failed","PDF gespeichert":"PDF saved","Papierkorb geleert":"Trash emptied","Papierkorb leeren?":"Empty trash?","Permit Soča":"Permit Soča","Person":"Person","Person / Haushalt":"Person / household","Person hinzufügen":"Add person","Person löschen":"Delete person","Person löschen?":"Delete person?","Person wählen":"Choose person","Personen":"People","Personen ·":"People ·","Peruanischer Sol":"Peruvian sol","Polnischer Złoty":"Polish złoty","QR-Code":"QR code","QR-Code scannen":"Scan QR code","QR-Scan wird auf diesem Gerät nicht unterstützt – nutze die Codeeingabe.":"QR scan is not supported on this device – enter the code instead.","RapidSplit-Export;":"RapidSplit export;","RapidSplit-Tour":"RapidSplit trip","Reisezeitraum":"Travel dates","Reisezeitraum wählen":"Pick travel dates","Richte die Kamera auf den QR-Code – die Tour wird automatisch hinzugefügt.":"Point the camera at the QR code – the trip is added automatically.","Sa":"Sa","Saldo":"Balance","Saldo & Ausgleich":"Balance & settle-up","Saldo &amp; Ausgleich":"Balance &amp; settle-up","Saldo je Person":"Balance per person","Schließen":"Close","Schritt":"Step","Schwedische Krone":"Swedish krona","Schweizer Franken":"Swiss franc","Seite":"Page","Serbischer Dinar":"Serbian dinar","Server nicht erreichbar":"Server not reachable","Server nicht erreichbar (":"Server not reachable (","Server nicht erreichbar oder Code falsch (":"Server not reachable or code wrong (","Server-Kopie gelöscht":"Server copy deleted","Server-Kopie löschen?":"Delete server copy?","Server-Löschung fehlgeschlagen (":"Server deletion failed (","Shutteln BiH":"Shuttle BiH","Shutteln SLO":"Shuttle SLO","So":"Su","Sonstige":"Other","Speichern fehlgeschlagen – Speicher evtl. voll. Sichere die Tour über den Export.":"Saving failed – storage may be full. Back up the trip using the export.","Sprit":"Fuel","Spritkosten":"Fuel costs","Start":"Start","Start-Block dauerhaft ausblenden":"Hide start block permanently","Startdatum antippen":"Tap start date","Summe":"Total","Summe (reine km-Kosten)":"Total (km costs only)","Sync-Fehler (":"Sync error (","Tabelle":"Table","Tankbeträge erfasst du unter „Ausgaben“ als Typ „Sprit“ – dort auch, wer sie bezahlt hat.":"You record fuel purchases under \"Expenses\" with type \"Fuel\" – including who paid them.","Tanken":"Fuel-up","Tanken Emily":"Fuel-up Emily","Tanken Olaf":"Fuel-up Olaf","Tanken Rush":"Fuel-up Rush","Tanken Steve":"Fuel-up Steve","Teilen":"Share","Teilen beenden":"Stop sharing","Teilen beenden &amp; Server-Kopie löschen":"Stop sharing &amp; delete server copy","Teilen beenden?":"Stop sharing?","Teilen beendet – Server-Kopie gelöscht":"Sharing stopped – server copy deleted","Teilen fehlgeschlagen":"Sharing failed","Teilen hier nicht verfügbar – PDF wurde stattdessen gespeichert":"Sharing not available here – PDF saved instead","Teilnehmende":"Participants","Tippen, um den Tournamen zu ändern":"Tap to change the trip name","Titel":"Title","Titel der Tour":"Trip title","Tour":"Trip","Tour beitreten":"Join trip","Tour endgültig löschen":"Delete trip permanently","Tour leeren?":"Clear trip?","Tour löschen":"Delete trip","Tour löschen?":"Delete trip?","Tour nicht auf dem Server gefunden":"Trip not found on server","Tour teilen":"Share trip","Tour wiederhergestellt":"Trip restored","Tour wiederherstellen":"Restore trip","Tour-Eckdaten":"Trip basics","Touren importiert":"Trips imported","Trage je Fahrer:in die km pro Etappe ein. Wähle oben einmal für alle Fahrer:innen, ob über €/km-Pauschale oder Spritkosten (einzelne Tankbeträge) abgerechnet wird.":"Enter the km per leg for each driver. At the top, choose once for all drivers whether costs are settled by a per-km rate or by fuel costs (individual fuel purchases).","Tschechische Krone":"Czech koruna","Tutorial":"Tutorial","Tutorial starten":"Start tutorial","Tutorial starten?":"Start tutorial?","Türkische Lira":"Turkish lira","US-Dollar":"US dollar","Unbenannt":"Untitled","Unbenannte Ausgabe":"New expense","Unbenannte Tour":"Untitled trip","Ungarischer Forint":"Hungarian forint","Ungültiger Code – bitte prüfen":"Invalid code – please check","Upload fehlgeschlagen (":"Upload failed (","Verein/Familie":"Club/family","Verein/Familie (optional)":"Club/family (optional)","Verein/Familie als Einheit abrechnen":"Settle club/family as one unit","Verschlüsselung wird von dieser Umgebung nicht unterstützt.":"Encryption is not supported in this environment.","Vom Server aktualisieren":"Refresh from server","Vom Server aktualisiert":"Refreshed from server","Von;An;Betrag;Bankverbindung":"From;To;Amount;Bank details","Website":"Website","Weiter":"Next","Weiter mit":"Continue with","Wer &amp; Wo":"Who &amp; Where","Wer und Wo":"Who and Where","Wer war auf welcher Etappe dabei? Die Kosten jeder Etappe teilen sich die markierten Personen.":"Who was on which leg? The cost of each leg is split among the people you mark.","Wer war wo dabei?":"Who joined where?","Wer zahlt an wen?":"Who pays whom?","Wer&amp;Wo":"Who","Wiederherstellen":"Restore","Willkommen bei RapidSplit!":"Welcome to RapidSplit!","Wizard abgeschlossen 🎉":"Wizard complete 🎉","Wizard beenden":"Exit wizard","Wähle eine Tour oder lege eine neue an.":"Pick a trip or create a new one.","Währung &amp; Wechselkurse":"Currency &amp; exchange rates","Währung der Abrechnung":"Settlement currency","Währung der Zahlung":"Payment currency","Währung:":"Currency:","Währung;":"Currency;","Zahler entfernen":"Remove payer","Zeitraum wählen":"Pick dates","Zeitraum;":"Dates;","Ziehen oder Pfeiltasten ↑/↓":"Drag or arrow keys ↑/↓","Zur Tourübersicht":"Back to all trips","Zurück":"Back","bekommt zurück":"gets back","gelöscht am":"deleted on","gelöschte Tour(en) werden endgültig entfernt und können nicht wiederhergestellt werden.":"deleted trip(s) will be removed permanently and cannot be restored.","ist jetzt Fahrer:in":"is now a driver","km gesamt":"Total km","km-genau verteilt":"split by exact km","liegen keine historischen Kurse vor – hier gilt der Stand der App-Version.":"no historical rates are available – the app version's rates apply here.","pro Person":"per person","wird aus der Gruppe und allen Zuordnungen/Ausgaben entfernt.":"will be removed from the group and from all assignments/expenses.","z.B. Anreise":"e.g. Outbound","zahlt an":"pays","zahlt ein":"pays in","Übernehmen":"Apply","Überweisung(en)":"transfer(s)","€/km-Pauschale":"€/km rate","← Zurück":"← Back","↔ Die Tabelle lässt sich seitlich wischen – so siehst du alle Fahrer:innen.":"↔ You can swipe the table sideways to see all drivers.","⚠️ Bitte prüfen – ungewöhnlich hohe km:":"⚠️ Please check – unusually high km:","Drucken öffnet die Systemvorschau (dort auch „Als PDF speichern“ möglich). CSV liefert alle Tabellen für Excel & Co.":"Printing opens the system preview (where you can also \"Save as PDF\"). CSV provides all tables for Excel & co.","Einkäufe, Camp, Maut & Co. – jede Ausgabe gilt für Etappen-Mitfahrende oder feste Personen. Tankbeträge erfasst du als Typ „Sprit“ mit Fahrzeug-Zuordnung.":"Groceries, camp, tolls & co. – each expense applies to everyone on the leg or to specific people. You record fuel purchases as type \"Fuel\" with a vehicle assigned.","Kilometer und Fahrtkosten je Fahrer:in. Maut, Parkplatz & Permit gehören in den Reiter „Ausgaben“.":"km and driving costs per driver. Tolls, parking & permits belong in the \"Expenses\" tab.","Teilen beenden & Server-Kopie löschen":"Stop sharing & delete server copy","Wer & Wo":"Who & Where","Wer&Wo":"Who","Währung & Wechselkurse":"Currency & exchange rates"}};
+const I18N={"en":{"# Server-Kopien gelöscht":" server copies deleted","# geteilte Touren werden vom Server entfernt; alle Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten.":" shared trips will be removed from the server; all codes and QR codes stop working. Everything stays on this device.","# wandert in „Gelöschte Touren“ und wird nach 30 Tagen endgültig entfernt.":" moves to “Deleted trips” and is permanently removed after 30 days.","# wird entfernt.":" will be removed.","# – werden nach 30 Tagen geleert":" – emptied after 30 days","#, Summe":", total","#/Person":"/person","#Auto":"car","#Autos":"cars","#Etappe":"leg","#Etappen":"legs","#Gesamt":"Total","#Person":"person","#Personen":"people","#Summe":"Total","#gelöscht am ":"deleted on ","#Überweisung":"transfer","#Überweisungen":"transfers","(Verein/Familie als Einheit)":"(club/family as one unit)","(wird geladen …)":"(loading …)",") – bitte sync.php aktualisieren":") – please update sync.php",") – werden nach 30 Tagen geleert":") – cleared after 30 days","/Person":"/person","/km-Pauschale":"/km rate","1. Tour & Etappen":"1. Trip & legs","2. Gruppe eintragen":"2. Enter group","3. Wer & Wo":"3. Who & Where","4. Fahrtkosten":"4. Driving costs","5. Ausgaben":"5. Expenses","6-stelliger Tour-Code":"6-character trip code","6. Auswertung":"6. Summary",": Fahrer:in-Eingaben wiederhergestellt":": driver entries restored","Abbrechen":"Cancel","Abrechnungsart für alle Fahrer:innen":"Cost method for all drivers","Abschnitte der Reise (Hinfahrt, Shuttle, Rückfahrt …) – jede wird unter ihren Mitfahrenden geteilt.":"Legs of the trip (outbound, shuttle, return …) – each one is split among the people on the leg.","Albanischer Lek":"Albanian lek","Alle":"All","Alle Eingaben dieser Tour werden unwiderruflich gelöscht.":"All entries in this trip will be permanently deleted.","Alle Server-Kopien löschen":"Delete all server copies","Alle Server-Kopien löschen?":"Delete all server copies?","Alle Touren":"All trips","Alle ausklappen":"Expand all","Alle einklappen":"Collapse all","Alle endgültig löschen":"Delete all permanently","Alle löschen":"Delete all","Alles ausgeglichen – keine Zahlungen nötig.":"All settled – no payments needed.","Alles ausgeglichen — keine Zahlungen nötig.":"All settled — no payments needed.","Als Fahrer:in markieren (mit eigenem Auto gefahren)":"Mark as driver (drove their own car)","Als PDF teilen":"Share as PDF","Als neue Tour importiert":"Imported as new trip","Anlass, gefahrene Flüsse, Schwierigkeit, Wasserstand, …":"Occasion, rivers paddled, difficulty, water level, …","Anteil":"Share","Auf den Server hochgeladen":"Uploaded to server","Ausgabe":"Expense","Ausgabe löschen?":"Delete expense?","Ausgaben":"Expenses","Ausgelegt":"Paid out","Ausklappen":"Expand","Auslage":"Amount paid","Auswertung":"Summary","Auswertung als PDF teilen":"Share summary as PDF","Auswählen":"Select","Auto":"Car","Automatisch":"Automatic","Automatisch (Systemvorgabe)":"Automatic (system default)","Bankverbindung":"Bank details","Bankverbindung/PayPal hinterlegen":"Add bank details/PayPal","Basiswährung der Tour wählen":"Choose trip base currency","Bei Aus: jede Person zahlt/erhält einzeln, auch innerhalb einer Familie/eines Vereins":"When off: each person pays/receives individually, even within a family/club","Beispiel laden":"Load sample","Beispiel-Tour angelegt":"Sample trip created","Beispiel-Tour laden":"Load sample trip","Beispiel-Tour zurückgesetzt":"Sample trip reset","Beitreten-Menü schließen":"Close join menu","Bereiche":"Sections","Beschreibung der Tour":"Trip description","Bezahlt von":"Paid by","Bezahlt von …":"Paid by …","Bezeichnung der Ausgabe":"Expense name","Bezeichnung;Betrag;Personen;pro Person":"Name;Amount;People;Per person","Bitte 6 Zeichen eingeben":"Please enter 6 characters","Brasilianischer Real":"Brazilian real","Britisches Pfund":"British pound","CSV exportiert":"CSV exported","Camp Liza":"Camp Liza","Chilenischer Peso":"Chilean peso","Code kopieren":"Copy code","Code unbekannt oder abgelaufen":"Code unknown or expired","Code und QR-Code sind 24 Stunden gültig. Danach einfach erneut teilen.":"Code and QR code are valid for 24 hours. Just share again afterwards.","Codeeingabe":"Enter code","Costa-Rica-Colón":"Costa Rican colón","Das PDF konnte nicht erstellt werden:":"The PDF could not be created:","Das ist kein RapidSplit-Code":"That's not a RapidSplit code","Das ist keine RapidSplit-Export-Datei.":"That's not a RapidSplit export file.","Daten behalten":"Keep data","Deine Tour liegt bisher nur auf diesem Gerät. Zum Teilen wird sie verschlüsselt auf unseren Server geladen. Du kannst die Kopie jederzeit wieder löschen.":"So far your trip is only on this device. To share it, an encrypted copy is uploaded to our server. You can delete the copy at any time.","Deine Touren":"Your trips","Der Code bleibt gültig, bis du das Teilen beendest.":"The code stays valid until you stop sharing.","Design wählen":"Choose theme","Design:":"Theme:","Di":"Tu","Die Datei enthält ungültige Daten. Deine bisherigen Touren wurden beibehalten.":"The file contains invalid data. Your existing trips have been kept.","Die Datei ist keine gültige JSON-Datei.":"The file is not a valid JSON file.","Die Datei konnte nicht gelesen werden.":"The file could not be read.","Die Server-Kopie dieser Tour existiert nicht mehr – vermutlich wurde das Teilen beendet oder die Kopie vom Ersteller bzw. der Erstellerin gelöscht. Du kannst lokal weiterarbeiten; die Teilen-Verknüpfung wurde entfernt. Bei Bedarf kannst du die Tour einfach erneut teilen.":"The server copy of this trip no longer exists – sharing was probably stopped or the copy was deleted by its creator. You can keep working locally; the sharing link has been removed. If you need to, you can simply share the trip again.","Die verschlüsselte Server-Kopie wird gelöscht. Bestehende Codes und QR-Codes funktionieren danach nicht mehr. Deine Tour bleibt auf diesem Gerät erhalten.":"The encrypted server copy will be deleted. Existing codes and QR codes will stop working afterwards. Your trip stays on this device.","Diese Etappe wird entfernt – auch aus „Wer & Wo“ und Ausgaben.":"This leg will be removed – also from \"Who & Where\" and Expenses.","Diese Person":"This person","Dieser Code führt zu keiner Tour (falsch oder abgelaufen)":"This code doesn't lead to a trip (wrong or expired)","Do":"Th","Drucken":"Print","Drucken öffnet die Systemvorschau (dort auch „Als PDF speichern“ möglich). CSV liefert alle Tabellen für Excel &amp; Co.":"Printing opens the system preview (where you can also \"Save as PDF\"). CSV provides all tables for Excel &amp; co.","Dunkel":"Dark","Dänische Krone":"Danish krone","E-Mail":"Email","Eigener Anteil":"Own share","Ein kurzer geführter Rundgang durch die App.":"A short guided tour of the app.","Eine geteilte Tour wird vom Server entfernt; ihre Codes und QR-Codes werden ungültig. Lokal bleibt alles erhalten.":"One shared trip will be removed from the server; its codes and QR codes stop working. Everything stays on this device.","Einkauf Gruppe":"Group groceries","Einklappen":"Collapse","Einkäufe, Camp, Maut &amp; Co. – jede Ausgabe gilt für Etappen-Mitfahrende oder feste Personen. Tankbeträge erfasst du als Typ „Sprit“ mit Fahrzeug-Zuordnung.":"Groceries, camp, tolls &amp; co. – each expense applies to everyone on the leg or to specific people. You record fuel purchases as type \"Fuel\" with a vehicle assigned.","Enddatum antippen":"Tap end date","Endgültig gelöscht":"Permanently deleted","Endgültig löschen":"Delete permanently","Endgültig löschen?":"Delete permanently?","Erfasse alle Ausgaben: Betrag und Bezahler:in – gültig für Etappen-Mitfahrende oder feste Personen. Tankbeträge legst du als Typ „Sprit“ mit Fahrzeug an.":"Record all expenses: amount and payer – valid for everyone on the leg or for specific people. You create fuel purchases as type \"Fuel\" with a vehicle.","Erstellt mit RapidSplit · rapidsplit.app":"Created with RapidSplit · rapidsplit.app","Es gelten die Kurse zum Reisebeginn.":"The rates at the start of the trip apply.","Es gelten die Tageskurse.":"The daily rates apply.","Etappe":"Leg","Etappe löschen":"Delete leg","Etappe löschen?":"Delete leg?","Etappe verschieben – Pfeiltasten hoch/runter":"Move leg – arrow keys up/down","Etappe;Kosten;Personen;pro Person":"Leg;Cost;People;Per person","Etappen":"Legs","Etappenfarbe":"Leg color","Euro":"Euro","Export CSV":"Export CSV","Exportieren":"Export","Exportiert":"Exported","Fahrer:in":"Driver","Fahrer:in entfernt":"Driver removed","Fahrer:in entfernt – Eingaben gemerkt":"Driver removed – entries remembered","Fahrer:innen":"Drivers","Fahrt":"Driving","Fahrtkosten":"Driving costs","Fahrtkosten je Etappe":"Driving costs per leg","Fahrtkosten je Etappe (reine km-Kosten)":"Driving costs per leg (km costs only)","Fahrzeug von …":"Vehicle of …","Fahrzeug wählen":"Choose vehicle","Fahrzeug wählen …":"Choose vehicle …","Fahrzeug:":"Vehicle:","Familie Jackson":"Jackson family","Feedback & Kontakt":"Feedback & contact","Feedback &amp; Kontakt":"Feedback &amp; contact","Fehler gefunden, Wunsch oder Idee? Schreib mir per E-Mail oder leg ein Issue auf GitHub an.":"Found a bug, got a wish or an idea? Email me or open an issue on GitHub.","Fertig ✓":"Done ✓","Fr":"Fr","Fremdwährung":"Foreign currency","Fremdwährung entfernen":"Remove foreign currency","Fremdwährung hinzufügen":"Add foreign currency","Fremdwährungen":"Foreign currencies","Für":"For","Für wen gilt die Ausgabe?":"Who does the expense apply to?","Gefahrene Kilometer je Fahrer:in. Abrechnung entweder mit €/km-Pauschale, oder über Spritkosten.":"km driven per driver. Settle either with a per-km rate or via fuel costs.","Gefällt dir RapidSplit? Unterstütze die Entwicklung:":"Like RapidSplit? Support its development:","Geleert":"Cleared","Gelöschte Touren":"Deleted trips","Gelöschte Touren (":"Deleted trips (","Georgischer Lari":"Georgian lari","Gesamt-km":"Total km","Gesamtkosten":"Total cost","Gib den 6-stelligen Tour-Code ein.":"Enter the 6-character trip code.","Gib der Tour einen Titel und Zeitraum und lege die Etappen an (Hinfahrt, Shuttle, Rückfahrt …).":"Give the trip a title and dates and add the legs (outbound, shuttle, return …).","Gruppe":"Group","Hake an, wer auf welcher Etappe mitgefahren ist.":"Tick who came along on which leg.","Hell":"Light","Hier ist nichts zu sehen? Trage Etappen im Bereich „Tour“ ein!":"Nothing here? Add legs in the \"Trip\" section.","Hier siehst du die Kosten pro Person, den Saldo und wer wem wie viel zahlt. Mit „Als PDF teilen“ verschickst du die Auswertung direkt.":"Here you see the cost per person, the balance and who pays whom how much. With \"Share as PDF\" you send the summary out directly.","Hinfahrt Sa 23.05. (München -> Bihać/BiH), Weiterreise Mi 27.05. (Bihać -> Kamp Liza/Soča, SLO), Rückreise 30./31.05. nach München.":"Outbound Sat 23 May (Munich -> Bihać/BiH), on to Kamp Liza/Soča, SLO on Wed 27 May, return 30/31 May to Munich.","Hinweis ausblenden":"Hide tip","Hinweise einblenden":"Show hints","Hinweise wieder eingeblendet":"Tips shown again","Hinzufügen":"Add","Höhe":"Amount","IBAN oder PayPal-Adresse (optional)":"IBAN or PayPal address (optional)","Im Reiter „Wer & Wo“, Bereich „Gruppe“: Trage alle Personen ein. Setze das „Fahrer:in“-Häkchen bei allen, die mit eigenem Auto gefahren sind. Ein Verein/Familie fasst Salden am Ende zusammen.":"In the \"Who & Where\" tab, \"Group\" section: enter all people. Tick the \"driver\" checkbox for everyone who drove their own car. A club/family combines balances at the end.","Import fehlgeschlagen":"Import failed","In „Gelöschte Touren“ verschoben":"Moved to \"Deleted trips\"","Isländische Krone":"Icelandic krona","Ja":"Yes","Kamera nicht verfügbar oder Zugriff verweigert":"Camera not available or access denied","Kamera startet …":"Starting camera …","Kanadischer Dollar":"Canadian dollar","Karten":"Cards","Keine":"None","Keine Etappe/Mitfahrende gewählt – wird niemandem berechnet.":"No leg/people selected – not charged to anyone.","Keine Fahrer:innen vorhanden – lege sie unter „Wer & Wo“ → „Gruppe“ an":"No drivers yet – add them under \"Who & Where\" → \"Group\"","Keine Server-Kopien vorhanden":"No server copies","Kilometer":"Kilometers","Kilometer je Fahrer:in":"km per driver","Kilometer und Fahrtkosten je Fahrer:in. Maut, Parkplatz &amp; Permit gehören in den Reiter „Ausgaben“.":"km and driving costs per driver. Tolls, parking &amp; permits belong in the \"Expenses\" tab.","Kolumbianischer Peso":"Colombian peso","Konto:":"Account:","Konvertible Mark":"Convertible mark","Kopiert":"Copied","Kosten":"Cost","Kosten pro Teilnehmer:in":"Cost per person","Kosten pro Teilnehmer:in fair berechnen & ausgleichen":"Calculate & settle cost per person fairly","Kosten pro Teilnehmer:in fair berechnen &amp; ausgleichen":"Calculate &amp; settle cost per person fairly","Kurse geladen: Stand":"Rates loaded: as of","Kurz-Code nicht verfügbar – bitte sync.php auf dem Server aktualisieren.":"Short code not available – please update sync.php on the server.","Leer starten":"Start empty","Leeren":"Clear","Lädt die Kurse zum Reisedatum der Tour (sonst Tageskurse). Es werden keine Tourdaten übertragen.":"Loads the rates for the trip's travel date (otherwise daily rates). No trip data is transferred.","Löschen":"Delete","Markiere Fahrer:innen mit eigenem Auto. Verein/Familie fasst Salden optional zusammen.":"Mark drivers with their own car. Club/family optionally combines balances.","Maut Österreich":"Austrian toll","Mehr von mir findest du auf":"Find more from me at","Menü":"Menu","Mexikanischer Peso":"Mexican peso","Mi":"We","Mit einer NEUEN, leeren Fahrt beginnen — oder die aktuellen Daten behalten?":"Start a NEW, empty trip — or keep the current data?","Mo":"Mo","Name":"Name","Name;Fahrtkosten;Sonstige;Eigener Anteil":"Name;Driving costs;Other;Own share","Name;Verein/Familie;Ausgelegt;Eigener Anteil;Saldo;Bankverbindung":"Name;Club/family;Paid out;Own share;Balance;Bank details","Neu hier? Starte das Tutorial oder lade die Beispiel-Tour.":"New here? Start the tutorial or load the sample trip.","Neue Ausgabe":"New expense","Neue Ausgabe anlegen":"Create new expense","Neue Etappe":"New leg","Neue Tour":"New trip","Neue Tour angelegt":"New trip created","Neue Tour anlegen":"Create new trip","Neue oder aktuelle Fahrt?":"New or current trip?","Nicht verfügbar":"Not available","Niemand ausgewählt – wird niemandem berechnet.":"Nobody selected – not charged to anyone.","Noch keine Ausgaben. Füge eine hinzu.":"No expenses yet. Add one.","Noch keine Etappen angelegt – im Reiter „Tour“ → „Etappen“.":"No legs yet – in the \"Trip\" tab → \"Legs\".","Noch keine Fahrer:innen angelegt.":"No drivers yet.","Noch keine Personen. Lege sie im Reiter „Gruppe“ an.":"No people yet. Add them in the \"Group\" tab.","Noch keine Tour vorhanden. Lege mit „+ Neue Tour“ los – oder schau dir die Beispiel-Tour an.":"No trips yet. Get started with \"+ New trip\" – or take a look at the sample trip.","Norwegische Krone":"Norwegian krone","PDF fehlgeschlagen":"PDF failed","PDF gespeichert":"PDF saved","Papierkorb geleert":"Trash emptied","Papierkorb leeren?":"Empty trash?","Permit Soča":"Permit Soča","Person":"Person","Person / Haushalt":"Person / household","Person hinzufügen":"Add person","Person löschen":"Delete person","Person löschen?":"Delete person?","Person wählen":"Choose person","Personen":"People","Personen ·":"People ·","Peruanischer Sol":"Peruvian sol","Polnischer Złoty":"Polish złoty","QR-Code":"QR code","QR-Code scannen":"Scan QR code","QR-Scan wird auf diesem Gerät nicht unterstützt – nutze die Codeeingabe.":"QR scan is not supported on this device – enter the code instead.","RapidSplit-Export;":"RapidSplit export;","RapidSplit-Tour":"RapidSplit trip","Reisezeitraum":"Travel dates","Reisezeitraum wählen":"Pick travel dates","Richte die Kamera auf den QR-Code – die Tour wird automatisch hinzugefügt.":"Point the camera at the QR code – the trip is added automatically.","Sa":"Sa","Saldo":"Balance","Saldo & Ausgleich":"Balance & settle-up","Saldo &amp; Ausgleich":"Balance &amp; settle-up","Saldo je Person":"Balance per person","Schließen":"Close","Schritt":"Step","Schwedische Krone":"Swedish krona","Schweizer Franken":"Swiss franc","Seite":"Page","Serbischer Dinar":"Serbian dinar","Server nicht erreichbar":"Server not reachable","Server nicht erreichbar (":"Server not reachable (","Server nicht erreichbar oder Code falsch (":"Server not reachable or code wrong (","Server-Kopie gelöscht":"Server copy deleted","Server-Kopie löschen?":"Delete server copy?","Server-Löschung fehlgeschlagen (":"Server deletion failed (","Shutteln BiH":"Shuttle BiH","Shutteln SLO":"Shuttle SLO","So":"Su","Sonstige":"Other","Speichern fehlgeschlagen – Speicher evtl. voll. Sichere die Tour über den Export.":"Saving failed – storage may be full. Back up the trip using the export.","Sprit":"Fuel","Spritkosten":"Fuel costs","Start":"Start","Start-Block dauerhaft ausblenden":"Hide start block permanently","Startdatum antippen":"Tap start date","Summe":"Total","Summe (reine km-Kosten)":"Total (km costs only)","Sync-Fehler (":"Sync error (","Tabelle":"Table","Tankbeträge erfasst du unter „Ausgaben“ als Typ „Sprit“ – dort auch, wer sie bezahlt hat.":"You record fuel purchases under \"Expenses\" with type \"Fuel\" – including who paid them.","Tanken":"Fuel-up","Tanken Emily":"Fuel-up Emily","Tanken Olaf":"Fuel-up Olaf","Tanken Rush":"Fuel-up Rush","Tanken Steve":"Fuel-up Steve","Teilen":"Share","Teilen beenden":"Stop sharing","Teilen beenden &amp; Server-Kopie löschen":"Stop sharing &amp; delete server copy","Teilen beenden?":"Stop sharing?","Teilen beendet – Server-Kopie gelöscht":"Sharing stopped – server copy deleted","Teilen fehlgeschlagen":"Sharing failed","Teilen hier nicht verfügbar – PDF wurde stattdessen gespeichert":"Sharing not available here – PDF saved instead","Teilnehmende":"Participants","Tippen, um den Tournamen zu ändern":"Tap to change the trip name","Titel":"Title","Titel der Tour":"Trip title","Tour":"Trip","Tour beitreten":"Join trip","Tour endgültig löschen":"Delete trip permanently","Tour leeren?":"Clear trip?","Tour löschen":"Delete trip","Tour löschen?":"Delete trip?","Tour nicht auf dem Server gefunden":"Trip not found on server","Tour teilen":"Share trip","Tour wiederhergestellt":"Trip restored","Tour wiederherstellen":"Restore trip","Tour-Eckdaten":"Trip basics","Touren importiert":"Trips imported","Trage je Fahrer:in die km pro Etappe ein. Wähle oben einmal für alle Fahrer:innen, ob über €/km-Pauschale oder Spritkosten (einzelne Tankbeträge) abgerechnet wird.":"Enter the km per leg for each driver. At the top, choose once for all drivers whether costs are settled by a per-km rate or by fuel costs (individual fuel purchases).","Tschechische Krone":"Czech koruna","Tutorial":"Tutorial","Tutorial starten":"Start tutorial","Tutorial starten?":"Start tutorial?","Türkische Lira":"Turkish lira","US-Dollar":"US dollar","Unbenannt":"Untitled","Unbenannte Ausgabe":"New expense","Unbenannte Tour":"Untitled trip","Ungarischer Forint":"Hungarian forint","Ungültiger Code – bitte prüfen":"Invalid code – please check","Upload fehlgeschlagen (":"Upload failed (","Verein/Familie":"Club/family","Verein/Familie (optional)":"Club/family (optional)","Verein/Familie als Einheit abrechnen":"Settle club/family as one unit","Verschlüsselung wird von dieser Umgebung nicht unterstützt.":"Encryption is not supported in this environment.","Vom Server aktualisieren":"Refresh from server","Vom Server aktualisiert":"Refreshed from server","Von;An;Betrag;Bankverbindung":"From;To;Amount;Bank details","Website":"Website","Weiter":"Next","Weiter mit":"Continue with","Wer &amp; Wo":"Who &amp; Where","Wer und Wo":"Who and Where","Wer war auf welcher Etappe dabei? Die Kosten jeder Etappe teilen sich die markierten Personen.":"Who was on which leg? The cost of each leg is split among the people you mark.","Wer war wo dabei?":"Who joined where?","Wer zahlt an wen?":"Who pays whom?","Wer&amp;Wo":"Who","Wiederherstellen":"Restore","Willkommen bei RapidSplit!":"Welcome to RapidSplit!","Wizard abgeschlossen 🎉":"Wizard complete 🎉","Wizard beenden":"Exit wizard","Wähle eine Tour oder lege eine neue an.":"Pick a trip or create a new one.","Währung &amp; Wechselkurse":"Currency &amp; exchange rates","Währung der Abrechnung":"Settlement currency","Währung der Zahlung":"Payment currency","Währung:":"Currency:","Währung;":"Currency;","Zahler entfernen":"Remove payer","Zeitraum wählen":"Pick dates","Zeitraum;":"Dates;","Ziehen oder Pfeiltasten ↑/↓":"Drag or arrow keys ↑/↓","Zur Tourübersicht":"Back to all trips","Zurück":"Back","bekommt zurück":"gets back","gelöscht am":"deleted on","gelöschte Tour(en) werden endgültig entfernt und können nicht wiederhergestellt werden.":"deleted trip(s) will be removed permanently and cannot be restored.","ist jetzt Fahrer:in":"is now a driver","km gesamt":"Total km","km-genau verteilt":"split by exact km","liegen keine historischen Kurse vor – hier gilt der Stand der App-Version.":"no historical rates are available – the app version's rates apply here.","pro Person":"per person","wird aus der Gruppe und allen Zuordnungen/Ausgaben entfernt.":"will be removed from the group and from all assignments/expenses.","z.B. Anreise":"e.g. Outbound","zahlt an":"pays","zahlt ein":"pays in","Übernehmen":"Apply","Überweisung(en)":"transfer(s)","€/km-Pauschale":"€/km rate","← Zurück":"← Back","↔ Die Tabelle lässt sich seitlich wischen – so siehst du alle Fahrer:innen.":"↔ You can swipe the table sideways to see all drivers.","⚠️ Bitte prüfen – ungewöhnlich hohe km:":"⚠️ Please check – unusually high km:","→ Gruppe":"→ Group","→ Etappen":"→ Legs","Standardwährung":"Default currency","Wird nur bei Abrechnungsart „Spritkosten“ (Reiter „Fahrt“) in die Kosten einbezogen.":"Only included in the costs when the cost method is \"Fuel costs\" (\"Driving\" tab).","⛽ Tipp: Stelle oben auf „Sprit“, dann wird der Betrag dem Auto km-genau zugerechnet.":"⛽ Tip: Set the type above to \"Fuel\" and the amount is allocated to the car by exact km.","Hinweis ausgeblendet – über das Wellen-Menü holst du ihn zurück":"Hint hidden – bring it back via the wave menu","# kann danach nicht wiederhergestellt werden.":" cannot be restored afterwards.","#Wechselkurse Stand: ":"Exchange rates as of ","# – händisch anpassbar. Abgerechnet wird in ":" – adjustable manually. Settlement in ","#Fahrer:in (mit eigenem Auto): ":"Driver (own car): ","#Bankverbindung von ":"Bank details of ","Noch keine Fahrer:innen angelegt. Setze im Reiter „Wer & Wo“ an der entsprechenden Stelle das „Fahrer:in“-Häkchen.":"No drivers yet. Tick the \"Driver\" checkbox in the \"Who & Where\" tab to assign a driver.","#Stand ":"as of ","#Kurse geladen: Stand ":"Rates loaded: as of ","#Währung: ":"Currency: ","#: Fahrer:in-Eingaben wiederhergestellt":": driver entries restored","# ist jetzt Fahrer:in":" is now a driver","# Touren importiert":" trips imported","#Sync-Fehler (":"Sync error (","#Server nicht erreichbar oder Code falsch (":"Server unreachable or wrong code (","#Upload fehlgeschlagen (":"Upload failed (","#Server nicht erreichbar (":"Server unreachable (","#Server-Löschung fehlgeschlagen (":"Server deletion failed (","#) – bitte sync.php aktualisieren":") – please update sync.php","Kurse automatisch laden":"Load rates automatically","Zum Mitmachen einfach in RapidSplit auf „Tour beitreten“ tippen und diesen QR-Code scannen – oder den Code eingeben.":"To join, simply tap \"Join trip\" in RapidSplit and scan this QR code – or enter the code.","Die Tour liegt dafür verschlüsselt auf unserem Server.":"For this, the trip is stored encrypted on our server.","Drucken öffnet die Systemvorschau (dort auch „Als PDF speichern“ möglich). CSV liefert alle Tabellen für Excel & Co.":"Printing opens the system preview (where you can also \"Save as PDF\"). CSV provides all tables for Excel & co.","Einkäufe, Camp, Maut & Co. – jede Ausgabe gilt für Etappen-Mitfahrende oder feste Personen. Tankbeträge erfasst du als Typ „Sprit“ mit Fahrzeug-Zuordnung.":"Groceries, camp, tolls & co. – each expense applies to everyone on the leg or to specific people. You record fuel purchases as type \"Fuel\" with a vehicle assigned.","Kilometer und Fahrtkosten je Fahrer:in. Maut, Parkplatz & Permit gehören in den Reiter „Ausgaben“.":"km and driving costs per driver. Tolls, parking & permits belong in the \"Expenses\" tab.","Teilen beenden & Server-Kopie löschen":"Stop sharing & delete server copy","Wer & Wo":"Who & Where","Wer&Wo":"Who","Währung & Wechselkurse":"Currency & exchange rates"}};
 const LANG_META={"de":{"label":"Deutsch","locale":"de-DE","datum":"numerisch"},"en":{"label":"English","locale":"en-GB","datum":"monat"}};
 let LANG=(function(){ try{ const v=localStorage.getItem(LANG_KEY); return (v&&LANG_META[v])?v:"de"; }catch(e){ return "de"; } })();
 function _d(){ return LANG==="de"?null:(I18N[LANG]||null); }
@@ -3582,8 +3584,10 @@ function openTour(id){
   document.body.classList.remove("fbpage");
   document.body.classList.remove("home");
   _accOpen="eck";
+  try{ const z=document.getElementById("addPersonZone"); if(z) z.hidden=true; }catch(e){}
   renderAll();
   try{ maybeRefreshFx(); }catch(e){}
+  try{ if(S.meta&&S.meta.sync) syncPull("auto"); }catch(e){}
   document.body.dataset.navdir="fwd";
   const b=document.querySelector('#tabs button[data-tab="info"]'); if(b){ _navSuppress=true; b.click(); _navSuppress=false; } else mainScrollTop();
   setHdrTitle("Tour");
@@ -3651,7 +3655,7 @@ function restoreTour(id){ const t=(DB.trash||[]).find(x=>x.id===id); if(!t) retu
   save(); renderHome(); toast("Tour wiederhergestellt"); }
 function purgeTour(id){ const t=(DB.trash||[]).find(x=>x.id===id); if(!t) return;
   const nm=((t.data.meta&&t.data.meta.title)||"").trim()||"Unbenannte Tour";
-  confirmDialog("Endgültig löschen?","„"+nm+"“ kann danach nicht wiederhergestellt werden.",{danger:true,okText:"Endgültig löschen",icon:"i-trash"}).then(ok=>{
+  confirmDialog("Endgültig löschen?","„"+nm+"“"+tm(" kann danach nicht wiederhergestellt werden."),{danger:true,okText:"Endgültig löschen",icon:"i-trash"}).then(ok=>{
     if(!ok) return; DB.trash=DB.trash.filter(x=>x.id!==id); save(); renderHome(); toast("Endgültig gelöscht"); });
 }
 function purgeAllTours(){
@@ -3716,7 +3720,7 @@ function renderHome(){
     +(hs.total?'<div class="t-total">'+esc(hs.total)+'</div>':'')
     +'</div>'
     +'<span class="t-acts">'
-    +'<button class="t-del'+((hero.data.meta&&hero.data.meta.sync)?' t-shared':'')+'" type="button" style="color:var(--brand)" onclick="shareTourById(\''+hero.id+'\',event)" aria-label="Tour teilen" title="Tour teilen">'+icon((hero.data.meta&&hero.data.meta.sync)?"i-cloud":"i-share")+'</button>'
+    +'<button class="t-del'+((hero.data.meta&&hero.data.meta.sync)?' t-shared':'')+'" type="button" style="color:'+((hero.data.meta&&hero.data.meta.syncGone&&!hero.data.meta.sync)?'var(--red)':'var(--brand)')+'" onclick="shareTourById(\''+hero.id+'\',event)" aria-label="Tour teilen" title="Tour teilen">'+icon((hero.data.meta&&hero.data.meta.sync)?"i-cloud":(hero.data.meta&&hero.data.meta.syncGone)?"i-cloud-x":"i-share")+'</button>'
     +'<button class="t-del" type="button" onclick="deleteTour(\''+hero.id+'\',event)" aria-label="Tour löschen" title="Tour löschen"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>'
     +'</span></div>';
   if(rest.length) h+='<div class="mini" style="margin:14px 4px 8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)">Alle Touren</div>';
@@ -3729,7 +3733,7 @@ function renderHome(){
       +(sub?'<div class="t-sub">'+esc(sub)+'</div>':'')
       +'</div>'
       +'<span class="t-acts">'
-      +'<button class="t-del'+((t.data.meta&&t.data.meta.sync)?' t-shared':'')+'" type="button" style="color:var(--brand)" onclick="shareTourById(\''+t.id+'\',event)" aria-label="Tour teilen" title="Tour teilen">'+icon((t.data.meta&&t.data.meta.sync)?"i-cloud":"i-share")+'</button>'
+      +'<button class="t-del'+((t.data.meta&&t.data.meta.sync)?' t-shared':'')+'" type="button" style="color:'+((t.data.meta&&t.data.meta.syncGone&&!t.data.meta.sync)?'var(--red)':'var(--brand)')+'" onclick="shareTourById(\''+t.id+'\',event)" aria-label="Tour teilen" title="Tour teilen">'+icon((t.data.meta&&t.data.meta.sync)?"i-cloud":(t.data.meta&&t.data.meta.syncGone)?"i-cloud-x":"i-share")+'</button>'
       +'<button class="t-del" type="button" onclick="deleteTour(\''+t.id+'\',event)" aria-label="Tour löschen" title="Tour löschen"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-trash"></use></svg></button>'
       +'</span></div>';
   }).join("");
@@ -3922,7 +3926,7 @@ function fxMissing(){ /* genutzte Fremdwährungen ohne EZB-Notierung (nur bei St
   try{ if(fxDay()===fxToday()) return [];
     return ((S&&S.meta&&S.meta.fx)||[]).map(f=>f.code).filter(c=>FX_EZB.indexOf(c)<0&&!(c in FX_FIXED)); }catch(e){ return []; } }
 function setFxAuto(on){ try{ localStorage.setItem(FX_AUTO_KEY,on?"1":"0"); }catch(e){}
-  if(on){ refreshFx(true).then(ok=>{ renderCurrency(); if(ok){ renderAll(); toast("Kurse geladen: Stand "+fxStamp()); } }); }
+  if(on){ refreshFx(true).then(ok=>{ renderCurrency(); if(ok){ renderAll(); toast(tm("Kurse geladen: Stand ")+fxStamp()); } }); }
   else renderCurrency(); }
 async function refreshFx(force){
   if(!force && !fxAuto()) return false;
@@ -4214,7 +4218,7 @@ function renderInfo(){
   document.getElementById("m_desc").value=t(S.meta.description||"");
   applyCurrency(); renderCurrency();
 }
-function curFull(c){ return c+" – "+(CUR_NAMES[c]||c)+" ("+CUR_SYMS[c]+")"; }
+function curFull(c){ return c+" – "+t(CUR_NAMES[c]||c)+" ("+CUR_SYMS[c]+")"; }
 function renderCurrency(){
   updDateBtns();
   const btn=document.getElementById("m_currency_btn");
@@ -4235,7 +4239,7 @@ function renderCurrency(){
   const hasFxNow=((S.meta.fx||[]).length>0);
   const miss=hasFxNow?fxMissing():[];
   fb.innerHTML=`<label class="fld">Fremdwährungen</label>
-    <p class="hint" style="margin:2px 0 4px">Wechselkurse Stand: ${fxStamp()} – händisch anpassbar. Abgerechnet wird in ${baseCur()}.</p>`+h
+    <p class="hint" style="margin:2px 0 4px">${tm("Wechselkurse Stand: ")}${fxStamp()}${tm(" – händisch anpassbar. Abgerechnet wird in ")}${baseCur()}.</p>`+h
     +(hasFxNow?`<label class="opt-toggle" style="margin-top:12px" title="Lädt die Kurse zum Reisedatum der Tour (sonst Tageskurse). Es werden keine Tourdaten übertragen.">
         <input type="checkbox" role="switch" ${fxAuto()?"checked":""} onchange="setFxAuto(this.checked)">
         <span class="opt-track"><span class="opt-knob"></span></span>
@@ -4345,14 +4349,14 @@ function setCurrency(code){ if(!CUR_LIST.includes(code)) return;
   S.meta.fx.forEach(f=>{ f.rate=defaultRate(code,f.code); });   // Kurse auf neue Basiswährung umrechnen
   S.expenses.forEach(ex=>(ex.payments||[]).forEach(pm=>{ if(pm.cur===code) delete pm.cur; }));
   S.participants.forEach(p=>{ if(p.driver) (p.driver.fuels||[]).forEach(e=>{ if(e.cur===code) delete e.cur; }); });
-  applyCurrency(); renderAll(); save(); toast("Währung: "+code+" ("+curSym(code)+")");
+  applyCurrency(); renderAll(); save(); toast(tm("Währung: ")+code+" ("+curSym(code)+")");
 }
 function addFx(code){ if(!CUR_LIST.includes(code)||code===baseCur()) return;
   S.meta.fx=S.meta.fx||[]; if(S.meta.fx.some(f=>f.code===code)) return;
   refreshFx().then(ok=>{ if(ok){ const f2=(S.meta.fx||[]).find(x=>x.code===code); if(f2) f2.rate=defaultRate(baseCur(),code); renderAll(); save(); } });
   const r=defaultRate(baseCur(),code);
   S.meta.fx.push({code:code,rate:r}); renderAll(); save();
-  toast("1 "+baseCur()+" = "+r+" "+code+" (Stand "+fxStamp()+", anpassbar)"); }
+  toast("1 "+baseCur()+" = "+r+" "+code+" ("+tm("Stand ")+fxStamp()+")"); }
 function updFxRate(code,v){ const f=(S.meta.fx||[]).find(x=>x.code===code); if(!f) return;
   const r=+String(v).replace(",","."); if(isFinite(r)&&r>0){ f.rate=r; renderAusgaben(); renderFahrer(); renderErgebnis(); save(); } else { renderCurrency(); } }
 function delFx(code){ S.meta.fx=(S.meta.fx||[]).filter(f=>f.code!==code);
@@ -4382,7 +4386,7 @@ function renderFahrer(){
   drivers.forEach(d=> h+=`<th class="num">${esc(d.name)}</th>`);
   h+="</tr></thead><tbody>";
   if(drivers.length===0){
-    h+=`<tr><td><span class="mini">Noch keine Fahrer:innen angelegt.</span></td></tr></tbody>`;
+    h+=`<tr><td><span class="mini">Noch keine Fahrer:innen angelegt.</span><br><button type="button" class="btn ghost sm" style="margin-top:8px" onclick="gotoGruppe()">→ Gruppe</button></td></tr></tbody>`;
     t.innerHTML=h;
   } else {
     // km je Etappe (immer erforderlich)
@@ -4437,8 +4441,8 @@ function _dk(){ return document.documentElement.getAttribute("data-theme")==="da
 function _segInk(col){ return _dk()?("color-mix(in srgb,"+col+" 62%,#fff)"):col; }
 function buildKmCards(){
   const drivers=S.participants.filter(p=>p.driver);
-  if(drivers.length===0) return '<p class="mini">Noch keine Fahrer:innen angelegt – setze im Reiter „Wer & Wo“ → „Gruppe“ das „Fahrer:in“-Häkchen.</p>';
-  if(S.segments.length===0) return '<p class="mini">Noch keine Etappen angelegt – im Reiter „Tour“ → „Etappen“.</p>';
+  if(drivers.length===0) return '<p class="mini">Noch keine Fahrer:innen angelegt. Setze im Reiter „Wer & Wo“ an der entsprechenden Stelle das „Fahrer:in“-Häkchen.</p><p style="margin:10px 0 0"><button type="button" class="btn ghost sm" onclick="gotoGruppe()">→ Gruppe</button></p>';
+  if(S.segments.length===0) return '<p class="mini">Noch keine Etappen angelegt – im Reiter „Tour“ → „Etappen“.</p><p style="margin:10px 0 0"><button type="button" class="btn ghost sm" onclick="gotoEtappen()">→ Etappen</button></p>';
   const fuelMode=S.costMode==="fuel";
   let h="";
   S.segments.forEach(sg=>{
@@ -4472,18 +4476,18 @@ function renderTeilnehmer(){
     h+=`<div class="prow">
       <input class="p-name" type="text" value="${esc(p.name)}" placeholder="Name" onchange="updPartName('${p.id}',this.value)">
       <input class="p-group" type="text" value="${esc(p.group||'')}" placeholder="Verein/Familie" onchange="updPartGroup('${p.id}',this.value)">
-      <span class="prow-actions"><label class="drv-toggle ${p.driver?'on':''}" title="Als Fahrer:in markieren (mit eigenem Auto gefahren)"><input type="checkbox" ${p.driver?'checked':''} onchange="toggleDriver('${p.id}',this.checked)" aria-label="Fahrer:in (mit eigenem Auto): ${esc(p.name)}">${icon("i-car")}<span>Fahrer:in</span></label>
+      <span class="prow-actions"><label class="drv-toggle ${p.driver?'on':''}" title="Als Fahrer:in markieren (mit eigenem Auto gefahren)"><input type="checkbox" ${p.driver?'checked':''} onchange="toggleDriver('${p.id}',this.checked)" aria-label="${tm("Fahrer:in (mit eigenem Auto): ")}${esc(p.name)}">${icon("i-car")}<span>Fahrer:in</span></label>
       ${SHOW_BANK?`<button type="button" class="drv-toggle pay-btn${(p.pay||payOpen)?' on':''}" id="paybtn-${p.id}" title="Bankverbindung/PayPal hinterlegen" aria-expanded="${payOpen}" onclick="togglePayRow('${p.id}')">${icon("i-coins")}<span>Bankverbindung</span></button>`:''}
       <button class="iconbtn" title="Person löschen" onclick="delParticipant('${p.id}')">${icon("i-trash")}</button></span>
       ${SHOW_BANK?`<div class="prow-pay"${payOpen?'':' style="display:none"'}>
-        <input type="text" id="payinp-${p.id}" aria-label="Bankverbindung von ${esc(p.name)}" value="${esc(p.pay||'')}" placeholder="IBAN oder PayPal-Adresse (optional)" onchange="updPartPay('${p.id}',this.value)">
+        <input type="text" id="payinp-${p.id}" aria-label="${tm("Bankverbindung von ")}${esc(p.name)}" value="${esc(p.pay||'')}" placeholder="IBAN oder PayPal-Adresse (optional)" onchange="updPartPay('${p.id}',this.value)">
       </div>`:''}
     </div>`;
   });
   t.innerHTML=h;
   // participation blocks
   const pb=document.getElementById("participationBlocks");pb.innerHTML="";
-  if(S.segments.length===0){ pb.innerHTML='<p class="mini">Hier ist nichts zu sehen? Trage Etappen im Bereich „Tour“ ein!</p>'; }
+  if(S.segments.length===0){ pb.innerHTML='<p class="mini">Hier ist nichts zu sehen? Trage Etappen im Bereich „Tour“ ein!</p><p style="margin:10px 0 0"><button type="button" class="btn ghost sm" onclick="gotoEtappen()">→ Etappen</button></p>'; }
   S.segments.forEach(s=>{
     const sel=S.participation[s.id]||[];const col=segColor(s.id);
     const open=s.id===_woOpen;
@@ -4504,7 +4508,7 @@ function renderTeilnehmer(){
 }
 function renderAusgaben(){
   const c=document.getElementById("expenseList");c.innerHTML="";
-  if(S.expenses.length===0){ c.innerHTML='<div class="card"><p class="mini">Noch keine Ausgaben. Füge oben eine hinzu.</p></div>'; return; }
+  if(S.expenses.length===0){ c.innerHTML='<div class="card"><p class="mini">Noch keine Ausgaben. Füge eine hinzu.</p></div>'; return; }
   const hasFx=(S.meta.fx||[]).length>0;
   if(S.expenses.length>1){
     const allC=S.expenses.every(e=>_expCollapsed.has(e.id));
@@ -4810,11 +4814,11 @@ function toggleDriver(id,on){const p=pById(id);if(!p)return;
       p.driver.km=p.driver.km||{};
       S.segments.forEach(s=>{ if(p.driver.km[s.id]==null) p.driver.km[s.id]=0; });
       renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
-      toast(p.name+": Fahrer:in-Eingaben wiederhergestellt");
+      toast(p.name+tm(": Fahrer:in-Eingaben wiederhergestellt"));
     } else {
       const km={};S.segments.forEach(s=>{km[s.id]=0;});p.driver={rate:0.30,km,fuels:[]};
       renderFahrer();renderTeilnehmer();renderAusgaben();renderErgebnis();save();
-      toast(p.name+" ist jetzt Fahrer:in");
+      toast(p.name+tm(" ist jetzt Fahrer:in"));
     }
   } else {
     if(!p.driver) return;
@@ -4853,8 +4857,15 @@ function pickPayCur(exId,pmId){ const ex=S.expenses.find(x=>x.id===exId); const 
 function setCostMode(m){ S.costMode=(m==="fuel"?"fuel":"rate"); renderFahrer(); renderErgebnis(); save(); }
 function setMergeGroups(on){ S.mergeGroups=!!on; renderErgebnis(); save(); }
 // participants
+function gotoTabAcc(tab,acc){
+  const b=document.querySelector('#tabs button[data-tab="'+tab+'"]'); if(b) b.click();
+  if(acc) setTimeout(function(){ try{ accEnsure(acc); }catch(e){} },200);
+}
+function gotoGruppe(){ gotoTabAcc("teilnahme","grp"); }
+function gotoEtappen(){ gotoTabAcc("info","seg"); }
 function fabAddPerson(){
   try{ accEnsure("grp"); }catch(e){}
+  const z=document.getElementById("addPersonZone"); if(z) z.hidden=false;
   const inp=document.getElementById("part_new");
   if(inp){ try{ inp.scrollIntoView({block:"center",behavior:"smooth"}); }catch(e){} setTimeout(()=>{ try{ inp.focus(); }catch(e){} },250); }
 }
@@ -5199,7 +5210,7 @@ function importJSON(ev){const f=ev.target.files[0]; ev.target.value=""; if(!f)re
     try{
       tourDatas.forEach(d=>{ S=d; normalize(); const id=uid(); DB.tours.push({id,data:S}); lastId=id; okCount++; });
       S=keep; openTour(lastId);
-      toast(okCount>1 ? okCount+" Touren importiert" : "Als neue Tour importiert");
+      toast(okCount>1 ? okCount+tm(" Touren importiert") : t("Als neue Tour importiert"));
     }catch(e){
       S=keep; try{normalize();}catch(_){}
       if(okCount>0){ save(); }
@@ -5241,7 +5252,7 @@ document.getElementById("tabs").addEventListener("click",e=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
   b.classList.add("active");b.setAttribute("aria-current","page");_sec.classList.add("active");
   if(b.dataset.tab==="ergebnis")renderErgebnis();
-  if(b.dataset.tab==="teilnahme"){ try{ accEnsure("grp"); }catch(e){} }
+  if(b.dataset.tab==="teilnahme"){ try{ accEnsure("grp"); }catch(e){} try{ const z=document.getElementById("addPersonZone"); if(z) z.hidden=true; }catch(e){} }
   if(b.dataset.tab==="info"){ try{ accEnsure("eck"); }catch(e){} }
   const hl2=b.querySelector(".nav-lbl"); if(hl2) setHdrTitle(hl2.textContent);
   if(b.dataset.tab==="fahrer")updKmScrollHint();   // Breite ist nur bei sichtbarem Tab messbar
@@ -5312,6 +5323,16 @@ document.getElementById("m_desc").addEventListener("input",e=>{S.meta.descriptio
   const el=document.getElementById(id); if(!el)return;
   el.addEventListener("keydown",e=>{if(e.key==="Enter"){ if(id==="seg_new")addSegment(); else addParticipant(); }});
 });
+// Personen-Zone: ohne Eingabe wieder ausblenden, sobald der Fokus die Zone verlässt
+(function(){
+  const z=document.getElementById("addPersonZone"); if(!z) return;
+  z.addEventListener("focusout",function(){
+    setTimeout(function(){
+      const a=document.getElementById("part_new"), b=document.getElementById("part_group");
+      if(!z.hidden && a && !a.value.trim() && (!b||!b.value.trim()) && !z.contains(document.activeElement)) z.hidden=true;
+    },120);
+  });
+})();
 // Zahlenfelder + markierte Textfelder (.selonfocus): beim Hineintippen vorausgefüllten Wert markieren → direkt lostippen
 document.addEventListener("focusin",e=>{
   const el=e.target;
@@ -5381,7 +5402,7 @@ function initBanners(){
     b.style.display=hidden?"none":"";
   });
 }
-function hideBanner(k){ try{localStorage.setItem(HIDE_BANNER_PREFIX+k,"1");}catch(e){} initBanners(); toast("Hinweis ausgeblendet – über das Zahnrad-Menü holst du ihn zurück"); }
+function hideBanner(k){ try{localStorage.setItem(HIDE_BANNER_PREFIX+k,"1");}catch(e){} initBanners(); toast("Hinweis ausgeblendet – über das Wellen-Menü holst du ihn zurück"); }
 function anyBannerHidden(){
   try{ return [...document.querySelectorAll(".banner[data-banner]")].some(b=>localStorage.getItem(HIDE_BANNER_PREFIX+b.dataset.banner)==="1"); }
   catch(e){ return false; }
@@ -5410,29 +5431,31 @@ async function syncPush(quiet){
     const snap=JSON.parse(JSON.stringify(S)); delete snap.meta.sync;
     const body=await _syncEnc(_u8b64(S.meta.sync.k),{data:snap,ts:Date.now()});
     const r=await fetch(SYNC_URL+"?id="+encodeURIComponent(S.meta.sync.id),{method:"POST",headers:{"Content-Type":"text/plain"},body:body});
-    if(!quiet) toast(r.ok?"Auf den Server hochgeladen":"Sync-Fehler ("+r.status+")");
+    if(!quiet) toast(r.ok?"Auf den Server hochgeladen":tm("Sync-Fehler (")+r.status+")");
   }catch(e){ if(!quiet) toast("Server nicht erreichbar"); }
 }
-async function syncPull(){
+async function syncPull(modus){
+  /* modus: undefined = manuell (Menü), "auto" = still beim Tour-Öffnen, "join" = Beitritt */
   if(!S.meta.sync) return;
   try{
     const r=await fetch(SYNC_URL+"?id="+encodeURIComponent(S.meta.sync.id));
     if(!r.ok){
       if(r.status===404){
-        delete S.meta.sync; const t4=activeTour(); if(t4) t4.data=S; save();
-        alertDialog("Tour nicht auf dem Server gefunden","Die Server-Kopie dieser Tour existiert nicht mehr – vermutlich wurde das Teilen beendet oder die Kopie vom Ersteller bzw. der Erstellerin gelöscht. Du kannst lokal weiterarbeiten; die Teilen-Verknüpfung wurde entfernt. Bei Bedarf kannst du die Tour einfach erneut teilen.");
-      } else { toast("Sync-Fehler ("+r.status+")"); }
+        S.meta.syncGone=Date.now(); delete S.meta.sync; const t4=activeTour(); if(t4) t4.data=S; save();
+        try{ renderHome(); }catch(e){}
+        if(modus!=="join") alertDialog("Tour nicht auf dem Server gefunden","Die Server-Kopie dieser Tour existiert nicht mehr – vermutlich wurde das Teilen beendet oder die Kopie vom Ersteller bzw. der Erstellerin gelöscht. Du kannst lokal weiterarbeiten; die Teilen-Verknüpfung wurde entfernt. Bei Bedarf kannst du die Tour einfach erneut teilen.");
+      } else { if(modus!=="auto"&&modus!=="join") toast(tm("Sync-Fehler (")+r.status+")"); }
       return; }
     const obj=await _syncDec(_u8b64(S.meta.sync.k),await r.text());
     if(obj&&obj.data){
       const keepSync=S.meta.sync;
       S=obj.data; normalize(); S.meta.sync=keepSync;
       const t=activeTour(); if(t) t.data=S;
-      renderAll(); save(); toast("Vom Server aktualisiert");
+      renderAll(); save(); if(!modus) toast("Vom Server aktualisiert");
       return true;
     }
     return false;
-  }catch(e){ toast("Server nicht erreichbar oder Code falsch ("+((e&&e.message)||e)+")"); return false; }
+  }catch(e){ if(modus!=="auto") toast(tm("Server nicht erreichbar oder Code falsch (")+((e&&e.message)||e)+")"); return false; }
 }
 function openShareQR(full,short,tourData){
   const ov=document.getElementById('pickerOverlay'), list=document.getElementById('pickerList'), titleEl=document.getElementById('pickerTitle');
@@ -5445,8 +5468,8 @@ function openShareQR(full,short,tourData){
     +(short?('<b style="font-size:27px;letter-spacing:.2em;font-variant-numeric:tabular-nums">'+esc(short)+'</b>')
            :('<span class="mini" style="word-break:break-all;max-width:230px">'+esc(full)+'</span>'))
     +'<button type="button" class="iconbtn" id="shareCopy" title="Code kopieren" aria-label="Code kopieren" style="position:absolute;left:50%;margin-left:86px">'+icon("i-copy")+'</button></div>'
-    +'<p class="hint" style="text-align:center;margin:8px 0 0">Mit diesem Code kannst du deine Tour teilen. Sie ist dafür verschlüsselt auf unserem Server gespeichert.</p>'
-    +'<p class="mini" style="text-align:center;margin:4px 0 0">'+(short?"Code und QR-Code sind 24 Stunden gültig. Danach einfach erneut teilen.":"Der Code bleibt gültig, bis du das Teilen beendest.")+'</p>'
+    +'<p class="hint" style="text-align:center;margin:8px 0 0">Zum Mitmachen einfach in RapidSplit auf „Tour beitreten“ tippen und diesen QR-Code scannen – oder den Code eingeben.</p>'
+    +'<p class="mini" style="text-align:center;margin:4px 0 0">'+(short?"Code und QR-Code sind 24 Stunden gültig. Danach einfach erneut teilen.":"Der Code bleibt gültig, bis du das Teilen beendest.")+'</p>'+'<p class="mini" style="text-align:center;margin:4px 0 0">Die Tour liegt dafür verschlüsselt auf unserem Server.</p>'
     +(short?'':'<p class="mini" style="text-align:center;color:var(--warn)">Kurz-Code nicht verfügbar – bitte sync.php auf dem Server aktualisieren.</p>')
     +'<div style="display:flex;justify-content:center;margin-top:14px"><button type="button" class="btn ghost sm" id="shareStop" style="color:var(--red)">Teilen beenden &amp; Server-Kopie löschen</button></div>';
   const stopB=list.querySelector("#shareStop");
@@ -5467,13 +5490,14 @@ function shareTourFlow(tour){
   const data = tour?tour.data:S;
   const hadSync=!!(data.meta&&data.meta.sync);
   const doShare=async function(){
+    if(data.meta.syncGone) delete data.meta.syncGone;
     if(!data.meta.sync){ data.meta.sync={id:_b64u8(crypto.getRandomValues(new Uint8Array(12))),k:_b64u8(crypto.getRandomValues(new Uint8Array(32)))}; save(); }
     const snap=JSON.parse(JSON.stringify(data)); delete snap.meta.sync;
     try{
       const body=await _syncEnc(_u8b64(data.meta.sync.k),{data:snap,ts:Date.now()});
       const r=await fetch(SYNC_URL+"?id="+encodeURIComponent(data.meta.sync.id),{method:"POST",body:body});
-      if(!r.ok){ toast("Upload fehlgeschlagen ("+r.status+")"); return; }
-    }catch(e){ toast("Server nicht erreichbar ("+((e&&e.message)||e)+")"); return; }
+      if(!r.ok){ toast(tm("Upload fehlgeschlagen (")+r.status+")"); return; }
+    }catch(e){ toast(tm("Server nicht erreichbar (")+((e&&e.message)||e)+")"); return; }
     const full=data.meta.sync.id+"."+data.meta.sync.k;
     let short="";
     try{ const rc=await fetch(SYNC_URL+"?mkcode=1",{method:"POST",body:full}); if(rc.ok){ short=(await rc.text()).trim(); if(!/^[A-Z2-9]{6}$/.test(short)) short=""; } }catch(e){}
@@ -5510,7 +5534,7 @@ function stopSharingDialog(d){
     if(!ok) return;
     try{
       const r=await fetch(SYNC_URL+"?del=1&id="+encodeURIComponent(d.meta.sync.id),{method:"POST",body:"x"});
-      if(!(r.ok||r.status===404)){ toast("Server-Löschung fehlgeschlagen ("+r.status+") – bitte sync.php aktualisieren"); return; }
+      if(!(r.ok||r.status===404)){ toast(tm("Server-Löschung fehlgeschlagen (")+r.status+tm(") – bitte sync.php aktualisieren")); return; }
     }catch(e){ toast("Server nicht erreichbar"); return; }
     delete d.meta.sync; save();
     try{ renderHome(); }catch(e){}
@@ -5538,6 +5562,15 @@ function hideJoinOpts(){ const o=document.getElementById("joinOpts"); if(o){ o.c
   document.body.classList.remove("join-open");
   document.removeEventListener('click',_joinOut); document.removeEventListener('keydown',_joinKey,true);
   const b=document.getElementById("fabJoin"); if(b){ b.setAttribute("aria-expanded","false"); b.setAttribute("aria-label","Tour beitreten"); } }
+/* Ordnet einen gescannten Rohwert ein: {kurz} = 6-Zeichen-Code, {voll} = id.schlüssel.
+   Versteht auch QR-Codes älterer Versionen (RSPLIT: + Voll-Code, nackter Voll-Code). */
+function scanZiel(raw){
+  raw=String(raw||"").trim();
+  if(/^RSPLIT:/i.test(raw)){ const c=raw.replace(/^RSPLIT:/i,"").trim(); return /^[A-Z2-9]{6}$/i.test(c)?{kurz:c.toUpperCase()}:{voll:c}; }
+  if(/^[A-Za-z0-9]{6}$/.test(raw)) return {kurz:raw};
+  if(/^[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{16,}$/.test(raw)) return {voll:raw};
+  return null;
+}
 function joinByShort(c){
   fetch(SYNC_URL+"?code="+encodeURIComponent(c.toUpperCase())).then(r=>{
     if(!r.ok){ toast("Code unbekannt oder abgelaufen"); return null; }
@@ -5609,8 +5642,8 @@ function qrScanDialog(){
         const codes=await det.detect(v);
         if(codes.length){
           const raw=(codes[0].rawValue||"").trim();
-          if(/^RSPLIT:/.test(raw)){ done(); const c=raw.replace(/^RSPLIT:/,""); if(/^[A-Z2-9]{6}$/.test(c)) joinByShort(c); else _joinFull(c); }
-          else if(/^[A-Za-z0-9]{6}$/.test(raw)){ done(); joinByShort(raw); }
+          const ziel=scanZiel(raw);
+          if(ziel){ done(); if(ziel.kurz) joinByShort(ziel.kurz); else _joinFull(ziel.voll); }
           else if(raw && !warned){ warned=true; toast("Das ist kein RapidSplit-Code"); }
         }
       }catch(e){}
@@ -5623,7 +5656,7 @@ function _joinFull(code){
   const id=uid();
   DB.tours.push({id:id,data:{meta:{title:"(wird geladen …)",sync:{id:p[0],k:p[1]}},segments:[],participants:[],participation:{},expenses:[]}});
   openTour(id);
-  syncPull().then(ok=>{
+  syncPull("join").then(ok=>{
     if(!ok){
       DB.tours=DB.tours.filter(x=>x.id!==id);
       if(DB.active===id) DB.active=null;
@@ -5639,6 +5672,7 @@ function renderMenu(){
   const sw='<span class="theme-switch mini" id="themeSwitch" aria-hidden="true"><span class="knob"><svg class="ic k-sun" focusable="false"><use href="#i-sun"></use></svg><svg class="ic k-moon" focusable="false"><use href="#i-moon"></use></svg></span></span>';
   let h='<button class="menu-item" role="menuitem" id="menuThemeItem" aria-checked="'+(currentTheme()==="dark")+'" onclick="cycleTheme(this)">'+icon("i-moon")+'<span class="mi-lbl">'+t("Design:")+' '+t(themeModeLabel(themeMode()))+'</span></button>';
     h+='<button class="menu-item" role="menuitem" onclick="closeMenu();langDialog()">'+icon("i-globe")+'<span class="mi-lbl">'+(LANG==="en"?"Language: ":"Sprache: ")+langLabel(LANG)+'</span></button>';
+    if(!inTour){ h+='<button class="menu-item" role="menuitem" onclick="closeMenu();curDialog()">'+icon("i-coins")+'<span class="mi-lbl">'+t("Standardwährung")+': '+defaultCur()+'</span></button>'; }
   if(inTour){
     h+='<div class="menu-sep"></div>';
     h+='<button class="menu-item" role="menuitem" onclick="closeMenu();startWizard()">'+icon("i-compass")+'<span class="mi-lbl">Tutorial starten</span></button>';
@@ -5829,6 +5863,7 @@ setTimeout(()=>{ try{ maybeRefreshFx(); }catch(e){} },1500);   // Tageskurse (nu
   let card=null,sx=0,sy=0,dx=0,drag=false,bgEl=null,pid=null;
   list.addEventListener("pointerdown",e=>{
     const c=e.target.closest(".exp-card"); if(!c) return;
+    if(!c.classList.contains("collapsed")) return;   // nur eingeklappte Kacheln – offene enthalten Felder und Regler
     if(e.target.closest("input,select,textarea,button,a,.picker-btn")) return;
     card=c; sx=e.clientX; sy=e.clientY; dx=0; drag=false; pid=e.pointerId; bgEl=null;
   });
@@ -5896,11 +5931,14 @@ setTimeout(function(){
    gewählten Sprache erscheinen. */
 function onboarding(){
   const ov=document.getElementById('pickerOverlay'), list=document.getElementById('pickerList'),
-        titleEl=document.getElementById('pickerTitle'), cancel=document.getElementById('pickerCancel');
-  if(!ov||!list||!titleEl) return;
-  let schritt=0, wahl={lang:LANG, theme:"auto", cur:defaultCur()};
+        titleEl=document.getElementById('pickerTitle'), foot=ov?ov.querySelector('.modal-actions'):null,
+        x=document.getElementById('pickerX');
+  if(!ov||!list||!titleEl||!foot) return;
+  const footAlt=foot.innerHTML;
+  const curErste=(typeof localCur==="function"?localCur():"EUR");
+  let schritt=0, wahl={lang:LANG, theme:"auto", cur:curErste};
   const L=function(de,en){ return wahl.lang==="en"?en:de; };
-  cancel.style.display="none";
+  if(x) x.style.display="none";
 
   const SCHRITTE=[
     { icon:"i-globe", titel:function(){ return "Sprache / Language"; },
@@ -5913,7 +5951,8 @@ function onboarding(){
       wert:function(){ return wahl.theme; },
       setzt:function(v){ wahl.theme=v; } },
     { icon:"i-coins", titel:function(){ return L("Standardwährung","Default currency"); },
-      opts:function(){ return CUR_LIST.map(function(c){ var D=(wahl.lang!=="de"&&I18N[wahl.lang])||null; return [c, c+" · "+((D&&D[CUR_NAMES[c]])||CUR_NAMES[c])]; }); },
+      opts:function(){ var reihe=[curErste].concat(CUR_LIST.filter(function(c){ return c!==curErste; }).slice().sort());
+        return reihe.map(function(c,i){ var D=(wahl.lang!=="de"&&I18N[wahl.lang])||null; return [c, c+" · "+((D&&D[CUR_NAMES[c]])||CUR_NAMES[c]), i===0]; }); },
       wert:function(){ return wahl.cur; },
       setzt:function(v){ wahl.cur=v; } }
   ];
@@ -5923,19 +5962,18 @@ function onboarding(){
     titleEl.innerHTML=icon(S0.icon)+'<span>'+esc(S0.titel())+'</span>';
     const letzter=(schritt===SCHRITTE.length-1);
     list.innerHTML=S0.opts().map(function(o){
-      return '<button type="button" class="picker-opt'+(o[0]===S0.wert()?' on':'')+'" data-id="'+esc(o[0])+'"><span>'+esc(o[1])+'</span>'+(o[0]===S0.wert()?icon('i-check'):'')+'</button>';
-    }).join("")
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px">'
-      +'<span class="mini">'+esc(L("Schritt","Step"))+' '+(schritt+1)+'/'+SCHRITTE.length+'</span>'
-      +'<span style="display:flex;gap:8px">'
-      +(schritt>0?'<button type="button" class="btn ghost sm flat" id="obBack">'+esc(L("Zurück","Back"))+'</button>':'')
-      +'<button type="button" class="btn ghost sm flat" id="obNext">'+esc(letzter?L("Fertig","Done"):L("Weiter","Next"))+'</button>'
-      +'</span></div>';
-    const b=list.querySelector("#obBack"); if(b) b.onclick=function(){ schritt--; rnd(); };
-    list.querySelector("#obNext").onclick=function(){
+      return '<button type="button" class="picker-opt'+(o[0]===S0.wert()?' on':'')+(o[2]?' sep':'')+'" data-id="'+esc(o[0])+'"><span>'+esc(o[1])+'</span>'+(o[0]===S0.wert()?icon('i-check'):'')+'</button>';
+    }).join("");
+    /* Navigation fest in der Fußzeile des Dialogs: die Liste scrollt, die Knöpfe nicht */
+    foot.innerHTML='<span class="mini" style="flex:1 1 auto;align-self:center">'+esc(L("Schritt","Step"))+' '+(schritt+1)+'/'+SCHRITTE.length+'</span>'
+      +(schritt>0?'<button type="button" class="btn ghost" id="obBack">'+esc(L("Zurück","Back"))+'</button>':'')
+      +'<button type="button" class="btn" id="obNext">'+esc(letzter?L("Fertig","Done"):L("Weiter","Next"))+'</button>';
+    const b=foot.querySelector("#obBack"); if(b) b.onclick=function(){ schritt--; rnd(); };
+    foot.querySelector("#obNext").onclick=function(){
       if(schritt<SCHRITTE.length-1){ schritt++; rnd(); return; }
       fertig();
     };
+    try{ list.scrollTop=0; const on=list.querySelector('.picker-opt.on'); if(on) on.scrollIntoView({block:'nearest'}); }catch(e){}
   }
   function fertig(){
     try{
@@ -5946,7 +5984,7 @@ function onboarding(){
     setThemeMode(wahl.theme);
     _ovClose(ov); document.body.classList.remove('modal-open');
     list.removeEventListener('click',onC);
-    cancel.style.display="";
+    foot.innerHTML=footAlt; if(x) x.style.display="";
     if(wahl.lang!==LANG) setLang(wahl.lang);          // lädt neu
     else { try{ if(typeof renderHome==="function") renderHome(); }catch(e){} }
   }
@@ -5955,7 +5993,7 @@ function onboarding(){
   ov.classList.remove('closing'); clearTimeout(ov._closT); ov.classList.add('show');
   document.body.classList.add('modal-open');
   rnd();
-  const iv=setInterval(function(){ if(!ov.classList.contains('show')){ cancel.style.display=""; clearInterval(iv); } },500);
+  const iv=setInterval(function(){ if(!ov.classList.contains('show')){ foot.innerHTML=footAlt; if(x) x.style.display=""; clearInterval(iv); } },500);
 }
 
 /* Sprache nachträglich wechseln (Wellenmenü) */
@@ -5964,23 +6002,57 @@ function langDialog(){
         titleEl=document.getElementById('pickerTitle'), cancel=document.getElementById('pickerCancel');
   if(!ov||!list||!titleEl) return;
   let sel=LANG;
+  const ok=document.getElementById('pickerOk');
   titleEl.innerHTML=icon('i-globe')+'<span>'+(LANG==="en"?"Language":"Sprache")+'</span>';
+  /* Bestätigen sitzt in der festen Fußzeile – gleiche Zeile wie Abbrechen */
+  if(ok){ ok.style.display=""; ok.textContent=(LANG==="en"?"Apply":"Übernehmen");
+    ok.onclick=function(){ const w=sel; done(); if(w!==LANG) setLang(w); }; }
   function done(){
     _ovClose(ov); document.body.classList.remove('modal-open');
     list.removeEventListener('click',onC);
     document.removeEventListener('keydown',onKey,true);
     ov.onclick=null; if(cancel) cancel.onclick=null;
+    if(ok){ ok.style.display="none"; ok.onclick=null; }
   }
   function onKey(e){ if(e.key==="Escape"){ e.preventDefault(); done(); } }
   function rnd(){
     list.innerHTML=Object.keys(LANG_META).map(function(c){ return [c, LANG_META[c].label]; }).map(function(o){
       return '<button type="button" class="picker-opt'+(o[0]===sel?' on':'')+'" data-id="'+o[0]+'"><span>'+o[1]+'</span>'+(o[0]===sel?icon('i-check'):'')+'</button>';
-    }).join("")
-      +'<div style="display:flex;justify-content:flex-end;margin-top:10px"><button type="button" class="btn ghost sm flat" id="langOk">'+(LANG==="en"?"Apply":"Übernehmen")+'</button></div>';
-    list.querySelector("#langOk").onclick=function(){
-      const w=sel; done();
-      if(w!==LANG) setLang(w);
-    };
+    }).join("");
+  }
+  function onC(e){ const b=e.target.closest('.picker-opt'); if(b){ sel=b.dataset.id; rnd(); } }
+  list.addEventListener('click',onC);
+  document.addEventListener('keydown',onKey,true);
+  if(cancel) cancel.onclick=done;
+  ov.onclick=function(e){ if(e.target===ov) done(); };
+  ov.classList.remove('closing'); clearTimeout(ov._closT); ov.classList.add('show');
+  document.body.classList.add('modal-open');
+  rnd();
+}
+
+/* Standardwährung nachträglich ändern (Wellenmenü auf dem Startbildschirm) */
+function curDialog(){
+  const ov=document.getElementById('pickerOverlay'), list=document.getElementById('pickerList'),
+        titleEl=document.getElementById('pickerTitle'), cancel=document.getElementById('pickerCancel'),
+        ok=document.getElementById('pickerOk');
+  if(!ov||!list||!titleEl) return;
+  let sel=defaultCur();
+  const reihe=[sel].concat(CUR_LIST.filter(function(c){ return c!==sel; }).slice().sort());
+  titleEl.innerHTML=icon('i-coins')+'<span>'+esc(t("Standardwährung"))+'</span>';
+  if(ok){ ok.style.display=""; ok.textContent=t("Übernehmen");
+    ok.onclick=function(){ try{ localStorage.setItem(CUR_KEY,sel); }catch(e){} done(); }; }
+  function done(){
+    _ovClose(ov); document.body.classList.remove('modal-open');
+    list.removeEventListener('click',onC);
+    document.removeEventListener('keydown',onKey,true);
+    ov.onclick=null; if(cancel) cancel.onclick=null;
+    if(ok){ ok.style.display="none"; ok.onclick=null; }
+  }
+  function onKey(e){ if(e.key==="Escape"){ e.preventDefault(); done(); } }
+  function rnd(){
+    list.innerHTML=reihe.map(function(c,i){
+      return '<button type="button" class="picker-opt'+(c===sel?' on':'')+(i===0?' sep':'')+'" data-id="'+c+'"><span>'+esc(c+" · "+t(CUR_NAMES[c]))+'</span>'+(c===sel?icon('i-check'):'')+'</button>';
+    }).join("");
   }
   function onC(e){ const b=e.target.closest('.picker-opt'); if(b){ sel=b.dataset.id; rnd(); } }
   list.addEventListener('click',onC);
