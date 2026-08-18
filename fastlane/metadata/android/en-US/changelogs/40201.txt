@@ -1,0 +1,8 @@
+RapidSplit 4.2.1:
+* Fixed: Share as PDF, print and CSV export work again (Android)
+* Swipe an expense card left to delete it
+* Optional IBAN/PayPal address per person is back
+* New "+ Person" button on the Who & Where tab
+* QR code and code are now both valid for 24 hours
+* Added missing English translations (dialogs, trash, fuel)
+* Exchange rates updated

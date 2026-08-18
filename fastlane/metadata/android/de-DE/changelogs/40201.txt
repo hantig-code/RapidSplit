@@ -1,0 +1,8 @@
+RapidSplit 4.2.1:
+* Behoben: PDF teilen, Drucken und CSV-Export funktionieren wieder (Android)
+* Ausgaben lassen sich per Wisch nach links löschen
+* IBAN/PayPal-Adresse optional je Person hinterlegbar
+* Neuer „+ Person"-Knopf im Reiter Wer & Wo
+* QR-Code und Code sind einheitlich 24 Stunden gültig
+* Fehlende englische Übersetzungen ergänzt (Dialoge, Papierkorb, Sprit)
+* Wechselkurse aktualisiert
