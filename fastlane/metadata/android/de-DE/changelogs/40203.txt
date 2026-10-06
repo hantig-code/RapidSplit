@@ -1,0 +1,8 @@
+RapidSplit 4.2.3:
+* Neu „Fahrt planen“: schlägt die Autos vor – Sitz- & Bootsplätze, Shuttle
+* Etappen-Karte: Start & Ziel wählen, km aus der Straßenstrecke
+* Bezahlen per Bank-QR-Code oder PayPal; auch Teilzahlungen abhaken
+* „Wer bist du?“ zeigt, was du zahlst oder bekommst
+* Teilen echt Ende-zu-Ende-verschlüsselt; QR/Tour-Code gilt 3 Tage
+* Material You, neue Beispiel-Tour, viele Verbesserungen
+* Behobener Bug: Einträge geteilter Touren konnten überschrieben werden

@@ -2,8 +2,13 @@
 
 RapidSplit rechnet die Kosten einer Kajak-, Vereins- oder Gruppentour **fair pro
 Teilnehmer:in** ab — etappengenau statt pauschal: Fahrtkosten je Etappe, gemeinsame
-Ausgaben, Salden und „wer zahlt wem". Läuft komplett im Browser, **offline**
-nutzbar, alle Daten bleiben lokal auf dem Gerät (kein Konto, kein Tracking).
+Ausgaben, Salden und „wer zahlt an wen". Läuft im Browser oder als Android-App,
+**offline** nutzbar, die Daten liegen lokal auf dem Gerät (kein Konto, kein Tracking).
+Nur wer eine Tour teilt, schickt sie über den Server — Ende-zu-Ende-verschlüsselt, der
+Server kann sie nicht lesen. Karte, Ortssuche, Strecke und automatische Wechselkurse
+(Schalter „Kurse automatisch laden“) fragen externe Dienste an, und zwar nur, wenn du sie
+nutzt; dabei gehen z. B. der Suchtext oder die Koordinaten von Start und Ziel an den
+jeweiligen Dienst.
 
 ## ▶️ App öffnen (aktuelle Version 4)
 
@@ -15,24 +20,31 @@ nutzbar, alle Daten bleiben lokal auf dem Gerät (kein Konto, kein Tracking).
 **Als App installieren:**
 
 - **Android:** in Chrome öffnen → Menü ⋮ → **„App installieren"** — oder die
-  native **Android-App (APK)** direkt von der RapidSplit-Website laden.
+  native **Android-App** über [Google Play](https://play.google.com/store/apps/details?id=com.hantig.rapidsplit)
+  bzw. [F-Droid](https://f-droid.org/packages/app.rapidsplit/) installieren.
 - **iPhone/iPad:** in **Safari** öffnen → Teilen (↑) → **„Zum Home-Bildschirm"**.
 - **Windows/macOS/Linux:** in Chrome/Edge das Installations-Symbol in der
   Adressleiste, oder in Safari **Ablage → „Zum Dock hinzufügen"**.
 
-Danach startet RapidSplit im eigenen Fenster und funktioniert vollständig offline.
+Danach startet RapidSplit im eigenen Fenster und rechnet auch ohne Internet. Nur Kartenbild,
+Ortssuche, Strecke, Wechselkurse und das Teilen brauchen eine Verbindung.
 
-## Funktionen (Version 3)
+## Funktionen (Version 4)
 
 - **Etappengenaue Fahrtkosten:** km je Fahrer:in und Etappe; Abrechnung wahlweise
   über **€/km-Pauschale** oder **Spritkosten nach km-Anteil** — nur wer mitfuhr, zahlt mit
-- **Fahrer-Auslagen** (Maut, Parkplatz, Permit …) etappengenau zuordenbar
-- Gemeinsame **Ausgaben** (Einkäufe, Campingplatz …) mit beliebigen Zahler:innen
-- **Verein/Familie**: Salden auf Wunsch zu einem Gruppensaldo zusammenfassen
-- Ergebnis: Kosten pro Person, Saldo, **minimale Anzahl Ausgleichszahlungen**
-- **Export als Datei** (Sicherung/Weitergabe) und **PDF-Export**
+- **Etappen-Karte:** Start und Ziel suchen oder auf der Karte wählen, Strecke und km
+  kommen automatisch
+- **Fahrt planen:** Sitz- und Bootsplätze je Auto, Vorschlag mit möglichst wenigen Autos,
+  Shuttle mit einem Auto am Ausstieg
+- **Ausgaben** (Maut, Parkplatz, Permit, Einkäufe, Campingplatz …) je Etappe oder für
+  ausgewählte Personen, mit beliebigen Zahler:innen
+- Ergebnis: Kosten pro Person, Saldo und „wer zahlt an wen" mit **möglichst wenigen
+  Überweisungen**; bezahlen per Bank-QR-Code (GiroCode, bei Euro) oder PayPal, Zahlungen abhaken
+- **Touren teilen** per QR-Code oder Tour-Code, Ende-zu-Ende-verschlüsselt
+- Mehrere Touren, **Export als Datei** (Sicherung/Weitergabe) und **PDF-Export**
 - Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren
-- Hell-/Dunkelmodus, Bottom-Navigation auf dem Handy, barrierearm
+- Deutsch und Englisch, Hell-/Dunkelmodus, Bottom-Navigation auf dem Handy, barrierearm
 
 ## Ordner in diesem Repository
 
@@ -42,16 +54,21 @@ Danach startet RapidSplit im eigenen Fenster und funktioniert vollständig offli
 | [`v2/`](v2/) | Weiterleitung: die frühere App-Adresse leitet zur neuen `app/`-URL um (installierte Apps wechseln automatisch, Daten bleiben erhalten) |
 | [`android/`](android/) | **Quellcode der nativen Android-App** (WebView-Wrapper um die Offline-PWA, Gradle-Projekt, Paket `app.rapidsplit`) |
 | [`fastlane/`](fastlane/) | App-Store-Metadaten (Beschreibungen, Icon) für F-Droid & Co. |
+| [`server/`](server/) | Quellcode des Sync-Servers fürs Teilen (`sync.php`, speichert nur Chiffretext) und Prüfskript `check-sync.sh` |
 | [`v1/`](v1/) | 📦 Archiv: die ursprüngliche Version 1 („Kajak-Tour Kostenrechner"), weiterhin lauffähig unter [/RapidSplit/v1/](https://hantig-code.github.io/RapidSplit/v1/) |
 
 Die frühere Root-Adresse leitet automatisch zur aktuellen App weiter.
 
 ## Technik
 
-Statische Single-File-App (HTML/CSS/JS, kein Build, keine Abhängigkeiten),
-`localStorage` zur Speicherung, Service Worker für den Offline-Betrieb.
-Die Rechenlogik ist gegen einen unabhängigen Vergleichsrechner mit über
-10.000 Zufallsfällen verifiziert (Abweichung < 0,5 Cent).
+Statische Single-File-App (HTML/CSS/JS, kein Build-Schritt), `localStorage` zur
+Speicherung, Service Worker für den Offline-Betrieb. Fremde Bibliotheken: der
+QR-Code-Generator von Kazuhiko Arase (MIT) und Leaflet (BSD-2-Clause) sind eingebettet,
+MapLibre GL JS (BSD-3-Clause) und seine Leaflet-Anbindung (ISC) fürs Kartenbild liegen in `app/vendor/`.
+Die Rechenlogik ist durch automatische Tests abgesichert: Salden und Überweisungen
+gehen centgenau auf, kein Cent geht verloren, alle Salden ergeben zusammen genau null –
+geprüft mit zufällig erzeugten Touren; die Beispiel-Tour wird zusätzlich unabhängig
+nachgerechnet.
 
 Die Beispiel-Tour nutzt zur Veranschaulichung Namen bekannter
 Wildwasser-Kajak-Fahrer:innen — rein illustrativ.
@@ -67,8 +84,10 @@ cd android
 ```
 
 Ergebnis: `android/app/build/outputs/apk/release/app-release-unsigned.apk`
-(benötigt JDK 17 und das Android SDK, compileSdk 34). Details zur
-F-Droid-Aufnahme: [`android/FDROID.md`](android/FDROID.md).
+(benötigt JDK 17 und das Android SDK, compileSdk 35; die veröffentlichten APKs
+werden wie bei F-Droid mit JDK 21 gebaut). Wie F-Droid die App reproduzierbar
+nachbaut, woher die Signatur kommt und wie ein Release getaggt wird:
+[`android/FDROID.md`](android/FDROID.md).
 
 ## Lizenz
 

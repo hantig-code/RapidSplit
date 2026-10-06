@@ -1,0 +1,8 @@
+RapidSplit 4.2.3:
+* New “Plan driving”: suggests which cars to take – seats, boat slots, shuttle
+* Leg map: pick start & destination, km from the road route
+* Pay via bank QR code or PayPal; check off payments, partial ones too
+* “Who are you?” shows at a glance what you owe or get back
+* Truly end-to-end encrypted sharing; QR/trip code valid for 3 days
+* Material You colors, new sample trip, US formats, many fixes
+* Fixed bug: entries in shared trips could be overwritten

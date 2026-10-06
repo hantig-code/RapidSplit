@@ -1,1 +1,1 @@
-Split trip costs fairly: per leg, not flat. Offline, no account needed.
+Split trip costs fairly, leg by leg – not one flat share. Offline, no account.

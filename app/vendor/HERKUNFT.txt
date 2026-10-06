@@ -1,0 +1,9 @@
+Fremdbibliotheken für die Karte (OpenFreeMap-Vektorkarte), unverändert aus der npm-Registry:
+- maplibre-gl 5.24.1 (BSD-3-Clause): dist/maplibre-gl.js, dist/maplibre-gl.css
+  Integrität (sha512) gegen registry.npmjs.org geprüft am 16.11.2026; npm-Herkunftsnachweis (SLSA)
+  = GitHub-Actions-Build aus maplibre/maplibre-gl-js, Commit 0f76405 (= Tag v5.24.1, Zweig 5.x).
+  Gegenüber 5.24.0 nur der Sicherheitsfix GHSA-jrc7-96c5-q579 (Attribution-Sanitizer: dom.ts,
+  attribution_control.ts, map.ts). CSS und Lizenz unverändert.
+  MapLibre 6 ist nur noch als ES-Modul verfügbar (kein UMD) – deshalb bewusst die 5.x-Linie.
+- @maplibre/maplibre-gl-leaflet 0.1.4 (ISC): leaflet-maplibre-gl.js (nur Lizenzkopfzeile vorangestellt)
+Werden erst beim Öffnen einer Karte nachgeladen (nicht beim App-Start).

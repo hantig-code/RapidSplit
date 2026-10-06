@@ -51,6 +51,7 @@ public class ShareProvider extends ContentProvider {
         if (n != null && n.endsWith(".pdf")) return "application/pdf";
         if (n != null && n.endsWith(".csv")) return "text/csv";
         if (n != null && n.endsWith(".json")) return "application/json";
+        if (n != null && n.endsWith(".png")) return "image/png";
         return "application/octet-stream";
     }
 

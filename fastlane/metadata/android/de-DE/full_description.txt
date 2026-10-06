@@ -1,18 +1,22 @@
-Wer mitfährt, zahlt mit. Wer nicht, zahlt nicht. RapidSplit rechnet Kajak-, Vereins- und Gruppen-Ausfahrten fair ab: etappengenau statt pauschal.
+Wer mitfährt, zahlt mit. Wer nicht, zahlt nicht. RapidSplit rechnet Kajak-, Vereins- und Gruppenausfahrten fair ab: etappengenau statt pauschal.
 
 <b>🛶 ETAPPENGENAUE FAHRTKOSTEN</b>
-Lege deine Tour als Etappen an (bspw. Hinfahrt, Shuttle, Rückfahrt) und markiere je Etappe, wer mitgefahren ist. Nur diese Personen teilen die Kosten der Etappe. Abgerechnet wird per €/km-Pauschale oder über die Spritkosten nach Kilometer-Anteil.
+Lege deine Tour als Etappen an (z. B. Hinfahrt, Shuttle, Rückfahrt) und markiere je Etappe, wer mitgefahren ist. Nur diese Personen teilen die Kosten der Etappe. Abgerechnet wird per €/km-Pauschale oder über die Spritkosten nach Kilometer-Anteil. Etappen-Kilometer lassen sich direkt auf der Karte berechnen: Start und Ziel wählen, Straßenstrecke mit km und Fahrzeit kommt automatisch (OpenStreetMap).
+
+<b>🗺️ FAHRT PLANEN</b>
+Plane die Autos je Etappe: Sitz- und Bootsplätze je Fahrer:in, dazu ein Vorschlag mit möglichst wenigen Autos – samt Zuordnung, wessen Boot auf welches Auto kommt. Beim Shutteln bleibt ein Auto am Ausstieg stehen: RapidSplit prüft, dass alle Fahrer:innen morgens zum Einstieg und abends zu ihren Autos zurückkommen.
 
 <b>💶 ALLE KOSTEN DER TOUR</b>
-<ul><li>Fahrer-Auslagen (Maut, Parkplatz, Permit) einzelnen Etappen zuordnen</li><li>Gemeinsame Ausgaben wie Einkauf oder Campingplatz, auch mit mehreren Zahler:innen</li><li>Fremdwährungen mit hinterlegten Tageskursen</li><li>Vereins- oder Familien-Salden auf Wunsch als Gruppe zusammenfassen</li><li>Mehrere Touren parallel verwalten</li></ul>
+<ul><li>Maut, Parkplatz oder Permit einzelnen Etappen zuordnen – es zahlen nur die Mitfahrenden</li><li>Gemeinsame Ausgaben wie Einkauf oder Campingplatz, auch mit mehreren Zahler:innen</li><li>Fremdwährungen: Kurse hinterlegt und von Hand anpassbar, auf Wunsch automatisch zum Reisebeginn geladen</li><li>Mehrere Touren parallel verwalten</li></ul>
 <b>✅ KLARES ERGEBNIS</b>
-Kosten pro Person, Salden und „wer zahlt wem“ mit der minimalen Zahl an Überweisungen. Export als PDF oder CSV zum Sichern und Weitergeben.
+Kosten pro Person, Salden und „Wer zahlt an wen?“ mit möglichst wenigen Überweisungen. „Wer bist du?“ zeigt dir auf einen Blick, was du noch zahlst oder bekommst. Bezahlen per Bank-QR-Code (GiroCode, bei Euro) oder PayPal; erledigte Zahlungen hakst du ab, auch Teilbeträge. Export als PDF oder CSV zum Sichern und Weitergeben.
 
 <b>🤝 GEMEINSAM ABRECHNEN</b>
-Teile deine Tour per QR-Code oder 6-stelligem Code und bearbeitet sie gemeinsam. Dafür wird eine Ende-zu-Ende-verschlüsselte Kopie auf den RapidSplit-Server geladen. Du kannst deine geteilten Touren jederzeit wieder vom Server löschen. Niemand außer den von dir eingeladenen Personen hat Zugriff auf die Tour-Daten.
+Teile deine Tour per QR-Code oder 16-stelligem Tour-Code (3 Tage gültig) – dann bearbeitet ihr sie gemeinsam. Die Tour wird auf deinem Gerät Ende-zu-Ende-verschlüsselt: Den Schlüssel erhalten nur Geräte, die mit einem gültigen Code beitreten – der Server speichert ausschließlich verschlüsselte Daten und kann sie nicht lesen. „Teilen beenden“ löscht die Server-Kopie jederzeit.
 
 <b>🔒 PRIVAT BY DESIGN</b>
-<ul><li>Kein Konto, keine Registrierung</li><li>Funktioniert komplett offline, ideal im Gelände</li><li>Deine Daten bleiben standardmäßig auf deinem Gerät – auf den RapidSplit-Server geht nur, was du ausdrücklich teilst</li><li>Kein Tracking, keine Werbung</li><li>Kostenlos und Open Source (GPL-3.0)</li></ul>
-Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus.
+<ul><li>Kein Konto, keine Registrierung</li><li>Funktioniert komplett offline, ideal im Gelände</li><li>Karte, Ortssuche, Routenberechnung und automatische Wechselkurse kontaktieren externe Dienste (Karte und Routen OpenStreetMap-basiert) nur, wenn du sie aktiv nutzt</li><li>Deine Daten bleiben standardmäßig auf deinem Gerät – auf den RapidSplit-Server geht nur, was du ausdrücklich teilst</li><li>Kein Tracking, keine Werbung</li><li>Kostenlos und Open Source (GPL-3.0)</li></ul>
+Mit Schritt-für-Schritt-Tutorial und Beispiel-Tour zum Ausprobieren. Hell- und Dunkelmodus, ab Android 12 auch in deinen Systemfarben (Material You).
+
 <b>🌍 DEUTSCH ODER ENGLISCH</b>
-Die Oberfläche gibt es in beiden Sprachen – beim ersten Start wählst du Sprache, Farbmodus und Standardwährung, später lässt sich alles im Menü umstellen.
+Die Oberfläche gibt es in beiden Sprachen – beim ersten Start wählst du Sprache, Design und Standardwährung, später lässt sich alles im Menü umstellen.

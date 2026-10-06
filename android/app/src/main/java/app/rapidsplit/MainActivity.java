@@ -13,6 +13,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
@@ -43,9 +44,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getResources().getConfiguration().smallestScreenWidthDp < 600) {
-            setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+        ausrichtungPruefen(getResources().getConfiguration());
 
         web = new WebView(this);
         WebSettings s = web.getSettings();
@@ -212,10 +211,13 @@ public class MainActivity extends Activity {
                 try {
                     int kb = imeBottomDp;   // reine Tastaturhöhe (ohne die ohnehin berücksichtigte Gestenleiste)
                     web.evaluateJavascript(
-                        "var r=document.documentElement;r.style.setProperty('--sys-top','" + navTopDp + "px');"
+                        /* In einer Funktion: kein globales „r“, und ganz früh beim Laden (Dokument ohne <html>) kein
+                           TypeError – onPageFinished meldet die Werte danach ohnehin erneut. */
+                        "(function(){var r=document.documentElement;if(!r)return;"
+                        + "r.style.setProperty('--sys-top','" + navTopDp + "px');"
                         + "r.style.setProperty('--sys-bottom','" + navBottomDp + "px');"
                         + "r.style.setProperty('--kb-native','" + kb + "px');"
-                        + "window.updPadExtra&&updPadExtra()", null);
+                        + "window.updPadExtra&&updPadExtra();})()", null);
                 } catch (Exception e) { /* ignore */ }
             }
         });
@@ -254,6 +256,56 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void setBarColor(String hex) { applyBars(hex); }
 
+        /** Anzeigedauer einer Snackbar (ms) nach der System-Einstellung „Zeit zum Reagieren“ (Bedienungshilfen, ab
+         *  Android 10, wie die MDC-Snackbar). MIT Aktion („Rückgängig“) und TalkBack: -1 = stehen lassen – großzügiger
+         *  als MDC ab Android 10, wie Compose M3/Flutter bei Snackbars mit Aktion. Die Web-App nimmt nie weniger als
+         *  ihren eigenen Wert (8 s ohne, 10 s mit Aktion). Nur lesend. */
+        @JavascriptInterface
+        public int snackTimeout(int ms, boolean mitAktion) {
+            try {
+                AccessibilityManager am = (AccessibilityManager) getSystemService(Context.ACCESSIBILITY_SERVICE);
+                if (am == null) return ms;
+                if (mitAktion && am.isEnabled() && am.isTouchExplorationEnabled()) return -1;
+                if (Build.VERSION.SDK_INT >= 29) {
+                    int flags = AccessibilityManager.FLAG_CONTENT_TEXT | AccessibilityManager.FLAG_CONTENT_ICONS
+                            | (mitAktion ? AccessibilityManager.FLAG_CONTENT_CONTROLS : 0);
+                    return am.getRecommendedTimeoutMillis(ms, flags);
+                }
+            } catch (Exception e) { /* ignore */ }
+            return ms;
+        }
+
+        /** Material-You-Tonpaletten (Android 12+), die das System aus dem Hintergrundbild ableitet:
+         *  {"a1":{"100":"#rrggbb",…,"0":…},"a2":…,"a3":…,"n1":…,"n2":…} (Schlüssel = M3-Ton). Sonst "".
+         *  Nur lesend und nur lokal – die Web-App setzt daraus ihre Farbrollen. */
+        @JavascriptInterface
+        public String getSystemPalette() {
+            if (Build.VERSION.SDK_INT < 31) return "";
+            try {
+                final int[][] ids = {
+                    { android.R.color.system_accent1_0, android.R.color.system_accent1_10, android.R.color.system_accent1_50, android.R.color.system_accent1_100, android.R.color.system_accent1_200, android.R.color.system_accent1_300, android.R.color.system_accent1_400, android.R.color.system_accent1_500, android.R.color.system_accent1_600, android.R.color.system_accent1_700, android.R.color.system_accent1_800, android.R.color.system_accent1_900, android.R.color.system_accent1_1000 },
+                    { android.R.color.system_accent2_0, android.R.color.system_accent2_10, android.R.color.system_accent2_50, android.R.color.system_accent2_100, android.R.color.system_accent2_200, android.R.color.system_accent2_300, android.R.color.system_accent2_400, android.R.color.system_accent2_500, android.R.color.system_accent2_600, android.R.color.system_accent2_700, android.R.color.system_accent2_800, android.R.color.system_accent2_900, android.R.color.system_accent2_1000 },
+                    { android.R.color.system_accent3_0, android.R.color.system_accent3_10, android.R.color.system_accent3_50, android.R.color.system_accent3_100, android.R.color.system_accent3_200, android.R.color.system_accent3_300, android.R.color.system_accent3_400, android.R.color.system_accent3_500, android.R.color.system_accent3_600, android.R.color.system_accent3_700, android.R.color.system_accent3_800, android.R.color.system_accent3_900, android.R.color.system_accent3_1000 },
+                    { android.R.color.system_neutral1_0, android.R.color.system_neutral1_10, android.R.color.system_neutral1_50, android.R.color.system_neutral1_100, android.R.color.system_neutral1_200, android.R.color.system_neutral1_300, android.R.color.system_neutral1_400, android.R.color.system_neutral1_500, android.R.color.system_neutral1_600, android.R.color.system_neutral1_700, android.R.color.system_neutral1_800, android.R.color.system_neutral1_900, android.R.color.system_neutral1_1000 },
+                    { android.R.color.system_neutral2_0, android.R.color.system_neutral2_10, android.R.color.system_neutral2_50, android.R.color.system_neutral2_100, android.R.color.system_neutral2_200, android.R.color.system_neutral2_300, android.R.color.system_neutral2_400, android.R.color.system_neutral2_500, android.R.color.system_neutral2_600, android.R.color.system_neutral2_700, android.R.color.system_neutral2_800, android.R.color.system_neutral2_900, android.R.color.system_neutral2_1000 } };
+                final String[] keys = { "a1", "a2", "a3", "n1", "n2" };
+                final int[] tone = { 100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0 };
+                StringBuilder sb = new StringBuilder("{");
+                for (int p = 0; p < ids.length; p++) {
+                    if (p > 0) sb.append(',');
+                    sb.append('"').append(keys[p]).append("\":{");
+                    for (int i = 0; i < tone.length; i++) {
+                        if (i > 0) sb.append(',');
+                        int c = getResources().getColor(ids[p][i], null);
+                        sb.append('"').append(tone[i]).append("\":\"#")
+                          .append(Integer.toHexString(0x1000000 | (c & 0xFFFFFF)).substring(1)).append('"');
+                    }
+                    sb.append('}');
+                }
+                return sb.append('}').toString();
+            } catch (Exception e) { return ""; }
+        }
+
         @JavascriptInterface
         public void saveFile(final String name, final String mime, final String b64) {
             try {
@@ -287,10 +339,12 @@ public class MainActivity extends Activity {
                     try {
                         java.io.File dir = new java.io.File(getCacheDir(), "share");
                         if (!dir.exists()) dir.mkdirs();
-                        String safe = (name == null ? "export.bin" : name).replaceAll("[^A-Za-z0-9._-]", "_");
+                        String safe = (name == null ? "" : name).replaceAll("[\\\\/:*?\"<>|\\x00-\\x1f]", "").trim().replaceAll("[. ]+$", "");
+                        if (safe.isEmpty()) safe = "export.bin";
                         java.io.File f = new java.io.File(dir, safe);
-                        java.io.FileOutputStream fos = new java.io.FileOutputStream(f);
-                        fos.write(bytes); fos.flush(); fos.close();
+                        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(f)) {
+                            fos.write(bytes); fos.flush();
+                        }
                         Uri uri = Uri.parse("content://" + getPackageName() + ".share/" + Uri.encode(safe));
                         Intent send = new Intent(Intent.ACTION_SEND);
                         send.setType(mime == null ? "application/octet-stream" : mime);
@@ -298,6 +352,39 @@ public class MainActivity extends Activity {
                         send.setClipData(android.content.ClipData.newRawUri(null, uri));
                         send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         startActivity(Intent.createChooser(send, "Auswertung teilen"));
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "Teilen fehlgeschlagen", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+
+        /** Tour-Einladung teilen: QR-Code als PNG plus Text (Code und Anleitung) in EINEM Teilen-Vorgang – Messenger
+         *  übernehmen den Text als Bildunterschrift, reine Text-Apps nur den Text. */
+        @JavascriptInterface
+        public void shareImageText(final String name, final String b64, final String text, final String title) {
+            final byte[] bytes;
+            try { bytes = Base64.decode(b64, Base64.DEFAULT); }
+            catch (Exception e) { return; }
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    try {
+                        java.io.File dir = new java.io.File(getCacheDir(), "share");
+                        if (!dir.exists()) dir.mkdirs();
+                        String safe = (name == null ? "" : name).replaceAll("[\\\\/:*?\"<>|\\x00-\\x1f]", "").trim().replaceAll("[. ]+$", "");
+                        if (!safe.endsWith(".png")) safe = "rapidsplit-tour-code.png";
+                        java.io.File f = new java.io.File(dir, safe);
+                        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(f)) {
+                            fos.write(bytes); fos.flush();
+                        }
+                        Uri uri = Uri.parse("content://" + getPackageName() + ".share/" + Uri.encode(safe));
+                        Intent send = new Intent(Intent.ACTION_SEND);
+                        send.setType("image/png");
+                        send.putExtra(Intent.EXTRA_STREAM, uri);
+                        if (text != null && !text.isEmpty()) send.putExtra(Intent.EXTRA_TEXT, text);
+                        send.setClipData(android.content.ClipData.newRawUri(null, uri));
+                        send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(Intent.createChooser(send, title == null || title.isEmpty() ? "Teilen" : title));
                     } catch (Exception e) {
                         Toast.makeText(MainActivity.this, "Teilen fehlgeschlagen", Toast.LENGTH_LONG).show();
                     }
@@ -376,12 +463,30 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Zurück in der App: Hintergrundbild/Systemfarben könnten sich geändert haben -> Web-App liest neu
+        if (web != null) pushSystemDark();
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        ausrichtungPruefen(newConfig);
         // uiMode steht in configChanges -> kein Activity-Neustart beim Hell/Dunkel-Wechsel (WebView-Zustand bleibt).
         int night = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
         applyBars(night == Configuration.UI_MODE_NIGHT_YES ? "#0e1513" : "#f5faf8");
         pushSystemDark();
+    }
+
+    /** Smartphones (kürzeste Seite < 600 dp) nur im Hochformat; Tablets, aufgeklappte Foldables und Chromebooks frei.
+     *  Auch bei jedem Konfigurationswechsel neu prüfen: Auf-/Zuklappen eines Foldables startet die Activity wegen
+     *  configChanges (smallestScreenSize) nicht neu. Im Mehrfenstermodus ignoriert Android die Vorgabe ohnehin. */
+    private void ausrichtungPruefen(Configuration c) {
+        int soll = c.smallestScreenWidthDp < 600
+                ? android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                : android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        if (getRequestedOrientation() != soll) setRequestedOrientation(soll);
     }
 
     @Override

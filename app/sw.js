@@ -1,7 +1,7 @@
 /* Kajak-Tour Kostenrechner — Service Worker
    Cache-first App-Shell, damit die App vollständig offline läuft.
    Bei jeder inhaltlichen Änderung CACHE_VERSION erhöhen. */
-const CACHE_VERSION = "rapidsplit-app-v5";
+const CACHE_VERSION = "rapidsplit-app-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -41,6 +41,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
+  // Nur die eigene App cachen. Sync-Abrufe (auch ein Sync-Skript auf derselben Domain) immer live –
+  // ein veralteter Stand würde den Konfliktschutz aushebeln.
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin || /\.php$/i.test(url.pathname) || url.searchParams.has("id")) return;
 
   // Navigationsanfragen: bei Offline auf index.html zurückfallen.
   if (req.mode === "navigate") {
