@@ -1,22 +1,32 @@
 Those who ride along pay along. Those who don't, don't. RapidSplit settles kayak, club and group trips fairly: leg by leg instead of one flat split.
 
-<b>🛶 PER-LEG TRAVEL COSTS</b>
+🛶 PER-LEG TRAVEL COSTS
 Set up your trip as legs (e.g., outbound, shuttle, return) and mark who rode along on each leg. Only those people share that leg's costs. Settle via a per-km rate or by fuel costs split by kilometer share. Leg distances can be calculated right on the map: pick start and destination, and the road route with km and driving time is fetched automatically (OpenStreetMap).
 
-<b>🗺️ PLAN DRIVING</b>
+🗺️ PLAN DRIVING
 Plan the cars per leg: seats and boat slots per driver, plus a suggestion that uses as few cars as possible – including whose boat goes on which car. When shuttling, one car stays at the take-out: RapidSplit checks that every driver gets back to the put-in in the morning and to their car in the evening.
 
-<b>💶 ALL TRIP COSTS</b>
-<ul><li>Assign tolls, parking or permits to individual legs – only the people on them pay</li><li>Shared expenses like groceries or campsites, with multiple payers if needed</li><li>Foreign currencies: built-in rates you can adjust, or have them loaded automatically for the trip's start date</li><li>Manage several trips in parallel</li></ul>
-<b>✅ A CLEAR RESULT</b>
+💶 ALL TRIP COSTS
+• Assign tolls, parking or permits to individual legs – only the people on them pay
+• Shared expenses like groceries or campsites, with multiple payers if needed
+• Foreign currencies: built-in rates you can adjust, or have them loaded automatically for the trip's start date
+• Manage several trips in parallel
+
+✅ A CLEAR RESULT
 Costs per person, balances and “Who pays whom?” with as few transfers as possible. “Who are you?” shows at a glance what you owe or are owed. Pay via bank QR code (GiroCode, for euro amounts) or PayPal, and check off completed payments – partial amounts too. Export as PDF or CSV for records and sharing.
 
-<b>🤝 SETTLE TOGETHER</b>
+🤝 SETTLE TOGETHER
 Share your trip via QR code or a 16-character trip code (valid for 3 days) and edit it together. The trip is end-to-end encrypted on your device: only devices that join with a valid code receive the key – the server stores nothing but encrypted data and cannot read it. “Stop sharing” deletes the server copy at any time.
 
-<b>🔒 PRIVATE BY DESIGN</b>
-<ul><li>No account, no registration</li><li>Works fully offline – ideal in the outdoors</li><li>Map, place search, routing and automatic exchange rates contact external services (map and routing are OpenStreetMap-based) only when you actively use them</li><li>Your data stays on your device by default – only what you explicitly share goes to the RapidSplit server</li><li>No tracking, no ads</li><li>Free and open source (GPL-3.0)</li></ul>
+🔒 PRIVATE BY DESIGN
+• No account, no registration
+• Works fully offline – ideal in the outdoors
+• Map, place search, routing and automatic exchange rates contact external services (map and routing are OpenStreetMap-based) only when you actively use them
+• Your data stays on your device by default – only what you explicitly share goes to the RapidSplit server
+• No tracking, no ads
+• Free and open source (GPL-3.0)
+
 Includes a step-by-step tutorial and a sample trip to try out. Light and dark mode, plus your system colors (Material You) on Android 12 and later.
 
-<b>🌍 ENGLISH OR GERMAN</b>
+🌍 ENGLISH OR GERMAN
 The interface comes in both languages – on first launch you pick language, theme and default currency, and you can change all of it later from the menu.
